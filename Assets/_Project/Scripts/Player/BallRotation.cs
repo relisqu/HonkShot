@@ -1,39 +1,49 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Scripts.Player
 {
     public class BallRotation : MonoBehaviour
     {
-        public SpriteRenderer BallArt; // Primary ball sprite
-        public SpriteRenderer BallArt2; // Secondary ball sprite (optional, for layered rotation effects)
+        public float PerspectiveCoeff = 0.1f;
+        public float PerspectiveCoeff2 = 0.1f;
+        public float PerspectiveCoeff3 = 0.1f;
+        public SpriteRenderer BandanaBallArt;
+        public SpriteRenderer EyesBallArt; // Primary ball sprite
+        public SpriteRenderer BeakBallArt; // Secondary ball sprite (optional, for layered rotation effects)
         public Transform MyTransform; // Transform of the ball
         public Rigidbody2D MyRigidbody; // Rigidbody2D for movement and physics
 
-        private Vector2 ballArtOffset;
-        private Vector2 ballArtOffset2;
+        private Vector2 eyesArtOffset;
+        private Vector2 beakArtOffset;
+        private Vector2 bandanaArtOffset;
         private Vector2 lastPosition;
         private Vector2 size;
 
         void Start()
         {
             // Initialize offsets and size
-            ballArtOffset = BallArt.transform.localPosition;
+
+            eyesArtOffset = EyesBallArt.transform.localPosition;
+            beakArtOffset = BeakBallArt.transform.localPosition;
+            bandanaArtOffset = BandanaBallArt.transform.localPosition;
             lastPosition = MyTransform.position;
-            size = GetSpriteSize(BallArt.sprite); // Utility function to get sprite size
+
+            size = GetSpriteSize(EyesBallArt.sprite); // Utility function to get sprite size
         }
 
         void Update()
         {
             // Update rotation offsets based on movement distance
             Vector2 movementDelta = GetMovementDelta();
-            ballArtOffset += movementDelta;
-            ballArtOffset2 -= movementDelta;
-
+            eyesArtOffset += movementDelta;
+            beakArtOffset += movementDelta;
+            bandanaArtOffset += movementDelta;
             // Wrap offsets to prevent drifting too far
             ModPosition();
 
             // Apply offsets to the sprites
-            SetOffset(ballArtOffset);
+            SetOffsets();
 
             // Store the current position for the next frame
             lastPosition = MyTransform.position;
@@ -50,18 +60,23 @@ namespace Scripts.Player
         private void ModPosition()
         {
             // Wrap the offsets within the sprite size to simulate rotation
-            ballArtOffset = Vector2Mod(ballArtOffset + size / 2, size) - size / 2;
-            ballArtOffset2 = Vector2Mod(ballArtOffset2 + size / 2, size) - size / 2;
+            eyesArtOffset = Vector2Mod(eyesArtOffset + GetSpriteSize(EyesBallArt.sprite) / 2, GetSpriteSize(EyesBallArt.sprite)) - GetSpriteSize(EyesBallArt.sprite) / 2;
+            beakArtOffset = Vector2Mod(beakArtOffset +  GetSpriteSize(BeakBallArt.sprite) / 2, GetSpriteSize(BeakBallArt.sprite)) - GetSpriteSize(BeakBallArt.sprite) / 2;
+            bandanaArtOffset = Vector2Mod(bandanaArtOffset + GetSpriteSize(BandanaBallArt.sprite) / 2,  GetSpriteSize(BandanaBallArt.sprite)) -  GetSpriteSize(BandanaBallArt.sprite) / 2;
         }
 
-        private void SetOffset(Vector2 offset)
+        private void SetOffsets()
         {
             // Apply the calculated offsets to the sprite renderers
-            BallArt.transform.localPosition = offset;
-            if (BallArt2 != null)
-            {
-                BallArt2.transform.localPosition = ballArtOffset2;
-            }
+            EyesBallArt.transform.localPosition = eyesArtOffset;
+            BeakBallArt.transform.localPosition = beakArtOffset;
+            BandanaBallArt.transform.localPosition = new Vector3(0, bandanaArtOffset.y, 0);
+            EyesBallArt.transform.localPosition =
+                new Vector3(eyesArtOffset.x, TopDownOffsetVector2(eyesArtOffset, EyesBallArt).y, 0);
+            BeakBallArt.transform.localPosition =
+                new Vector3(beakArtOffset.x, TopDownOffsetVector2(beakArtOffset, BeakBallArt).y, 0);
+           // BandanaBallArt.transform.localPosition =
+            //    new Vector3(0, TopDownOffsetVector2(bandanaArtOffset, BandanaBallArt).y, 0);
         }
 
 
@@ -76,19 +91,18 @@ namespace Scripts.Player
 
                 return a;
             }
-            else if (a < m)
-            {
-                return a;
-            }
-            else
-            {
-                do
-                {
-                    a -= m;
-                } while (a >= m);
 
+            if (a < m)
+            {
                 return a;
             }
+
+            do
+            {
+                a -= m;
+            } while (a >= m);
+
+            return a;
         }
 
         public static Vector2 Vector2Mod(Vector2 a, Vector2 m)
@@ -96,71 +110,23 @@ namespace Scripts.Player
             return new Vector2(FloatMod(a.x, m.x), FloatMod(a.y, m.y));
         }
 
-        public static Vector2 RotateVector2(Vector2 a, float r)
+        public Vector2 RotateVector2(Vector2 a, float r)
         {
             float s = Mathf.Sin(r);
             float c = Mathf.Cos(r);
-            return new Vector2(a.x * c - a.y * s, a.y * c + a.x * s);
+            var rotatedVector = new Vector2(a.x * c - a.y * s, a.y * c + a.x * s);
+            Debug.Log(rotatedVector);
+            return rotatedVector;
         }
 
-        public static float Lerp(float a, float b, float speed, float time, float minSpeed = 0)
+        public Vector2 TopDownOffsetVector2(Vector2 offset, SpriteRenderer renderer)
         {
-            if (a == b)
-            {
-                return a;
-            }
-
-            bool min = a < b;
-            a = Mathf.Lerp(a, b, speed * time * 0.01f) + ((b > a) ? minSpeed : -minSpeed) * 0.01f;
-            if (min)
-            {
-                if (a >= b)
-                {
-                    a = b;
-                }
-            }
-            else
-            {
-                if (a <= b)
-                {
-                    a = b;
-                }
-            }
-
-            return a;
+            var perspOffset = offset.x / (GetSpriteSize(renderer.sprite).x / 2);
+            var a = offset.y + PerspectiveCoeff3 - Mathf.Cos(perspOffset * PerspectiveCoeff) * PerspectiveCoeff2;
+            Debug.Log(a);
+            return new Vector2(0, a);
         }
 
-        public static bool PointInRect(Vector2 p, Rect r)
-        {
-            return (p.x >= r.x && p.x < r.x + r.width && p.y >= r.y && p.y < r.y + r.height);
-        }
-
-        public static bool PointInRound(CircleCollider2D r, Vector2 p)
-        {
-            return ((Vector2)r.transform.position - p).sqrMagnitude < r.radius * r.radius;
-        }
-
-        public static float AngleVector(Vector2 v)
-        {
-            return Vector2.Angle(Vector2.right, v) * ((v.y > 0) ? 1 : -1) * Mathf.PI / 180;
-        }
-
-        public static void SetApha(SpriteRenderer s, float a)
-        {
-            Color c = s.color;
-            c.a = a;
-            s.color = c;
-        }
-
-        public static void SetRotationZ(Transform t, float r)
-        {
-            t.localRotation = Quaternion.AngleAxis(r, Vector3.forward);
-        }
-
-        public static void SetRotationZR(Transform t, float r)
-        {
-            SetRotationZ(t, r / Mathf.PI * 180);
-        }
 
         public static Vector2 GetSpriteSize(Sprite s)
         {
