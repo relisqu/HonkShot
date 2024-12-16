@@ -75,8 +75,6 @@ namespace Scripts.Player
                 new Vector3(eyesArtOffset.x, TopDownOffsetVector2(eyesArtOffset, EyesBallArt).y, 0);
             BeakBallArt.transform.localPosition =
                 new Vector3(beakArtOffset.x, TopDownOffsetVector2(beakArtOffset, BeakBallArt).y, 0);
-           // BandanaBallArt.transform.localPosition =
-            //    new Vector3(0, TopDownOffsetVector2(bandanaArtOffset, BandanaBallArt).y, 0);
         }
 
 
