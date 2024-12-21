@@ -60,20 +60,24 @@ namespace Scripts.Player
             OnDragStarted?.Invoke();
             _isDragging = true;
             _dragStartPos = Camera.main.WorldToScreenPoint(_playerTransform.position);
-            _dragCurPos = _mouseActionReference.action.ReadValue<Vector2>(); // Get the starting mouse position
+            _dragCurPos = _mouseActionReference.action.ReadValue<Vector2>();
         }
 
         private void OnDragRelease(InputAction.CallbackContext context)
         {
-            OnDragFinished?.Invoke(GetCurrentInputPosition());
+            OnDragFinished?.Invoke(GetCurrentDrag());
             _isDragging = false;
         }
 
-        public Vector2 GetCurrentInputPosition()
+        public Vector2 GetCurrentDrag()
         {
             var dragDirection = _dragCurPos - _dragStartPos;
             return dragDirection;
         }
 
+        public float GetCurrentDragMagnitude()
+        {
+            return GetCurrentDrag().magnitude;
+        }
     }
 }

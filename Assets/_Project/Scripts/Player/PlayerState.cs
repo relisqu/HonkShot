@@ -3,6 +3,7 @@
     public enum PlayerState
     {
         Ball,
+        Swapping,
         Shooter
     }
 }

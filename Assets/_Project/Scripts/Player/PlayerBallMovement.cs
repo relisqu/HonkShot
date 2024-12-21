@@ -68,9 +68,9 @@ namespace Scripts.Player
                 Vector2 normal = other.contacts[0].normal;
                 Vector2 incomingVelocity = preCollisionVelocity;
                 Vector2 reflectedVelocity = Vector2.Reflect(incomingVelocity, normal);
-                Debug.Log($"incomingVelocity:{incomingVelocity} reflectedVelocity:{reflectedVelocity}");
                 _rigidbody2D.velocity = reflectedVelocity * bounceObject.Bounciness;
             }
         }
+        
     }
 }
