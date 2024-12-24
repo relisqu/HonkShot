@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 9160224991665677935}
   - component: {fileID: 3641270050611705291}
   - component: {fileID: 1956692562764782737}
-  - component: {fileID: 2583161750094452401}
   m_Layer: 0
   m_Name: SmallWall
   m_TagString: Untagged
@@ -95,7 +94,7 @@ PolygonCollider2D:
   m_GameObject: {fileID: 2425228489420642626}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: b4bd32cd6d61a4741a55c8b781c0080e, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -140,16 +139,3 @@ PolygonCollider2D:
       - {x: 0.6526587, y: 0.21194613}
       - {x: 0.092387676, y: 0.7412722}
   m_UseDelaunayMesh: 0
---- !u!114 &2583161750094452401
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2425228489420642626}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07848764a75e458c81bd7fbce915c2bb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _bounciness: 0.4
