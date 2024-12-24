@@ -4,7 +4,7 @@
     {
         Player,
         Enemy,
-        
-        Music
+        Music,
+        Environment,
     }
 }

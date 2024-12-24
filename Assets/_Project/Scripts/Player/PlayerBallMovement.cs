@@ -1,5 +1,6 @@
 ﻿using System;
-using Scripts.LevelObjects;
+using Scripts.Audio;
+using Scripts.LevelSystem;
 using UnityEngine;
 
 namespace Scripts.Player
@@ -52,25 +53,25 @@ namespace Scripts.Player
         }
 
         private Vector2 preCollisionVelocity;
+
         private void FixedUpdate()
         {
             // Capture the Rigidbody's velocity before the collision happens
             preCollisionVelocity = _rigidbody2D.velocity;
         }
+
         private void OnCollisionEnter2D(Collision2D other)
         {
             if (_playerStatus.PlayerState != PlayerState.Ball) return;
 
-            if (other.gameObject.TryGetComponent(out BounceObject bounceObject))
+            if (other.gameObject.TryGetComponent(out LevelSolidObject _))
             {
-                if (bounceObject.Bounciness <= 0) return;
+                var force = _rigidbody2D.velocity.magnitude / _forceModifier;
+                force = Mathf.Clamp(force, 0, 1);
+                Debug.Log(force);
 
-                Vector2 normal = other.contacts[0].normal;
-                Vector2 incomingVelocity = preCollisionVelocity;
-                Vector2 reflectedVelocity = Vector2.Reflect(incomingVelocity, normal);
-                _rigidbody2D.velocity = reflectedVelocity * bounceObject.Bounciness;
+                AudioManager.Instance.PlayOneShot(SoundChanelType.Player, "gooseCollision", force);
             }
         }
-        
     }
 }

@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 5446575030972496271}
   - component: {fileID: 5518951336158486568}
   - component: {fileID: 2265482727764664873}
-  - component: {fileID: 5175792967393395002}
   - component: {fileID: 2305141423084587861}
+  - component: {fileID: 8466320548080367611}
+  - component: {fileID: 2617943583294215966}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Untagged
@@ -133,8 +134,34 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!58 &5175792967393395002
-CircleCollider2D:
+--- !u!210 &2305141423084587861
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1356849177087957430}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 1
+  m_SortAtRoot: 0
+--- !u!114 &8466320548080367611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1356849177087957430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07848764a75e458c81bd7fbce915c2bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _speedToSoundCoeff: 0.08
+  _rigidbody2D: {fileID: 2265482727764664873}
+--- !u!70 &2617943583294215966
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -165,21 +192,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.125
---- !u!210 &2305141423084587861
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1356849177087957430}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 1
-  m_SortAtRoot: 0
+  m_Offset: {x: 0.0017944364, y: -0.053837635}
+  m_Size: {x: 0.1746281, y: 0.14232542}
+  m_Direction: 1
 --- !u!1 &3422058974086237453
 GameObject:
   m_ObjectHideFlags: 0
