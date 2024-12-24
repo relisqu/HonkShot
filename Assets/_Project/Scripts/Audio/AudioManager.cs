@@ -126,8 +126,18 @@ namespace Scripts.Audio
             _audioSources[soundChanelType].isPlaying
             && _audioSources[soundChanelType].clip == soundEffect.GetAudioClip();
 
-        public void Stop(SoundChanelType soundChanelType) =>
-            _audioSources[soundChanelType].Stop();
+        public void Stop(SoundChanelType soundChanelType, string soundName = null)
+        {
+            if (soundName != null)
+            {
+                if (IsPlaying(soundChanelType, name))
+                    _audioSources[soundChanelType].Stop();
+            }
+            else
+            {
+                _audioSources[soundChanelType].Stop();
+            }
+        }
 
         public void Pause(SoundChanelType soundChanelType) =>
             _audioSources[soundChanelType].Stop();
@@ -163,7 +173,7 @@ namespace Scripts.Audio
             var audioSourceVolume = _audioSources[soundChanelType].volume;
             _audioSources[soundChanelType].volume = 0;
             SetMute(soundChanelType, false);
-            
+
             yield return _audioSources[soundChanelType].DOFade(audioSourceVolume, smoothSpeed).WaitForCompletion();
 
             //_audioSources[soundChanelType].volume = _volumes[soundChanelType];

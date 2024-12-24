@@ -10,12 +10,14 @@ namespace Scripts.Player
         [SerializeField] private InputActionReference _mouseActionReference;
         [SerializeField] private Transform _playerTransform;
 
+
         private Vector2 _dragCurPos;
         private Vector2 _dragStartPos;
         private bool _isDragging = false;
 
         public Action OnDragStarted;
         public Action<Vector2> OnDragFinished;
+        public bool IsDragging => _isDragging;
 
         private void Start()
         {
@@ -53,8 +55,9 @@ namespace Scripts.Player
 
             _mouseActionReference.action.started -= OnDragStart;
             _mouseActionReference.action.canceled -= OnDragRelease;
+            
         }
-
+        
         private void OnDragStart(InputAction.CallbackContext context)
         {
             OnDragStarted?.Invoke();
@@ -69,6 +72,7 @@ namespace Scripts.Player
             _isDragging = false;
         }
 
+        
         public Vector2 GetCurrentDrag()
         {
             var dragDirection = _dragCurPos - _dragStartPos;

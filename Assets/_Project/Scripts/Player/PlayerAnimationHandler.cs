@@ -105,7 +105,7 @@ namespace Scripts.Player
                 }
 
 
-                var scale = Mathf.Clamp(30 / Mathf.Sqrt(_inputHandler.GetCurrentDragMagnitude()), 0.3f, 1f);
+                var scale = Mathf.Clamp(8 / Mathf.Sqrt(_inputHandler.GetCurrentDragMagnitude()), 0.6f, 1f);
 
                 float currentVelocityX = _inputHandler.GetCurrentDrag().x;
 

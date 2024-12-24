@@ -10,10 +10,10 @@ namespace Scripts.Player
         [SerializeField] private Rigidbody2D _rigidbody2D;
         [SerializeField] private InputHandler _inputHandler;
         [SerializeField] private PlayerStatus _playerStatus;
-        [SerializeField] private float _defaultSpeed;
         [SerializeField] private float _forceModifier;
         [SerializeField] private float _maxForce;
         [SerializeField] private float _minBallForce;
+        public float MaxForce => _maxForce;
 
         public void Update()
         {
@@ -68,7 +68,6 @@ namespace Scripts.Player
             {
                 var force = _rigidbody2D.velocity.magnitude / _forceModifier;
                 force = Mathf.Clamp(force, 0, 1);
-                Debug.Log(force);
 
                 AudioManager.Instance.PlayOneShot(SoundChanelType.Player, "gooseCollision", force);
             }
