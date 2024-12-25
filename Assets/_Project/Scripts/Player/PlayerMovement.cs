@@ -64,6 +64,10 @@ namespace Scripts.Player
             return _rigidbody2D.velocity;
         }
 
-        
+
+        public Rigidbody2D GetRigidbody()
+        {
+            return _rigidbody2D;
+        }
     }
 }
