@@ -1,5 +1,6 @@
 ﻿using System;
 using Scripts.Audio;
+using Scripts.LevelSystem;
 using UnityEngine;
 
 namespace Scripts.Player
@@ -8,6 +9,7 @@ namespace Scripts.Player
     {
         [SerializeField] private PlayerBallMovement _playerBallMovement;
         [SerializeField] private InputHandler _inputHandler;
+        [SerializeField] private TeleportableEntity _teleportableEntity;
         [SerializeField] private float _stretchSoundDragForce;
 
         private bool _playedStretchSound;
@@ -15,11 +17,18 @@ namespace Scripts.Player
         private void OnEnable()
         {
             _inputHandler.OnDragFinished += InputHandler_DragFinished;
+            _teleportableEntity.Teleported += TeleportableEntity_Teleported;
         }
 
         private void OnDisable()
         {
             _inputHandler.OnDragFinished -= InputHandler_DragFinished;
+            _teleportableEntity.Teleported -= TeleportableEntity_Teleported;
+        }
+
+        private void TeleportableEntity_Teleported()
+        {
+            AudioManager.Instance.PlayOneShot(SoundChanelType.Player, "warp");
         }
 
         private void InputHandler_DragFinished(Vector2 _)
@@ -42,8 +51,8 @@ namespace Scripts.Player
                 PlayStretchSound();
                 _playedStretchSound = true;
             }
-            
-            if( magnitude < _stretchSoundDragForce)
+
+            if (magnitude < _stretchSoundDragForce)
             {
                 _playedStretchSound = false;
             }

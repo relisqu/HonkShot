@@ -18,6 +18,8 @@ GameObject:
   - component: {fileID: 6293474562219293711}
   - component: {fileID: 5865247646953967656}
   - component: {fileID: 5619532225779478360}
+  - component: {fileID: 6818305907836223152}
+  - component: {fileID: 8887970704425061413}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -54,8 +56,8 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0.1
+  m_Mass: 5
+  m_LinearDrag: 0.3
   m_AngularDrag: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
@@ -67,7 +69,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &4628585418959965787
 MonoBehaviour:
@@ -85,8 +87,8 @@ MonoBehaviour:
   _playerStatus: {fileID: 2410884018478326342}
   _playerBallMovement: {fileID: 2855041829269072723}
   _inputHandler: {fileID: 5673762809728403182}
-  _defaultSpeed: 58
-  _linearDrag: 0.87
+  _defaultSpeed: 160
+  _linearDrag: 0.92
 --- !u!114 &5673762809728403182
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -129,10 +131,9 @@ MonoBehaviour:
   _rigidbody2D: {fileID: 2247023436353849157}
   _inputHandler: {fileID: 5673762809728403182}
   _playerStatus: {fileID: 2410884018478326342}
-  _defaultSpeed: 60
   _forceModifier: 5
-  _maxForce: 10
-  _minBallForce: 2
+  _maxForce: 60
+  _minBallForce: 1.5
 --- !u!114 &5510771135622167037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,8 +199,40 @@ MonoBehaviour:
   _playerStatus: {fileID: 2410884018478326342}
   _playerMovement: {fileID: 4628585418959965787}
   _shooterSprite: {fileID: 8715344108396758757}
-  _shooterGameObject: {fileID: 0}
+  _shooterGameObject: {fileID: 334979677366588079}
   _playerAnimator: {fileID: 5865247646953967656}
+  _inputHandler: {fileID: 5673762809728403182}
+  _minSize: 0.7
+  _shakeForce: 2
+--- !u!114 &6818305907836223152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 225159964537138388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ec1a6e81241429288595ca2d7b9a1d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerBallMovement: {fileID: 2855041829269072723}
+  _inputHandler: {fileID: 5673762809728403182}
+  _stretchSoundDragForce: 170
+--- !u!114 &8887970704425061413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 225159964537138388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db4d9a7db2944eb78fc3f5e09cf9f780, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _teleportCooldown: 0.7
+  _rigidbody2D: {fileID: 2247023436353849157}
 --- !u!1 &334979677366588079
 GameObject:
   m_ObjectHideFlags: 0
@@ -248,7 +281,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &160628296117967834
 Transform:
   m_ObjectHideFlags: 0
@@ -552,7 +585,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6608237241733386666
 Transform:
   m_ObjectHideFlags: 0
@@ -803,6 +836,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8683689150091313475}
   - component: {fileID: 3355724425614522728}
+  - component: {fileID: 5046093045949384557}
   m_Layer: 0
   m_Name: Collider
   m_TagString: Untagged
@@ -819,7 +853,7 @@ Transform:
   m_GameObject: {fileID: 7841696198769404249}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.056, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -860,6 +894,36 @@ CapsuleCollider2D:
   m_Offset: {x: -0.02950956, y: 0.022883004}
   m_Size: {x: 0.27490214, y: 0.16193964}
   m_Direction: 1
+--- !u!114 &5046093045949384557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7841696198769404249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShadowGroup: 0
+  m_ComponentVersion: 1
+  m_HasRenderer: 0
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 0
+  m_ApplyToSortingLayers: 00000000
+  m_ShapePath:
+  - {x: -0.1669606, y: -0.058086753, z: 0}
+  - {x: -0.1669606, y: 0.10385287, z: 0}
+  - {x: 0.10794151, y: 0.10385287, z: 0}
+  - {x: 0.10794151, y: -0.058086753, z: 0}
+  m_ShapePathHash: 0
+  m_Mesh: {fileID: 0}
+  m_InstanceId: -89086
+  m_LocalBounds:
+    m_Center: {x: -0.029509544, y: 0.022883058, z: 0}
+    m_Extent: {x: 0.13745105, y: 0.08096981, z: 0}
 --- !u!1 &7978030659828972108
 GameObject:
   m_ObjectHideFlags: 0
@@ -972,6 +1036,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6342402690918349685}
   - component: {fileID: 4172385670859091897}
+  - component: {fileID: 7769735408336255179}
   m_Layer: 0
   m_Name: Collider
   m_TagString: Untagged
@@ -1029,6 +1094,44 @@ CapsuleCollider2D:
   m_Offset: {x: -0.00000036467182, y: -0.059088662}
   m_Size: {x: 0.6705478, y: 0.58818835}
   m_Direction: 1
+--- !u!114 &7769735408336255179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8848443921729478529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShadowGroup: 0
+  m_ComponentVersion: 1
+  m_HasRenderer: 0
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 0
+  m_ApplyToSortingLayers: 00000000
+  m_ShapePath:
+  - {x: -0.28161198, y: -0.24800491, z: 0}
+  - {x: -0.32883477, y: -0.11057925, z: 0}
+  - {x: -0.38974047, y: 0.06045483, z: 0}
+  - {x: -0.26899195, y: 0.33317995, z: 0}
+  - {x: -0.008067608, y: 0.45566016, z: 0}
+  - {x: 0.25563955, y: 0.35399866, z: 0}
+  - {x: 0.38679743, y: 0.1458115, z: 0}
+  - {x: 0.3602562, y: -0.108303666, z: 0}
+  - {x: 0.28805065, y: -0.24156547, z: 0}
+  - {x: 0.19780171, y: -0.32385838, z: 0}
+  - {x: 0.013203502, y: -0.35820222, z: 0}
+  - {x: -0.1628086, y: -0.3367374, z: 0}
+  m_ShapePathHash: -1285002581
+  m_Mesh: {fileID: 0}
+  m_InstanceId: -89292
+  m_LocalBounds:
+    m_Center: {x: -0.0014715195, y: 0.048728973, z: 0}
+    m_Extent: {x: 0.38826895, y: 0.4069312, z: 0}
 --- !u!1 &9075545120881852204
 GameObject:
   m_ObjectHideFlags: 0

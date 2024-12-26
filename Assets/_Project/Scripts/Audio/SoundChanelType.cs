@@ -6,5 +6,6 @@
         Enemy,
         Music,
         Environment,
+        UI
     }
 }

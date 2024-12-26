@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 3641270050611705291}
   - component: {fileID: 1956692562764782737}
   - component: {fileID: 3283020652940717117}
-  m_Layer: 0
+  - component: {fileID: 1584554418699127476}
+  m_Layer: 7
   m_Name: SmallWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -54,7 +55,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -85,7 +86,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!60 &1956692562764782737
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -152,3 +153,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8ac461deff84a48b6db99929b71e868, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1584554418699127476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2425228489420642626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShadowGroup: 0
+  m_ComponentVersion: 1
+  m_HasRenderer: 1
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 0
+  m_ApplyToSortingLayers: 00000000
+  m_ShapePath:
+  - {x: -0.024683714, y: -0.67306364, z: 0}
+  - {x: -0.65625, y: -0.04462552, z: 0}
+  - {x: -0.6638651, y: 0.1544075, z: 0}
+  - {x: -0.0040237904, y: 0.558233, z: 0}
+  - {x: 0.6484802, y: 0.1995194, z: 0}
+  - {x: 0.6357446, y: -0.020991802, z: 0}
+  m_ShapePathHash: -1235616535
+  m_Mesh: {fileID: 0}
+  m_InstanceId: -86766
+  m_LocalBounds:
+    m_Center: {x: -0.0076924562, y: -0.057415307, z: 0}
+    m_Extent: {x: 0.65617263, y: 0.6156483, z: 0}

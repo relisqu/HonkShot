@@ -1,5 +1,6 @@
 ﻿using System;
 using Scripts.Audio;
+using Scripts.LevelSystem;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -69,5 +70,7 @@ namespace Scripts.Player
         {
             return _rigidbody2D;
         }
+        
+        
     }
 }

@@ -9,6 +9,7 @@ namespace Scripts.Player
         [SerializeField] private InputActionReference _moveActionReference;
         [SerializeField] private InputActionReference _mouseActionReference;
         [SerializeField] private Transform _playerTransform;
+        [SerializeField] private UnityEngine.Camera _camera;
 
 
         private Vector2 _dragCurPos;
@@ -62,7 +63,7 @@ namespace Scripts.Player
         {
             OnDragStarted?.Invoke();
             _isDragging = true;
-            _dragStartPos = Camera.main.WorldToScreenPoint(_playerTransform.position);
+            _dragStartPos = _camera.WorldToScreenPoint(_playerTransform.position);
             _dragCurPos = _mouseActionReference.action.ReadValue<Vector2>();
         }
 

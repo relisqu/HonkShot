@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 2305141423084587861}
   - component: {fileID: 8466320548080367611}
   - component: {fileID: 2617943583294215966}
+  - component: {fileID: 7443040630234656360}
+  - component: {fileID: 3183475686058685337}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Untagged
@@ -195,6 +197,50 @@ CapsuleCollider2D:
   m_Offset: {x: 0.0017944364, y: -0.053837635}
   m_Size: {x: 0.1746281, y: 0.14232542}
   m_Direction: 1
+--- !u!114 &7443040630234656360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1356849177087957430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db4d9a7db2944eb78fc3f5e09cf9f780, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _teleportCooldown: 0.5
+  _rigidbody2D: {fileID: 2265482727764664873}
+--- !u!114 &3183475686058685337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1356849177087957430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShadowGroup: 0
+  m_ComponentVersion: 1
+  m_HasRenderer: 1
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 0
+  m_ApplyToSortingLayers: 00000000
+  m_ShapePath:
+  - {x: -0.056442022, y: -0.120886564, z: 0}
+  - {x: -0.08523631, y: -0.053251028, z: 0}
+  - {x: 0.086607456, y: -0.055993557, z: 0}
+  - {x: 0.064668655, y: -0.125, z: 0}
+  m_ShapePathHash: -1119678731
+  m_Mesh: {fileID: 0}
+  m_InstanceId: -85750
+  m_LocalBounds:
+    m_Center: {x: 0.0006855726, y: -0.089125514, z: 0}
+    m_Extent: {x: 0.08592188, y: 0.035874486, z: 0}
 --- !u!1 &3422058974086237453
 GameObject:
   m_ObjectHideFlags: 0
