@@ -9,6 +9,7 @@ namespace Scripts.Player
     {
         [SerializeField] private PlayerBallMovement _playerBallMovement;
         [SerializeField] private InputHandler _inputHandler;
+        [SerializeField] private PlayerStatus _playerStatus;
         [SerializeField] private TeleportableEntity _teleportableEntity;
         [SerializeField] private float _stretchSoundDragForce;
 
@@ -33,20 +34,29 @@ namespace Scripts.Player
 
         private void InputHandler_DragFinished(Vector2 _)
         {
-            PlayReleaseSound();
+            if (_wasSwapping)
+                PlayReleaseSound();
         }
+
+        private bool _wasSwapping;
 
         private void Update()
         {
-            if (_inputHandler.IsDragging)
+            if (_playerStatus.PlayerState == PlayerState.Swapping && _inputHandler.IsDragging)
             {
+                _wasSwapping = true;
                 InputHandler_Drag(_inputHandler.GetCurrentDragMagnitude());
+            }
+            else
+            {
+                _wasSwapping = false;
             }
         }
 
         private void InputHandler_Drag(float magnitude)
         {
-            if (!_playedStretchSound && magnitude > _stretchSoundDragForce)
+            if (!_playedStretchSound &&
+                magnitude > _stretchSoundDragForce)
             {
                 PlayStretchSound();
                 _playedStretchSound = true;

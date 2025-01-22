@@ -1,6 +1,7 @@
-﻿using Scripts.Player.Stamina;
+﻿using System;
+using Scripts.Player.Stamina;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 namespace Scripts.UI
 {
@@ -9,8 +10,25 @@ namespace Scripts.UI
         [SerializeField] private Slider _staminaBar;
         [SerializeField] private StaminaManager _staminaManager;
 
+        private void OnEnable()
+        {
+            _staminaManager.OnStaminaValueChanged += StaminaManager_StaminaValueChange;
+        }
+
+        private void OnDisable()
+        {
+            _staminaManager.OnStaminaValueChanged -= StaminaManager_StaminaValueChange;
+        }
+
+        private void StaminaManager_StaminaValueChange()
+        {
+            UpdateStaminaBar();
+        }
+
+
         private void UpdateStaminaBar()
         {
+            Debug.Log(_staminaBar);
             _staminaBar.value = _staminaManager.GetCurrentStamina() / _staminaManager.GetMaxStamina();
         }
     }

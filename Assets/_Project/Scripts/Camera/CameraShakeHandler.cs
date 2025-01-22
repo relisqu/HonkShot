@@ -1,12 +1,14 @@
 ﻿using Cinemachine;
 using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using UnityEngine;
 
 namespace Scripts.Camera
 {
     public class CameraShakeHandler : MonoBehaviour
     {
-        [SerializeField] private CinemachineBasicMultiChannelPerlin _virtualCameraBasicMultiChannelPerlin;
+        [SerializeField] private CinemachineVirtualCamera _virtualCamera;
 
         public static CameraShakeHandler Instance;
 
@@ -15,18 +17,32 @@ namespace Scripts.Camera
             Instance = this;
         }
 
+        TweenerCore<float, float, FloatOptions> _shakeTween;
+
         public void ShakeCamera(float duration, float strength)
         {
-            _virtualCameraBasicMultiChannelPerlin.m_AmplitudeGain =
-                strength;
+            if (_shakeTween != null) return;
+            var noiseChannel = _virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+            noiseChannel.m_AmplitudeGain = strength;
 
-            DOTween.To(
-                () => _virtualCameraBasicMultiChannelPerlin.m_AmplitudeGain,
-                value => _virtualCameraBasicMultiChannelPerlin.m_AmplitudeGain =
+            _shakeTween = DOTween.To(
+                () => noiseChannel.m_AmplitudeGain,
+                value => noiseChannel.m_AmplitudeGain =
                     value,
                 0f, // Target value
                 duration
-            ).OnComplete(() => { _virtualCameraBasicMultiChannelPerlin.m_AmplitudeGain = 0f; });
+            ).OnComplete(() =>
+            {
+                _shakeTween = null;
+                noiseChannel.m_FrequencyGain = 0f;
+            });
+            DOTween.To(
+                () => noiseChannel.m_FrequencyGain,
+                value => noiseChannel.m_FrequencyGain =
+                    value,
+                0f, // Target value
+                duration
+            ).OnComplete(() => { noiseChannel.m_FrequencyGain = 0f; });
         }
     }
 }

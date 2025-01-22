@@ -41,7 +41,8 @@ namespace Scripts.Player
 
         private void InputHandler_OnDragFinished(Vector2 force)
         {
-            ThrowGoose(force);
+            if (_playerStatus.PlayerState == PlayerState.Swapping)
+                ThrowGoose(force);
         }
 
         public void ThrowGoose(Vector2 dragForce)
@@ -56,7 +57,6 @@ namespace Scripts.Player
 
         private void FixedUpdate()
         {
-            // Capture the Rigidbody's velocity before the collision happens
             preCollisionVelocity = _rigidbody2D.velocity;
         }
 

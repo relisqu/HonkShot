@@ -59,7 +59,7 @@ namespace Scripts.Player
         private void AlignShooterSpriteToMovement()
         {
             float currentVelocityX = _playerMovement.GetVelocity().x;
-            if (!(Mathf.Abs(currentVelocityX) > 0.1f) ||
+            if (!(Mathf.Abs(currentVelocityX) > 0f) ||
                 Mathf.Approximately(Mathf.Sign(currentVelocityX), Mathf.Sign(_lastHorizontalVelocity))) return;
 
             var currentScale = currentVelocityX < 0 ? 1f : -1f;
