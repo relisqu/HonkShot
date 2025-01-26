@@ -2,7 +2,6 @@
 using Scripts.Audio;
 using Scripts.Camera;
 using Scripts.LevelSystem;
-using Scripts.Player.Stamina;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -13,7 +12,6 @@ namespace Scripts.Player
         [SerializeField] private Rigidbody2D _rigidbody2D;
         [SerializeField] private PlayerStatus _playerStatus;
         [SerializeField] private PlayerBallMovement _playerBallMovement;
-        [SerializeField] private StaminaManager _staminaManager;
         [SerializeField] private InputHandler _inputHandler;
         [SerializeField] private float _defaultSpeed;
         [SerializeField] private float _linearDrag = 0.05f;
@@ -30,14 +28,7 @@ namespace Scripts.Player
 
         private void InputHandler_OnDragStarted()
         {
-            if (_staminaManager.TrySpendStamina(20f))
-            {
-                _playerStatus.SetPlayerState(PlayerState.Swapping);
-            }
-            else
-            {
-                CameraShakeHandler.Instance.ShakeCamera(0.55f, 10f);
-            }
+             _playerStatus.SetPlayerState(PlayerState.Swapping);
         }
 
         private void FixedUpdate()

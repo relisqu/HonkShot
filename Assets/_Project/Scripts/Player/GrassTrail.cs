@@ -25,7 +25,6 @@ namespace Scripts.Player
             _trailParticles.transform.position = _playerMovement.transform.position;
             if (distance < 1f && _playerMovement.GetVelocity().sqrMagnitude > 0.1f)
             {
-                Debug.Log("Playing");
                 if (!_trailParticles.isEmitting)
                 {
                     _trailParticles.Play();
@@ -34,8 +33,6 @@ namespace Scripts.Player
             else
             {
                 _trailParticles.Stop();
-                Debug.Log("Stop");
-                // _trailParticles.Stop();
             }
 
             var shape = _trailParticles.shape;
