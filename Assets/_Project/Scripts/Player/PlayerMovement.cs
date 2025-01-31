@@ -2,6 +2,7 @@
 using Scripts.Audio;
 using Scripts.Camera;
 using Scripts.LevelSystem;
+using Scripts.Player.InputHandling;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -35,10 +36,6 @@ namespace Scripts.Player
         {
             switch (_playerStatus.PlayerState)
             {
-                case PlayerState.Shooter:
-                    _rigidbody2D.velocity *= _linearDrag;
-                    Move();
-                    break;
                 case PlayerState.Ball:
                     break;
                 case PlayerState.Swapping:
@@ -47,13 +44,6 @@ namespace Scripts.Player
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
-
-        public void Move()
-        {
-            var movement = _inputHandler.GetMovementInput();
-            _rigidbody2D.AddForce(movement * (_defaultSpeed * Time.deltaTime), ForceMode2D.Impulse);
-            _rigidbody2D.velocity *= _linearDrag;
         }
 
         public float GetSpeed()

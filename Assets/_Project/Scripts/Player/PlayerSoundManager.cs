@@ -1,6 +1,7 @@
 ﻿using System;
 using Scripts.Audio;
 using Scripts.LevelSystem;
+using Scripts.Player.InputHandling;
 using UnityEngine;
 
 namespace Scripts.Player
@@ -45,7 +46,7 @@ namespace Scripts.Player
             if (_playerStatus.PlayerState == PlayerState.Swapping && _inputHandler.IsDragging)
             {
                 _wasSwapping = true;
-                InputHandler_Drag(_inputHandler.GetCurrentDragMagnitude());
+            //    InputHandler_Drag(_inputHandler.GetCurrentDragMagnitude());
             }
             else
             {

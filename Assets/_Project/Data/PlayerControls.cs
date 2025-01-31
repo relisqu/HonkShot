@@ -53,6 +53,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": ""Hold"",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ShootGooseMovementDelta"",
+                    ""type"": ""Value"",
+                    ""id"": ""0ee45e35-6bf0-49df-bac9-65dd15fdb328"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -60,6 +69,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""37f6d4f3-5d50-46c3-85c0-1a835e1e2ca9"",
                     ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""23cf67a3-8c4f-44e9-a660-f890ed5d184d"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -139,21 +159,43 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""ShootGoose"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""binding"",
-                    ""id"": ""0fc2226b-9cc1-424e-a992-6520b133dc1e"",
-                    ""path"": ""<Mouse>/position"",
+                    ""name"": ""One Modifier"",
+                    ""id"": ""f80bbfee-9dac-4755-9d24-52c39927be38"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": ""InvertVector2"",
+                    ""groups"": """",
+                    ""action"": ""ShootGoose"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Modifier"",
+                    ""id"": ""aab8f6ea-418d-4557-9572-c90b9fb3798f"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Controller"",
                     ""action"": ""ShootGoose"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1b105514-a7b3-48e9-b7c6-c07d1d89e61c"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""ShootGooseMovementDelta"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -174,6 +216,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isOR"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Controller"",
+            ""bindingGroup"": ""Controller"",
+            ""devices"": [
+                {
+                    ""devicePath"": ""<Gamepad>"",
+                    ""isOptional"": false,
+                    ""isOR"": false
+                }
+            ]
         }
     ]
 }");
@@ -182,6 +235,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
         m_Player_ShootGoose = m_Player.FindAction("ShootGoose", throwIfNotFound: true);
+        m_Player_ShootGooseMovementDelta = m_Player.FindAction("ShootGooseMovementDelta", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -246,6 +300,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Fire;
     private readonly InputAction m_Player_ShootGoose;
+    private readonly InputAction m_Player_ShootGooseMovementDelta;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -253,6 +308,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
         public InputAction @ShootGoose => m_Wrapper.m_Player_ShootGoose;
+        public InputAction @ShootGooseMovementDelta => m_Wrapper.m_Player_ShootGooseMovementDelta;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -271,6 +327,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @ShootGoose.started += instance.OnShootGoose;
             @ShootGoose.performed += instance.OnShootGoose;
             @ShootGoose.canceled += instance.OnShootGoose;
+            @ShootGooseMovementDelta.started += instance.OnShootGooseMovementDelta;
+            @ShootGooseMovementDelta.performed += instance.OnShootGooseMovementDelta;
+            @ShootGooseMovementDelta.canceled += instance.OnShootGooseMovementDelta;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -284,6 +343,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @ShootGoose.started -= instance.OnShootGoose;
             @ShootGoose.performed -= instance.OnShootGoose;
             @ShootGoose.canceled -= instance.OnShootGoose;
+            @ShootGooseMovementDelta.started -= instance.OnShootGooseMovementDelta;
+            @ShootGooseMovementDelta.performed -= instance.OnShootGooseMovementDelta;
+            @ShootGooseMovementDelta.canceled -= instance.OnShootGooseMovementDelta;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -310,10 +372,20 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             return asset.controlSchemes[m_KeyboardSchemeIndex];
         }
     }
+    private int m_ControllerSchemeIndex = -1;
+    public InputControlScheme ControllerScheme
+    {
+        get
+        {
+            if (m_ControllerSchemeIndex == -1) m_ControllerSchemeIndex = asset.FindControlSchemeIndex("Controller");
+            return asset.controlSchemes[m_ControllerSchemeIndex];
+        }
+    }
     public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
         void OnFire(InputAction.CallbackContext context);
         void OnShootGoose(InputAction.CallbackContext context);
+        void OnShootGooseMovementDelta(InputAction.CallbackContext context);
     }
 }

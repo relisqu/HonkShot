@@ -13,7 +13,7 @@ namespace Scripts.Player
 
         public void SetDefaultState()
         {
-            SetPlayerState(PlayerState.Shooter);
+            SetPlayerState(PlayerState.Ball);
         }
 
 
@@ -26,9 +26,6 @@ namespace Scripts.Player
             {
                 case PlayerState.Ball:
                     OnSwapToBall?.Invoke();
-                    break;
-                case PlayerState.Shooter:
-                    OnSwapToShooter?.Invoke();
                     break;
                 case PlayerState.Swapping:
                     break;

@@ -1,5 +1,6 @@
 ﻿using System;
 using DG.Tweening;
+using Scripts.Player.InputHandling;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UIElements;
@@ -40,11 +41,6 @@ namespace Scripts.Player
         {
             switch (_playerStatus.PlayerState)
             {
-                case PlayerState.Shooter:
-                    AlignShooterSpriteToMovement();
-                    _playerAnimator.SetFloat(Speed, _playerMovement.GetSpeed());
-                    break;
-
                 case PlayerState.Ball:
                     break;
                 case PlayerState.Swapping:
@@ -95,24 +91,24 @@ namespace Scripts.Player
         {
             if (_playerStatus.PlayerState == PlayerState.Swapping)
             {
-                var dragForce = _inputHandler.GetCurrentDragMagnitude() / 50000f;
+             //   var dragForce = _inputHandler.GetCurrentDragMagnitude() / 50000f;
                 if (_dragShakeTweener == null)
                 {
-                    _dragShakeTweener = _shooterGameObject.transform.DOShakePosition(0.1f, dragForce * _shakeForce)
-                        .OnComplete(
-                            () => { _dragShakeTweener = null; });
-                    _dragShakeTweener.Play();
+                 //   _dragShakeTweener = _shooterGameObject.transform.DOShakePosition(0.1f, dragForce * _shakeForce)
+                  //      .OnComplete(
+                 //           () => { _dragShakeTweener = null; });
+                 //   _dragShakeTweener.Play();
                 }
 
 
-                var scale = Mathf.Clamp(8 / Mathf.Sqrt(_inputHandler.GetCurrentDragMagnitude()), 0.6f, 1f);
+               // var scale = Mathf.Clamp(8 / Mathf.Sqrt(_inputHandler.GetCurrentDragMagnitude()), 0.6f, 1f);
 
                 float currentVelocityX = _inputHandler.GetCurrentDrag().x;
 
                 var currentScale = currentVelocityX < 0 ? 1f : -1f;
 
-                _shooterGameObject.transform.localScale =
-                    new Vector3(-currentScale, scale, 1f);
+               // _shooterGameObject.transform.localScale =
+               //     new Vector3(-currentScale, scale, 1f);
             }
         }
 
