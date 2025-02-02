@@ -7,6 +7,7 @@ namespace Scripts.Player.InputHandling
     public interface IInputHandler
     {
         event Action OnDragStarted;
+        event Action OnVisualDragStarted;
         event Action<Vector2> OnDragFinished;
 
 

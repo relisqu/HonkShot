@@ -3,6 +3,7 @@ using Scripts.Audio;
 using Scripts.LevelSystem;
 using Scripts.Player.InputHandling;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Scripts.Player
 {
@@ -12,9 +13,12 @@ namespace Scripts.Player
         [SerializeField] private InputHandler _inputHandler;
         [SerializeField] private PlayerStatus _playerStatus;
         [SerializeField] private float _forceModifier;
-        [SerializeField] private float _maxForce;
+
+        [FormerlySerializedAs("_maxForce")] [SerializeField]
+        private float _maxForceMagnitude;
+
         [SerializeField] private float _minBallForce;
-        public float MaxForce => _maxForce;
+        public float maxForceMagnitude => _maxForceMagnitude;
 
         private void FinishBallMode()
         {
@@ -40,8 +44,8 @@ namespace Scripts.Player
 
         public void ThrowGoose(Vector2 dragForce)
         {
-            Debug.Log(dragForce);
-            _rigidbody2D.AddForce(-dragForce.normalized, ForceMode2D.Impulse);
+            var forceMagnitude = Mathf.Min(dragForce.magnitude, _maxForceMagnitude);
+            _rigidbody2D.AddForce(-forceMagnitude * dragForce.normalized * _forceModifier, ForceMode2D.Impulse);
             _playerStatus.SetPlayerState(PlayerState.Ball);
         }
 

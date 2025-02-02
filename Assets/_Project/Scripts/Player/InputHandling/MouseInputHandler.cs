@@ -15,7 +15,9 @@ namespace Scripts.Player.InputHandling
         private Transform _playerTransform;
 
         public event Action OnDragStarted;
+        public event Action OnVisualDragStarted;
         public event Action<Vector2> OnDragFinished;
+        
         public InputActionReference MovementValueActionInterface => _mousePositionAction;
         public InputActionReference PressActionInterface => _pressAction;
 
@@ -56,6 +58,7 @@ namespace Scripts.Player.InputHandling
         {
             _dragCurPos = Vector2.zero;
             _isDragging = true;
+            OnVisualDragStarted?.Invoke();
             OnDragStarted?.Invoke();
             _dragStartPos = (Vector2)_playerTransform.position;
             var currentPoint = (Vector2)_camera.ScreenToWorldPoint(_mousePositionAction.action.ReadValue<Vector2>());

@@ -196,6 +196,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""ShootGooseMovementDelta"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""77a4f11d-80c5-4c81-9840-bfde30eef031"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": ""ScaleVector2(x=4,y=4)"",
+                    ""groups"": ""Controller"",
+                    ""action"": ""ShootGooseMovementDelta"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
