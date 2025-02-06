@@ -23,7 +23,7 @@ namespace Scripts.LevelSystem
             var direction = _currentVelocity.normalized;
 
             var averageNormal = new Vector2(0, 0);
-            foreach (var contact in other.contacts)
+            foreach (var contact in other.contacts)  //probably isn't needed, just for safety measurements 
             {
                 averageNormal += contact.normal;
             }
