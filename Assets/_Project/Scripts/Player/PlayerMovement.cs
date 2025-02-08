@@ -58,10 +58,11 @@ namespace Scripts.Player
             }
         }
 
+
         public void Move()
         {
             var movement = _inputHandler.GetMovementInput();
-            _rigidbody2D.AddForce(movement * (_defaultSpeed * Time.deltaTime), ForceMode2D.Impulse);
+            _rigidbody2D.AddForce(movement * (_defaultSpeed * Time.unscaledDeltaTime), ForceMode2D.Impulse);
             _rigidbody2D.velocity *= _linearDrag;
         }
 

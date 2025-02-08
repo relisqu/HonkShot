@@ -8,7 +8,7 @@ public class TimeObject : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        TimeManager.Instance.AddObject(GetComponent<Rigidbody2D>(), IsPlayer);
+        //TimeManager.Instance.AddObject(GetComponent<Rigidbody2D>(), IsPlayer);
     }
 
     // Update is called once per frame
