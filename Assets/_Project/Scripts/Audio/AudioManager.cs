@@ -35,6 +35,7 @@ namespace Scripts.Audio
                 _audioSources.Add(chanelType, gameObject.AddComponent<AudioSource>());
                 _volumes.Add(chanelType, DefaultVolume);
             }
+            
         }
 
         public float TotalVolume
