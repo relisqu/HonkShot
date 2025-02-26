@@ -33,10 +33,12 @@ public class TimeManager : MonoBehaviour
             {
                 case GameState.Play:
                     Time.timeScale = 1f;
+                    Time.fixedDeltaTime = 0.02F * Time.timeScale;
                     AudioManager.Instance.TotalMute = false;
                     break;
-                case GameState.Slowed:
+                case GameState.Slowed:      
                     Time.timeScale = TimeSlow;
+                    Time.fixedDeltaTime = 0.02F * Time.timeScale;
                     // If desired, you can slow down the music here.
                     break;
                 case GameState.Pause:
