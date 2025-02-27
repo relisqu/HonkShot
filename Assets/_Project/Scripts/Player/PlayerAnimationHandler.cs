@@ -89,6 +89,8 @@ namespace Scripts.Player
 
         public void SetDragAnimation()
         {
+            Debug.Log(_playerStatus.CurrentGameObject.transform.localScale + " " +
+                      _playerStatus.CurrentGameObject.name);
             if (_playerStatus.PlayerState == PlayerState.Swapping)
             {
                 Debug.Log(_playerStatus.PlayerState);
@@ -98,7 +100,8 @@ namespace Scripts.Player
                 float currentVelocityX = _inputHandler.GetCurrentDrag().x;
                 var currentScale = currentVelocityX < 0 ? 1f : -1f;
                 _playerStatus.CurrentGameObject.transform.localScale = new Vector3(currentScale, currentYScale, 1f);
-                Debug.Log(_playerStatus.CurrentGameObject.transform.localScale+" "+_playerStatus.CurrentGameObject.name);
+                Debug.Log(_playerStatus.CurrentGameObject.transform.localScale + " " +
+                          _playerStatus.CurrentGameObject.name);
             }
         }
 
@@ -134,8 +137,8 @@ namespace Scripts.Player
 
             var currentScale = currentVelocityX < 0 ? 1f : -1f;
 
-            //_playerStatus.CurrentGameObject.transform.localScale =
-              //  new Vector3(currentScale, 1f, 1f);
+            _playerStatus.CurrentGameObject.transform.localScale =
+                new Vector3(currentScale, 1f, 1f);
             _lastHorizontalVelocity = currentVelocityX;
         }
     }
