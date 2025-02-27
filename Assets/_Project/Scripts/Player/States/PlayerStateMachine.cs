@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Scripts.Player.States
 {
+
     public class AnimationStateMachine
     {
         private static readonly int IdleToSwapping = Animator.StringToHash("IdleToSwapping");
@@ -36,12 +37,14 @@ namespace Scripts.Player.States
         {
             if (_currentState == newState) return;
 
+            if(_animator== null) return;
             switch (_currentState)
             {
                 case PlayerState.Idle:
                     if (newState == PlayerState.Swapping)
                     {
                         _animator.SetTrigger(IdleToSwapping);
+                        Debug.Log("Swap IdleToSwap");
                     }
 
                     break;

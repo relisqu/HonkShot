@@ -7,23 +7,36 @@ namespace Scripts.Player
     public class PlayerStatus : MonoBehaviour
     {
         private PlayerState _playerState;
+        private AnimationStateMachine _animationStateMachine;
+        [SerializeField] private GameObject _idlePlayerGameObject;
+        [SerializeField] private GameObject _ballPlayerGameObject;
 
         public PlayerState PlayerState => _playerState;
         public Action OnSwapToBall;
         public Action OnSwapToIdle;
-        private AnimationStateMachine _animationStateMachine;
-        public AnimationStateMachine AnimationStateMachine => _animationStateMachine;
+
+        public GameObject CurrentGameObject =>
+            _idlePlayerGameObject.activeSelf ? _idlePlayerGameObject : _ballPlayerGameObject;
+
+        public AnimationStateMachine AnimationStateMachine()
+        {
+            if (_animationStateMachine == null)
+            {
+                _animationStateMachine = new AnimationStateMachine();
+            }
+
+            return _animationStateMachine;
+        }
 
         private void Awake()
         {
             SetDefaultState();
-            _animationStateMachine = new AnimationStateMachine();
         }
 
         public void SetDefaultState()
         {
-            SetPlayerState(PlayerState.Ball);
-            _animationStateMachine.SetDefaultState(_playerState);
+            SetPlayerState(PlayerState.Idle);
+            AnimationStateMachine().SetDefaultState(_playerState);
         }
 
 
@@ -32,6 +45,7 @@ namespace Scripts.Player
             if (_playerState == playerState) return;
 
             _playerState = playerState;
+            _animationStateMachine.ChangeState(_playerState);
 
             switch (_playerState)
             {

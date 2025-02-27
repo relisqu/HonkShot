@@ -19,7 +19,6 @@ namespace Scripts.Player
         [SerializeField] private PlayerMovement _playerMovement;
         [SerializeField] private PlayerBallMovement _playerBallMovement;
         [SerializeField] private SpriteRenderer _shooterSprite;
-        [SerializeField] private GameObject _shooterGameObject;
         [SerializeField] private Animator _playerAnimator;
         [SerializeField] private InputHandler _inputHandler;
         [SerializeField] private ParticleSystem _playerSweatParticleSystem;
@@ -35,7 +34,8 @@ namespace Scripts.Player
 
         private void OnEnable()
         {
-            _playerStatus.AnimationStateMachine.SetAnimator(_playerAnimator);
+            _playerStatus.AnimationStateMachine().SetAnimator(_playerAnimator);
+            _playerStatus.OnSwapToBall += PlayerStatus_SwapToBall;
             _inputHandler.OnDragStarted += InputHandler_DragStarted;
             _inputHandler.OnDragFinished += InputHandler_DragFinished;
         }
@@ -49,8 +49,6 @@ namespace Scripts.Player
                 case PlayerState.Swapping:
                     SetDragAnimation();
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -63,13 +61,14 @@ namespace Scripts.Player
 
             var currentScale = currentVelocityX < 0 ? 1f : -1f;
 
-            _shooterGameObject.transform.localScale =
-                new Vector3(currentScale, 1f, 1f);
+            // _shooterGameObject.transform.localScale =
+            //     new Vector3(currentScale, 1f, 1f);
             _lastHorizontalVelocity = currentVelocityX;
         }
 
         private void OnDisable()
         {
+            _playerStatus.OnSwapToBall -= PlayerStatus_SwapToBall;
             _inputHandler.OnDragStarted -= InputHandler_DragStarted;
             _inputHandler.OnDragFinished -= InputHandler_DragFinished;
         }
@@ -92,17 +91,14 @@ namespace Scripts.Player
         {
             if (_playerStatus.PlayerState == PlayerState.Swapping)
             {
-                var dragForce = _inputHandler.GetCurrentDrag();
-                if (_dragShakeTweener == null)
-                {
-                    // _dragShakeTweener = _shooterGameObject.transform.DOShakePosition(0.1f, dragForce * _shakeForce)
-                }
+                Debug.Log(_playerStatus.PlayerState);
 
                 var forceScale = _inputHandler.GetCurrentDrag().magnitude / _playerBallMovement.MaxForceMagnitude;
                 float currentYScale = Mathf.Lerp(1f, 0.8f, forceScale);
                 float currentVelocityX = _inputHandler.GetCurrentDrag().x;
                 var currentScale = currentVelocityX < 0 ? 1f : -1f;
-                _shooterGameObject.transform.localScale = new Vector3(currentScale, currentYScale, 1f);
+                _playerStatus.CurrentGameObject.transform.localScale = new Vector3(currentScale, currentYScale, 1f);
+                Debug.Log(_playerStatus.CurrentGameObject.transform.localScale+" "+_playerStatus.CurrentGameObject.name);
             }
         }
 
@@ -138,8 +134,8 @@ namespace Scripts.Player
 
             var currentScale = currentVelocityX < 0 ? 1f : -1f;
 
-            _shooterGameObject.transform.localScale =
-                new Vector3(currentScale, 1f, 1f);
+            //_playerStatus.CurrentGameObject.transform.localScale =
+              //  new Vector3(currentScale, 1f, 1f);
             _lastHorizontalVelocity = currentVelocityX;
         }
     }

@@ -42,7 +42,7 @@ namespace Scripts.Player
                     _rigidbody2D.velocity = Vector2.zero;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    break;
             }
         }
 
