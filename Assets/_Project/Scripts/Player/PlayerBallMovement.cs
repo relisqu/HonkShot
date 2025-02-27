@@ -18,12 +18,12 @@ namespace Scripts.Player
         private float _maxForceMagnitude;
 
         [SerializeField] private float _minBallForce;
-        public float maxForceMagnitude => _maxForceMagnitude;
+        public float MaxForceMagnitude => _maxForceMagnitude;
 
         private void FinishBallMode()
         {
             _rigidbody2D.velocity = Vector2.zero;
-            _playerStatus.SetPlayerState(PlayerState.Ball);
+            _playerStatus.SetPlayerState(PlayerState.Idle);
         }
 
         private void OnEnable()
@@ -54,6 +54,7 @@ namespace Scripts.Player
         private void FixedUpdate()
         {
             preCollisionVelocity = _rigidbody2D.velocity;
+            
         }
 
         private void OnCollisionEnter2D(Collision2D other)

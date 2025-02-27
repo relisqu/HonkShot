@@ -3,7 +3,7 @@ using DG.Tweening;
 using Scripts.Player.InputHandling;
 using UnityEngine;
 using UnityEngine.Serialization;
-using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
 
 namespace Scripts.Player
 {
@@ -12,13 +12,17 @@ namespace Scripts.Player
         private static readonly int SwapToBall = Animator.StringToHash("SwapToBall");
         private static readonly int SwapToShooter = Animator.StringToHash("SwapToShooter");
         private static readonly int Speed = Animator.StringToHash("Speed");
+        private static readonly int DragStart = Animator.StringToHash("DragStart");
+
 
         [SerializeField] private PlayerStatus _playerStatus;
         [SerializeField] private PlayerMovement _playerMovement;
+        [SerializeField] private PlayerBallMovement _playerBallMovement;
         [SerializeField] private SpriteRenderer _shooterSprite;
         [SerializeField] private GameObject _shooterGameObject;
         [SerializeField] private Animator _playerAnimator;
         [SerializeField] private InputHandler _inputHandler;
+        [SerializeField] private ParticleSystem _playerSweatParticleSystem;
 
         [FormerlySerializedAs("MinSize")] [SerializeField]
         private float _minSize;
@@ -31,8 +35,7 @@ namespace Scripts.Player
 
         private void OnEnable()
         {
-            _playerStatus.OnSwapToBall += PlayerStatus_SwapToBall;
-            _playerStatus.OnSwapToShooter += PlayerStatus_SwapToShooter;
+            _playerStatus.AnimationStateMachine.SetAnimator(_playerAnimator);
             _inputHandler.OnDragStarted += InputHandler_DragStarted;
             _inputHandler.OnDragFinished += InputHandler_DragFinished;
         }
@@ -67,8 +70,6 @@ namespace Scripts.Player
 
         private void OnDisable()
         {
-            _playerStatus.OnSwapToBall -= PlayerStatus_SwapToBall;
-            _playerStatus.OnSwapToShooter -= PlayerStatus_SwapToShooter;
             _inputHandler.OnDragStarted -= InputHandler_DragStarted;
             _inputHandler.OnDragFinished -= InputHandler_DragFinished;
         }
@@ -91,25 +92,28 @@ namespace Scripts.Player
         {
             if (_playerStatus.PlayerState == PlayerState.Swapping)
             {
-             //   var dragForce = _inputHandler.GetCurrentDragMagnitude() / 50000f;
+                var dragForce = _inputHandler.GetCurrentDrag();
                 if (_dragShakeTweener == null)
                 {
-                 //   _dragShakeTweener = _shooterGameObject.transform.DOShakePosition(0.1f, dragForce * _shakeForce)
-                  //      .OnComplete(
-                 //           () => { _dragShakeTweener = null; });
-                 //   _dragShakeTweener.Play();
+                    // _dragShakeTweener = _shooterGameObject.transform.DOShakePosition(0.1f, dragForce * _shakeForce)
                 }
 
-
-               // var scale = Mathf.Clamp(8 / Mathf.Sqrt(_inputHandler.GetCurrentDragMagnitude()), 0.6f, 1f);
-
+                var forceScale = _inputHandler.GetCurrentDrag().magnitude / _playerBallMovement.MaxForceMagnitude;
+                float currentYScale = Mathf.Lerp(1f, 0.8f, forceScale);
                 float currentVelocityX = _inputHandler.GetCurrentDrag().x;
-
                 var currentScale = currentVelocityX < 0 ? 1f : -1f;
-
-               // _shooterGameObject.transform.localScale =
-               //     new Vector3(-currentScale, scale, 1f);
+                _shooterGameObject.transform.localScale = new Vector3(currentScale, currentYScale, 1f);
             }
+        }
+
+        private void EmitSweatParticles()
+        {
+            var dragMagnitude = _inputHandler.GetCurrentDrag().magnitude;
+            var forceMagnitude = Mathf.Min(dragMagnitude, _playerBallMovement.MaxForceMagnitude);
+            var forceScale = forceMagnitude / _playerBallMovement.MaxForceMagnitude;
+
+            var randomValue = Random.Range(0.4f, forceScale * 3f);
+            _playerSweatParticleSystem.Emit((int)randomValue);
         }
 
         public void PlaySwapToBallAnimation()
@@ -124,7 +128,9 @@ namespace Scripts.Player
 
         private void InputHandler_DragStarted()
         {
+            _playerAnimator.SetTrigger(DragStart);
         }
+
 
         private void InputHandler_DragFinished(Vector2 _)
         {
