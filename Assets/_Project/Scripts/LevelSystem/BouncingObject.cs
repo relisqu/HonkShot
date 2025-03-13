@@ -10,11 +10,16 @@ namespace Scripts.LevelSystem
 
         private Vector2 _currentVelocity;
 
+        public void SetCurrentVelocity(Vector2 velocity)
+        {
+            if (_currentVelocity.magnitude > 0.01f && velocity.magnitude < 0.001f) return;
+            _currentVelocity = velocity;
+        }
+
         private void FixedUpdate()
         {
             _currentVelocity = _rigidbody2D.velocity;
         }
-
 
         private void OnCollisionEnter2D(Collision2D other)
         {
@@ -23,7 +28,7 @@ namespace Scripts.LevelSystem
             var direction = _currentVelocity.normalized;
 
             var averageNormal = new Vector2(0, 0);
-            foreach (var contact in other.contacts)  //probably isn't needed, just for safety measurements 
+            foreach (var contact in other.contacts) //probably isn't needed, just for safety measurements 
             {
                 averageNormal += contact.normal;
             }

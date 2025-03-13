@@ -54,7 +54,6 @@ namespace Scripts.Player.InputHandling
                     break;
             }
             
-            Debug.Log(newControlScheme);
             if (_currentInputHandler != null)
             {
                 _currentInputHandler.OnDragStarted += OnDragStarted;

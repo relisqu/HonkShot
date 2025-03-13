@@ -20,11 +20,7 @@ namespace Scripts.Player
         [SerializeField] private float _minBallForce;
         public float MaxForceMagnitude => _maxForceMagnitude;
 
-        private void FinishBallMode()
-        {
-            _rigidbody2D.velocity = Vector2.zero;
-            _playerStatus.SetPlayerState(PlayerState.Idle);
-        }
+        
 
         private void OnEnable()
         {
@@ -44,17 +40,14 @@ namespace Scripts.Player
 
         public void ThrowGoose(Vector2 dragForce)
         {
-            var forceMagnitude = Mathf.Min(dragForce.magnitude, _maxForceMagnitude);
-            _rigidbody2D.AddForce(-forceMagnitude * dragForce.normalized * _forceModifier, ForceMode2D.Impulse);
+            ThrowRigidbody(_rigidbody2D, dragForce);
             _playerStatus.SetPlayerState(PlayerState.Ball);
         }
 
-        private Vector2 preCollisionVelocity;
-
-        private void FixedUpdate()
+        public void ThrowRigidbody(Rigidbody2D rigidbody, Vector2 dragForce)
         {
-            preCollisionVelocity = _rigidbody2D.velocity;
-            
+            var forceMagnitude = Mathf.Min(dragForce.magnitude, _maxForceMagnitude);
+            rigidbody.AddForce(dragForce.normalized * (-forceMagnitude * _forceModifier), ForceMode2D.Impulse);
         }
 
         private void OnCollisionEnter2D(Collision2D other)

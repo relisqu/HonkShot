@@ -1,5 +1,7 @@
 ﻿using System;
 using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using Scripts.Player.InputHandling;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -7,7 +9,7 @@ using Random = UnityEngine.Random;
 
 namespace Scripts.Player
 {
-    public class PlayerAnimationHandler : MonoBehaviour
+    public class PlayerSwapAnimationHandler : MonoBehaviour
     {
         private static readonly int SwapToBall = Animator.StringToHash("SwapToBall");
         private static readonly int SwapToShooter = Animator.StringToHash("SwapToShooter");
@@ -42,6 +44,7 @@ namespace Scripts.Player
 
         private void Update()
         {
+            Debug.Log(TimeManager.Instance.GameState + " " + TimeManager.Instance.TimeSlow);
             switch (_playerStatus.PlayerState)
             {
                 case PlayerState.Ball:
@@ -52,19 +55,6 @@ namespace Scripts.Player
             }
         }
 
-
-        private void AlignShooterSpriteToMovement()
-        {
-            float currentVelocityX = _playerMovement.GetVelocity().x;
-            if (!(Mathf.Abs(currentVelocityX) > 0f) ||
-                Mathf.Approximately(Mathf.Sign(currentVelocityX), Mathf.Sign(_lastHorizontalVelocity))) return;
-
-            var currentScale = currentVelocityX < 0 ? 1f : -1f;
-
-            // _shooterGameObject.transform.localScale =
-            //     new Vector3(currentScale, 1f, 1f);
-            _lastHorizontalVelocity = currentVelocityX;
-        }
 
         private void OnDisable()
         {
@@ -89,20 +79,21 @@ namespace Scripts.Player
 
         public void SetDragAnimation()
         {
-            Debug.Log(_playerStatus.CurrentGameObject.transform.localScale + " " +
-                      _playerStatus.CurrentGameObject.name);
-            if (_playerStatus.PlayerState == PlayerState.Swapping)
-            {
-                Debug.Log(_playerStatus.PlayerState);
+            if (_playerStatus.PlayerState != PlayerState.Swapping) return;
+            var dragForce = _inputHandler.GetCurrentDrag();
 
-                var forceScale = _inputHandler.GetCurrentDrag().magnitude / _playerBallMovement.MaxForceMagnitude;
-                float currentYScale = Mathf.Lerp(1f, 0.8f, forceScale);
-                float currentVelocityX = _inputHandler.GetCurrentDrag().x;
-                var currentScale = currentVelocityX < 0 ? 1f : -1f;
-                _playerStatus.CurrentGameObject.transform.localScale = new Vector3(currentScale, currentYScale, 1f);
-                Debug.Log(_playerStatus.CurrentGameObject.transform.localScale + " " +
-                          _playerStatus.CurrentGameObject.name);
+            var forceScale = _inputHandler.GetCurrentDrag().magnitude / _playerBallMovement.MaxForceMagnitude;
+            float currentYScale = Mathf.Lerp(1f, 0.8f, forceScale);
+            float currentVelocityX = _inputHandler.GetCurrentDrag().x;
+
+            if (_dragShakeTweener == null || !_dragShakeTweener.IsPlaying())
+            {
+                _dragShakeTweener =
+                    _playerStatus.CurrentGameObject.transform.DOShakePosition(0.1f, forceScale * _shakeForce);
             }
+
+            var currentScale = currentVelocityX < 0 ? 1f : -1f;
+            _playerStatus.CurrentGameObject.transform.localScale = new Vector3(currentScale, currentYScale, 1f);
         }
 
         private void EmitSweatParticles()
@@ -128,18 +119,48 @@ namespace Scripts.Player
         private void InputHandler_DragStarted()
         {
             _playerAnimator.SetTrigger(DragStart);
+            SlowDownGame();
         }
 
+        public void SlowDownGame()
+        {
+            if (_slowdownTween != null && _slowdownTween.IsPlaying())
+            {
+                _slowdownTween.Kill();
+            }
+
+            var slowTime = 1f;
+
+            _slowdownTween = DOTween.To(() => slowTime, x => slowTime = x, 0.1f, 0.15f).OnUpdate(() =>
+            {
+                TimeManager.Instance.SlowGame(slowTime);
+            });
+        }
+
+
+        private TweenerCore<float, float, FloatOptions> _slowdownTween;
 
         private void InputHandler_DragFinished(Vector2 _)
         {
             float currentVelocityX = _playerMovement.GetVelocity().x;
 
             var currentScale = currentVelocityX < 0 ? 1f : -1f;
-
+            _dragShakeTweener?.Kill();
             _playerStatus.CurrentGameObject.transform.localScale =
                 new Vector3(currentScale, 1f, 1f);
             _lastHorizontalVelocity = currentVelocityX;
+
+            var slowTime = TimeManager.Instance.TimeSlow;
+            
+            if (_slowdownTween != null && _slowdownTween.IsPlaying())
+            {
+                _slowdownTween.Kill();
+            }
+
+            _slowdownTween = DOTween.To(() => slowTime, x => slowTime = x, 1f, 0.1f).OnUpdate(() =>
+            {
+                TimeManager.Instance.SlowGame(slowTime);
+            }).OnComplete(() => { TimeManager.Instance.ResumeGame(); });
         }
     }
 }
