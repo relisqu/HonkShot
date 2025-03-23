@@ -9,6 +9,7 @@ namespace Scripts.LevelSystem
         [SerializeField] private Rigidbody2D _rigidbody2D;
 
         private Vector2 _currentVelocity;
+        public Vector2 CurrentVelocity => _currentVelocity;
 
         public void SetCurrentVelocity(Vector2 velocity)
         {
@@ -39,5 +40,9 @@ namespace Scripts.LevelSystem
             _rigidbody2D.velocity
                 = newDirection * _currentVelocity.magnitude * bounceObject.Bounciness;
         }
+
+
+       
+
     }
 }

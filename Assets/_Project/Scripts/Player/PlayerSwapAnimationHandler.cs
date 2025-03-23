@@ -44,7 +44,6 @@ namespace Scripts.Player
 
         private void Update()
         {
-            Debug.Log(TimeManager.Instance.GameState + " " + TimeManager.Instance.TimeSlow);
             switch (_playerStatus.PlayerState)
             {
                 case PlayerState.Ball:
