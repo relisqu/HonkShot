@@ -1,7 +1,7 @@
 ﻿using DG.Tweening;
 using UnityEngine;
 
-namespace Scripts.LevelSystem
+namespace Scripts.LevelSystem.LevelObjects
 {
     public class PunchObjectAnimation : MonoBehaviour
     {

@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.U2D;
 
-namespace Scripts.LevelSystem
+namespace Scripts.LevelSystem.LevelObjects
 {
     public class WallGeneration : MonoBehaviour
     {

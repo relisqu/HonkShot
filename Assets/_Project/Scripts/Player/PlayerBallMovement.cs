@@ -1,6 +1,7 @@
 ﻿using System;
 using Scripts.Audio;
 using Scripts.LevelSystem;
+using Scripts.LevelSystem.LevelObjects;
 using Scripts.Player.InputHandling;
 using UnityEngine;
 using UnityEngine.Serialization;

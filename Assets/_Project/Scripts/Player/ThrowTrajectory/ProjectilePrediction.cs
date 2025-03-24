@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using Scripts.LevelSystem.LevelGeneration;
 using Scripts.Player.InputHandling;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,7 +13,6 @@ namespace Scripts.Player
     {
         [SerializeField] private LineRenderer _line;
         [SerializeField] private int _maxPhysicsFrameIterations = 100;
-        [SerializeField] private Transform _obstaclesParent;
         [SerializeField] private InputHandler _inputHandler;
         [SerializeField] private PlayerBallMovement _playerBallMovement;
         [SerializeField] private PlayerGhostProjectile _playerGhostProjectile;
@@ -63,9 +63,10 @@ namespace Scripts.Player
                 SceneManager.CreateScene("Simulation", new CreateSceneParameters(LocalPhysicsMode.Physics2D));
             _physicsScene = _simulationScene.GetPhysicsScene2D();
 
-            foreach (Transform obj in _obstaclesParent)
+            foreach (Transform obj in LevelManager.Instance.CurrentRoom.ObstaclesTransform)
             {
                 var ghostObj = Instantiate(obj.gameObject, obj.position, obj.rotation);
+                
                 var spriteRenderer = ghostObj.GetComponentInChildren<SpriteRenderer>(false);
                 if (spriteRenderer!=null)
                 {

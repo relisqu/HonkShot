@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections;
-using Scripts.Player;
-using UnityEngine;
-using UnityEngine.Serialization;
+﻿using UnityEngine;
 
-namespace Scripts.LevelSystem
+namespace Scripts.LevelSystem.LevelObjects
 {
     public class Portal : MonoBehaviour
     {

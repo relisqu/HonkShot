@@ -1,4 +1,5 @@
 ﻿using Scripts.LevelSystem;
+using Scripts.LevelSystem.LevelObjects;
 using UnityEngine;
 
 namespace Scripts.Player

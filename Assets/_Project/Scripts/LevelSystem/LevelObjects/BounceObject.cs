@@ -1,9 +1,6 @@
-﻿using System;
-using Scripts.Audio;
-using Scripts.Player;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Scripts.LevelSystem
+namespace Scripts.LevelSystem.LevelObjects
 {
     public class BounceObject : MonoBehaviour
     {
