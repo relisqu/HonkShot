@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.LevelCreator;
 using Scripts.Enemies;
@@ -22,14 +23,15 @@ namespace Scripts.LevelSystem.LevelGeneration
             _enemyHealths = enemies.ToList();
             foreach (var enemyHealth in _enemyHealths)
             {
+                Debug.Log("ENEMY " + enemyHealth.IsAlive());
                 enemyHealth.HealthController.OnDied += EnemyHealthController_Died;
             }
 
             if (IsCleared())
             {
+                Debug.Log("UNLOCKED");
                 UnlockRoom();
             }
-            
         }
 
         private void EnemyHealthController_Died()
@@ -44,6 +46,7 @@ namespace Scripts.LevelSystem.LevelGeneration
         {
             Debug.Log($"Room {gameObject.name} unlocked!");
             _door.Open();
+            LevelManager.Instance.CompletedRoom?.Invoke();
         }
 
         public bool IsCleared()

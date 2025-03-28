@@ -16,6 +16,7 @@ namespace Scripts.LevelSystem.LevelObjects
         {
             if (_animationTween != null && _animationTween.IsPlaying()) return;
 
+            if(_spriteRenderer == null) return;
             var previousMaterial = _spriteRenderer.material;
             _spriteRenderer.material = _blinkColorMaterial;
             _animationTween = _spriteRenderer.transform.DOPunchScale(_punchScale * Vector3.one, 0.2f, _punchVibrato, 0f).OnComplete(() =>

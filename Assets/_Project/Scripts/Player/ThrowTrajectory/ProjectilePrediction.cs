@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using Scripts.Enemies;
 using Scripts.LevelSystem.LevelGeneration;
 using Scripts.Player.InputHandling;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace Scripts.Player
         [SerializeField] private LineRenderer _line;
         [SerializeField] private int _maxPhysicsFrameIterations = 100;
         [SerializeField] private InputHandler _inputHandler;
+        [SerializeField] private PlayerMovement _playerMovement;
         [SerializeField] private PlayerBallMovement _playerBallMovement;
         [SerializeField] private PlayerGhostProjectile _playerGhostProjectile;
 
@@ -25,14 +27,14 @@ namespace Scripts.Player
 
         private void OnEnable()
         {
-            _inputHandler.OnDragStarted += InputHandler_DragStarted;
-            _inputHandler.OnDragFinished += InputHandler_DragFinished;
+            _playerMovement.DragStarted += InputHandler_DragStarted;
+            _playerMovement.DragFinished += InputHandler_DragFinished;
         }
 
         private void OnDisable()
         {
-            _inputHandler.OnDragStarted -= InputHandler_DragStarted;
-            _inputHandler.OnDragFinished -= InputHandler_DragFinished;
+            _playerMovement.DragStarted -= InputHandler_DragStarted;
+            _playerMovement.DragFinished -= InputHandler_DragFinished;
         }
 
         private void InputHandler_DragStarted()
@@ -66,15 +68,38 @@ namespace Scripts.Player
             foreach (Transform obj in LevelManager.Instance.CurrentRoom.ObstaclesTransform)
             {
                 var ghostObj = Instantiate(obj.gameObject, obj.position, obj.rotation);
-                
-                var spriteRenderer = ghostObj.GetComponentInChildren<SpriteRenderer>(false);
-                if (spriteRenderer!=null)
+
+
+                foreach (Transform innerObj in obj)
+                {
+                    if (innerObj.TryGetComponent(out EnemyHealth enemyHealth))
+                    {
+                        if (ghostObj.transform != innerObj.transform)
+                        {
+                            var ghostInnerObj = Instantiate(innerObj.gameObject, innerObj.position, innerObj.rotation);
+                            var spriteInnerRenderers = ghostInnerObj.GetComponentsInChildren<SpriteRenderer>(true);
+                            foreach (var spriteRenderer in spriteInnerRenderers)
+                            {
+                                spriteRenderer.enabled = false;
+                            }
+
+                            SceneManager.MoveGameObjectToScene(ghostInnerObj, _simulationScene);
+                            if (!ghostInnerObj.gameObject.isStatic) _spawnedObjects.Add(innerObj, ghostInnerObj.transform);
+                        }
+                    }
+                }
+
+                var spriteRenderers = ghostObj.GetComponentsInChildren<SpriteRenderer>(true);
+                foreach (var spriteRenderer in spriteRenderers)
                 {
                     spriteRenderer.enabled = false;
                 }
 
                 SceneManager.MoveGameObjectToScene(ghostObj, _simulationScene);
-                if (!ghostObj.isStatic) _spawnedObjects.Add(obj, ghostObj.transform);
+                if (!ghostObj.isStatic)
+                {
+                    _spawnedObjects.Add(obj, ghostObj.transform);
+                }
             }
         }
 

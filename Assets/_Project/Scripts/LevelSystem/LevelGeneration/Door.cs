@@ -1,16 +1,16 @@
 using System;
+using DG.Tweening;
 using Scripts.LevelSystem.LevelGeneration;
 using Scripts.Player;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
 namespace Assets.Scripts.LevelCreator
 {
     public class Door : MonoBehaviour
     {
-        [FormerlySerializedAs("DoorAnimator")] [SerializeField]
-        private Animator _doorAnimator;
-
+        [SerializeField] private Transform _doorBlockerTransform;
         [FormerlySerializedAs("Room")] [SerializeField]
         private Room _room;
 
@@ -34,6 +34,7 @@ namespace Assets.Scripts.LevelCreator
         public void Open()
         {
             isCurrentlyOpened = true;
+            _doorBlockerTransform.transform.DOScaleY(0f, 0.4f);
         }
 
         public void Close()
@@ -43,6 +44,10 @@ namespace Assets.Scripts.LevelCreator
 
         public void GoThroughDoor(PlayerMovement player)
         {
+            if(_room==null)
+            {
+                return;
+            }
             _room.SetActive();
             player.transform.position = _room.SpawnPointTransform.position;
             LevelManager.Instance.EnterRoom(room: _room);

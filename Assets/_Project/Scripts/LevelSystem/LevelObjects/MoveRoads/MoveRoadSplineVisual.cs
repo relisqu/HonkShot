@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using Unity.Mathematics;
@@ -17,10 +18,12 @@ namespace Scripts.LevelSystem.LevelObjects.MoveRoads
         [SerializeField] private Transform _finishPoint;
         [SerializeField] private float _pointDistance;
 
-        private void Start()
+        private IEnumerator Start()
         {
-            UpdateSecondSpline();
+           //UpdateSecondSpline();
+            yield return new WaitForSeconds(0.1f);
         }
+
 
         [Button]
         public void UpdateSecondSpline()
@@ -53,6 +56,7 @@ namespace Scripts.LevelSystem.LevelObjects.MoveRoads
             _finishPoint.rotation = Quaternion.Euler(0f, 0f, startPointAngle + 180);
         }
 
+     
         private void Update()
         {
 #if UNITY_EDITOR

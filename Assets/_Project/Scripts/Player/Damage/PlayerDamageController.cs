@@ -12,7 +12,6 @@ namespace Scripts.Player.Damage
         {
             if (other.gameObject.TryGetComponent(out EnemyHealth enemyHealth))
             {
-                Debug.Log(enemyHealth.name);
                 enemyHealth.HealthController.TakeDamage(_defaultDamage);
             }
         }

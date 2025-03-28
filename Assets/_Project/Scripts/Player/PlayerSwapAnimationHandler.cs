@@ -38,8 +38,8 @@ namespace Scripts.Player
         {
             _playerStatus.AnimationStateMachine().SetAnimator(_playerAnimator);
             _playerStatus.OnSwapToBall += PlayerStatus_SwapToBall;
-            _inputHandler.OnDragStarted += InputHandler_DragStarted;
-            _inputHandler.OnDragFinished += InputHandler_DragFinished;
+            _playerMovement.DragStarted += PlayerMovement_DragStarted;
+            _playerMovement.DragFinished += PlayerMovement_DragFinished;
         }
 
         private void Update()
@@ -58,8 +58,8 @@ namespace Scripts.Player
         private void OnDisable()
         {
             _playerStatus.OnSwapToBall -= PlayerStatus_SwapToBall;
-            _inputHandler.OnDragStarted -= InputHandler_DragStarted;
-            _inputHandler.OnDragFinished -= InputHandler_DragFinished;
+            _inputHandler.OnDragStarted -= PlayerMovement_DragStarted;
+            _inputHandler.OnDragFinished -= PlayerMovement_DragFinished;
         }
 
 
@@ -115,7 +115,7 @@ namespace Scripts.Player
             _playerAnimator.SetTrigger(SwapToShooter);
         }
 
-        private void InputHandler_DragStarted()
+        private void PlayerMovement_DragStarted()
         {
             _playerAnimator.SetTrigger(DragStart);
             SlowDownGame();
@@ -139,7 +139,7 @@ namespace Scripts.Player
 
         private TweenerCore<float, float, FloatOptions> _slowdownTween;
 
-        private void InputHandler_DragFinished(Vector2 _)
+        private void PlayerMovement_DragFinished(Vector2 _)
         {
             float currentVelocityX = _playerMovement.GetVelocity().x;
 

@@ -8,6 +8,8 @@ namespace Scripts.LevelSystem.LevelGeneration
         public static LevelManager Instance;
 
         private Room _currentRoom;
+        public Action EnteredRoom;
+        public Action CompletedRoom;
 
         public Room CurrentRoom => _currentRoom;
 
@@ -21,6 +23,7 @@ namespace Scripts.LevelSystem.LevelGeneration
         {
             _currentRoom = room;
             _currentRoom.SetActive();
+            EnteredRoom?.Invoke();
         }
     }
 }

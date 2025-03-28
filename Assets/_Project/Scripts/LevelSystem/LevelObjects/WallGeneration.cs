@@ -12,7 +12,7 @@ namespace Scripts.LevelSystem.LevelObjects
 
         private void Start()
         {
-            GenerateWalls();
+            //GenerateWalls();
         }
 
         [Button]

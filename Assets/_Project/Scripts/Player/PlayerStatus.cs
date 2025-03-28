@@ -1,4 +1,5 @@
 ﻿using System;
+using Scripts.Health;
 using Scripts.Player.States;
 using UnityEngine;
 
@@ -10,6 +11,7 @@ namespace Scripts.Player
         private AnimationStateMachine _animationStateMachine;
         [SerializeField] private GameObject _idlePlayerGameObject;
         [SerializeField] private GameObject _ballPlayerGameObject;
+        [SerializeField] private HealthController _healthController;
 
         public PlayerState PlayerState => _playerState;
         public Action OnSwapToBall;
@@ -17,6 +19,11 @@ namespace Scripts.Player
 
         public GameObject CurrentGameObject =>
             _idlePlayerGameObject.activeSelf ? _idlePlayerGameObject : _ballPlayerGameObject;
+
+        public HealthController GetHealthController()
+        {
+            return _healthController;
+        }
 
         public AnimationStateMachine AnimationStateMachine()
         {
@@ -39,13 +46,20 @@ namespace Scripts.Player
             AnimationStateMachine().SetDefaultState(_playerState);
         }
 
+        private PlayerState _preSwapState;
 
         public void SetPlayerState(PlayerState playerState)
         {
+            if (playerState == PlayerState.Swapping)
+            {
+                _preSwapState = _playerState;
+            }
+
             if (_playerState == playerState) return;
 
             _playerState = playerState;
-            _animationStateMachine.ChangeState(_playerState);
+            
+            AnimationStateMachine().ChangeState(_playerState);
 
             switch (_playerState)
             {
@@ -55,9 +69,15 @@ namespace Scripts.Player
                 case PlayerState.Swapping:
                     OnSwapToIdle?.Invoke();
                     break;
+
                 default:
                     break;
             }
+        }
+
+        public void ResetSwapState()
+        {
+            SetPlayerState(_preSwapState);
         }
     }
 }

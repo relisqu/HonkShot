@@ -2,6 +2,7 @@
 using Scripts.Audio;
 using Scripts.Camera;
 using Scripts.LevelSystem;
+using Scripts.Player.Dash;
 using Scripts.Player.InputHandling;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -15,28 +16,49 @@ namespace Scripts.Player
         [SerializeField] private PlayerBallMovement _playerBallMovement;
         [SerializeField] private InputHandler _inputHandler;
         [SerializeField] private float _defaultSpeed;
-        [SerializeField] private float _linearDrag = 0.05f;
+
+        [SerializeField] private PlayerDashController _playerDashController;
+        public Action DragStarted;
+        public Action<Vector2> DragFinished;
+
+        private bool _isDragging;
 
         private void OnEnable()
         {
             _inputHandler.OnDragStarted += InputHandler_OnDragStarted;
+            _inputHandler.OnDragFinished += InputHandler_OnDragFinished;
+        }
+
+        private void InputHandler_OnDragFinished(Vector2 obj)
+        {
+            if (_isDragging)
+            {
+                DragFinished?.Invoke(obj);
+                _isDragging = false;
+            }
         }
 
         private void OnDisable()
         {
             _inputHandler.OnDragStarted -= InputHandler_OnDragStarted;
+            _inputHandler.OnDragFinished -= InputHandler_OnDragFinished;
         }
 
         private void InputHandler_OnDragStarted()
         {
-             _playerStatus.SetPlayerState(PlayerState.Swapping);
+            if (_playerDashController.CanDash)
+            {
+                _isDragging = true;
+                _playerStatus.SetPlayerState(PlayerState.Swapping);
+                DragStarted?.Invoke();
+            }
         }
-
         private void FixedUpdate()
         {
             switch (_playerStatus.PlayerState)
             {
                 case PlayerState.Ball:
+                    
                     break;
                 case PlayerState.Swapping:
                     _rigidbody2D.velocity = Vector2.zero;
@@ -45,7 +67,7 @@ namespace Scripts.Player
                     break;
             }
         }
-        
+
         public Vector2 GetVelocity()
         {
             return _rigidbody2D.velocity;

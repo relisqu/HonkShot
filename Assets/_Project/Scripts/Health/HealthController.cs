@@ -17,8 +17,12 @@ namespace Scripts.Health
         public bool IsInvincible => _isInvincible;
         public bool IsAlive => _currentHealth > 0;
 
-        public float RemainingHealthPercentage => _currentHealth / _maxHealth;
+        public float RemainingHealthPercentage => _currentHealth / _defaultHealth;
 
+        private void Awake()
+        {
+            _currentHealth = _defaultHealth;
+        }
 
         public void TakeDamage(float damageAmount)
         {
@@ -41,11 +45,11 @@ namespace Scripts.Health
 
             if (_currentHealth == 0)
             {
-                OnDied.Invoke();
+                OnDied?.Invoke();
             }
             else
             {
-                OnDamaged.Invoke();
+                OnDamaged?.Invoke();
             }
         }
 

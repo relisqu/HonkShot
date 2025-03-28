@@ -19,9 +19,8 @@ namespace Scripts.Camera
 
         TweenerCore<float, float, FloatOptions> _shakeTween;
 
-        public void ShakeCamera(float duration, float strength)
+        private void Shake(float duration, float strength)
         {
-            if (_shakeTween != null) return;
             var noiseChannel = _virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             noiseChannel.m_AmplitudeGain = strength;
 
@@ -42,7 +41,23 @@ namespace Scripts.Camera
                     value,
                 0f, // Target value
                 duration
-            ).OnComplete(() => { noiseChannel.m_FrequencyGain = 0f; });
+            ).OnComplete(() =>
+            {
+                noiseChannel.m_FrequencyGain = 0f;
+                _shakeTween = null;
+            });
+        }
+
+        public void ShakeCameraOutsideOfQueue(float duration, float strength)
+        {
+            if (_shakeTween != null) _shakeTween.Kill();
+            Shake(duration, strength);
+        }
+
+        public void ShakeCamera(float duration, float strength)
+        {
+            if (_shakeTween != null) return;
+            Shake(duration, strength);
         }
     }
 }

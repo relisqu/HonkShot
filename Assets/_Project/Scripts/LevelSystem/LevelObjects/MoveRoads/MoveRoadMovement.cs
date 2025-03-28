@@ -1,5 +1,6 @@
 ﻿using System;
 using Scripts.Player;
+using Scripts.PointSystem;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -10,7 +11,8 @@ namespace Scripts.LevelObjects.MoveRoads
     public class MoveRoadMovement : MonoBehaviour
     {
         [SerializeField] private SplineContainer _splineContainer;
-        [FormerlySerializedAs("speed")] public float _speed = 1.2f;
+        [SerializeField] public float _speed = 1.2f;
+        [SerializeField] private AttackPointsObject _attackPointsObject;
 
         [FormerlySerializedAs("rotationSpeed")]
         public float _rotationSpeed = 5f;
@@ -29,6 +31,8 @@ namespace Scripts.LevelObjects.MoveRoads
         private Vector2 _closestPoint;
         private float _closestPointT;
 
+        private bool _wasTouched;
+
         private void Update()
         {
             float3 closestPlayerPoint;
@@ -43,10 +47,29 @@ namespace Scripts.LevelObjects.MoveRoads
             _closestPointT = closestPlayerPointT;
             var distance = Vector2.Distance(position,
                 _playerMovement.transform.position);
+
             if (distance < _playerDistance)
             {
+                if (_wasTouched)
+                {
+                    _attackPointsObject.IncreaseStayPoints();
+                }
+                else
+                {
+                    _attackPointsObject.EarnTouchPoints();
+                    _wasTouched = true;
+                }
+
                 var angle = _splineContainer.Spline.EvaluateTangent(closestPlayerPointT);
                 ApplyForce(_playerMovement.GetRigidbody(), angle);
+            }
+            else
+            {
+                if (_wasTouched)
+                {
+                    _attackPointsObject.EarnStayPoints();
+                    _wasTouched = false;
+                }
             }
         }
 
