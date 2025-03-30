@@ -11,7 +11,7 @@ namespace Scripts.Enemies
     public class WalkingEnemy : MonoBehaviour
     {
         [Header("Path Settings")] [SerializeField]
-        private Transform[] _pathPoints;
+        private List<Transform> _pathPoints = new();
 
         [SerializeField] private float _moveSpeed = 2f;
         [SerializeField] private SpriteRenderer _prefireSpriteRenderer;
@@ -24,7 +24,10 @@ namespace Scripts.Enemies
         [SerializeField] private float _attackInterval = 1f;
         [SerializeField] private float _attackWarningTime = 0.5f;
         [SerializeField] private int _damage = 1;
-        [SerializeField] private ParticleSystem _attackWarningEffect;
+
+        [Header("Visuals")] [Space] [SerializeField]
+        private ParticleSystem _attackWarningEffect;
+
         [SerializeField] private LayerMask _playerLayer;
 
         [Header("Components")] [SerializeField]
@@ -37,12 +40,14 @@ namespace Scripts.Enemies
 
         private void Start()
         {
-            if (_pathPoints.Length == 0)
+            if (_pathPoints.Count == 0)
             {
                 Debug.LogError("No path points assigned.");
                 enabled = false;
                 return;
             }
+
+            _pathPoints.RemoveAll(point => point == null);
 
             StartCoroutine(FollowPath());
             StartCoroutine(AttackRoutine());
@@ -67,7 +72,7 @@ namespace Scripts.Enemies
                     yield return null;
                 }
 
-                _currentTargetIndex = (_currentTargetIndex + 1) % _pathPoints.Length;
+                _currentTargetIndex = (_currentTargetIndex + 1) % _pathPoints.Count;
             }
         }
 
@@ -103,10 +108,23 @@ namespace Scripts.Enemies
             _isAttacking = false;
         }
 
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position, _attackRange);
+            Gizmos.color = Color.green;
+            for (int i = 0; i < _pathPoints.Count; i++)
+            {
+                if (_pathPoints[i] != null)
+                {
+                    Gizmos.DrawSphere(_pathPoints[i].position, 0.2f);
+                    if (i < _pathPoints.Count - 1 && _pathPoints[i + 1] != null)
+                        Gizmos.DrawLine(_pathPoints[i].position, _pathPoints[i + 1].position);
+                }
+            }
+
+            if (_pathPoints.Count >= 2)
+            {
+                Gizmos.DrawLine(_pathPoints[0].position, _pathPoints[^1].position);
+            }
         }
     }
 }

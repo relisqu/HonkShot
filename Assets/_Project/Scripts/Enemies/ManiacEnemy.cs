@@ -21,6 +21,7 @@ public class ManiacEnemy : MonoBehaviour
     [SerializeField] private float _attackInterval = 1f;
     [SerializeField] private float _attackWarningTime = 0.5f;
     [SerializeField] private int _damage = 1;
+    [Header("Visuals")] [Space]
     [SerializeField] private ParticleSystem _attackParticles;
     [SerializeField] private Color _prefireSpriteColor;
 

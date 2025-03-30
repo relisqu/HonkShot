@@ -72,7 +72,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2307467787802688383}
   m_Layer: 0
-  m_Name: WalkerEnemySpot
+  m_Name: WalkerSpot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -168,6 +168,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2307467787802688383}
     m_Modifications:
+    - target: {fileID: 2054567384914526939, guid: 4a50a16bc1d41b84681226b61c366171, type: 3}
+      propertyPath: _pathPoints.Array.size
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2054567384914526939, guid: 4a50a16bc1d41b84681226b61c366171, type: 3}
       propertyPath: _pathPoints.Array.data[0]
       value: 
