@@ -63,5 +63,14 @@ namespace Scripts.LevelSystem.LevelGeneration
         {
             _door.SetRoom(roomInstance);
         }
+
+        private void OnDrawGizmos()
+        {
+            if (_spawnPointTransform != null)
+            {
+                Gizmos.color = Color.white;
+                Gizmos.DrawSphere(_spawnPointTransform.position, 0.3f);
+            }
+        }
     }
 }

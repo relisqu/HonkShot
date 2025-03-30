@@ -1,6 +1,7 @@
 ﻿using System;
 using Scripts.Audio;
 using Scripts.LevelSystem.LevelGeneration;
+using Scripts.Other;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -14,7 +15,7 @@ namespace Scripts.LevelSystem
         private void Start()
         {
             AudioManager.Instance.PlaySmooth(SoundChanelType.Music, "levelMusic", true);
-            _levelManager.EnterRoom(_levelGenerator.GetRoom(0));
+                _levelManager.EnterRoom(_levelGenerator.GetRoom(0));
         }
 
         private void Update()

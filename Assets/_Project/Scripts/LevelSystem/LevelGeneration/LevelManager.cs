@@ -1,4 +1,5 @@
 ﻿using System;
+using Scripts.Other;
 using UnityEngine;
 
 namespace Scripts.LevelSystem.LevelGeneration
@@ -17,10 +18,16 @@ namespace Scripts.LevelSystem.LevelGeneration
         private void Awake()
         {
             Instance = this;
+            if (!DebugMode.Instance.GeneratingLevels)
+            {
+                var room = FindObjectOfType<Room>();
+                _currentRoom = room;
+            }
         }
 
-        public  void EnterRoom(Room room)
+        public void EnterRoom(Room room)
         {
+            if (room == null) return;
             _currentRoom = room;
             _currentRoom.SetActive();
             EnteredRoom?.Invoke();

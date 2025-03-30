@@ -31,7 +31,7 @@ namespace Scripts.LevelSystem.LevelObjects
             Touched?.Invoke(_currentTouchCount);
         }
 
-        public void Reset()
+        public void ResetTouch()
         {
             _currentTouchCount = 0;
             Resetted?.Invoke();

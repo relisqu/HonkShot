@@ -8,6 +8,7 @@ namespace Scripts.Camera
     {
         void LateUpdate()
         {
+            if (!LevelManager.Instance.CurrentRoom) return;
             transform.position = LevelManager.Instance.CurrentRoom.transform.position;
         }
     }

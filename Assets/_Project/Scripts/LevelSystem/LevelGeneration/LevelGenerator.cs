@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Scripts.Other;
 using UnityEngine;
 
 namespace Scripts.LevelSystem.LevelGeneration
@@ -14,7 +15,14 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         private void Awake()
         {
-            GenerateLevel();
+            if (DebugMode.Instance.GeneratingLevels)
+            {
+                GenerateLevel();
+            }
+            else
+            {
+                AstarPath.active.Scan();
+            }
         }
 
         private void GenerateLevel()
@@ -31,6 +39,7 @@ namespace Scripts.LevelSystem.LevelGeneration
                 _spawnedRooms.Add(roomInstance);
                 spawnPosition += Vector3.up * _roomHeight;
             }
+
             AstarPath.active.Scan();
             foreach (var room in _spawnedRooms)
             {
@@ -69,7 +78,9 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         public Room GetRoom(int i)
         {
-            return _spawnedRooms[i];
+            if (_spawnedRooms.Count > i)
+                return _spawnedRooms[i];
+            return null;
         }
     }
 }

@@ -1,18 +1,30 @@
-﻿using Sirenix.OdinInspector;
+﻿using System;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.U2D;
 
 namespace Scripts.LevelSystem.LevelObjects
 {
+    [ExecuteInEditMode]
     public class WallGeneration : MonoBehaviour
     {
         [SerializeField] private GameObject _wallPrefab;
-        [SerializeField] private Transform _wallsContainer; 
+        [SerializeField] private Transform _wallsContainer;
         [SerializeField] private SpriteShapeController _levelField;
 
         private void Start()
         {
             //GenerateWalls();
+        }
+
+        private int nextUpdate = 1;
+
+        private void Update()
+        {
+            if (Time.time < nextUpdate) return;
+
+            nextUpdate = Mathf.FloorToInt(Time.time) + 1;
+            GenerateWalls();
         }
 
         [Button]
@@ -40,23 +52,21 @@ namespace Scripts.LevelSystem.LevelObjects
                 Vector3 midpoint = (worldCurrentPoint + worldNextPoint) / 2f;
 
                 Vector3 direction = worldNextPoint - worldCurrentPoint;
-                float rotationZ = 90+Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                float rotationZ = 90 + Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
                 GameObject wall = Instantiate(_wallPrefab, midpoint, Quaternion.Euler(0, 0, rotationZ),
                     _wallsContainer);
 
                 float wallLength = direction.magnitude;
                 wall.transform.localScale =
-                    new Vector3(wall.transform.localScale.x, wallLength+0.2f, 1);
+                    new Vector3(wall.transform.localScale.x, wallLength + 0.2f, 1);
             }
         }
 
         private void ClearContainer()
         {
-            foreach (Transform child in _wallsContainer)
-            {
-                Destroy(child.gameObject);
-            }
+            for (int i = _wallsContainer.childCount; i > 0; --i)
+                DestroyImmediate(_wallsContainer.GetChild(0).gameObject);
         }
     }
 }
