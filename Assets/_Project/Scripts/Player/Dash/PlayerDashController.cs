@@ -12,7 +12,7 @@ namespace Scripts.Player.Dash
 
 
         [SerializeField] private bool _canRegenDashes = true;
-        [SerializeField] private float _dashRegenerationRate;
+        [Tooltip("How many dashes player regenerates per second")][SerializeField] private float _dashRegenerationRate;
 
         private int _currentDashCount;
 

@@ -15,12 +15,14 @@ namespace Scripts.Player
         [SerializeField] private InputHandler _inputHandler;
         [SerializeField] private PlayerStatus _playerStatus;
         [SerializeField] private PlayerDashController _playerDashController;
+        [Header("Input Handling Parameters")] [Space]
         [SerializeField] private float _forceModifier;
 
         [FormerlySerializedAs("_maxForce")] [SerializeField]
         private float _maxForceMagnitude;
 
         [SerializeField] private float _minBallForce;
+        [Header("Ball Movement Parameters")] [Space]
         [SerializeField] private float _additionalDragStartTime = 2000f;
         [SerializeField] private float _additionalDragForce = 1.01f;
         public float MaxForceMagnitude => _maxForceMagnitude;
