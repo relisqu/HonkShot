@@ -61,6 +61,7 @@ namespace Scripts.Player
 
         private void CreatePhysicsScene()
         {
+            if(LevelManager.Instance.CurrentRoom== null) return;
             _simulationScene =
                 SceneManager.CreateScene("Simulation", new CreateSceneParameters(LocalPhysicsMode.Physics2D));
             _physicsScene = _simulationScene.GetPhysicsScene2D();
@@ -105,6 +106,7 @@ namespace Scripts.Player
 
         private void Update()
         {
+            if(!LevelManager.Instance.CurrentRoom) return;
             foreach (var item in _spawnedObjects)
             {
                 item.Value.position = item.Key.position;

@@ -1,0 +1,32 @@
+﻿using UnityEngine.Serialization;
+
+namespace Scripts.Enemies.Bullets
+{
+    using UnityEngine;
+
+    public class BaseBullet : MonoBehaviour
+    {
+        [SerializeField] private float _speed = 5f;
+        [SerializeField] protected float _maxLifetime = 3f;
+        [SerializeField] protected float _damage = 3f;
+        [SerializeField] protected Transform _baseTransform;
+
+        private void Start()
+        {
+            if (_baseTransform == null)
+                _baseTransform = transform;
+            Destroy(gameObject, _maxLifetime);
+        }
+
+        private void Update()
+        {
+            _baseTransform.position += _baseTransform.up * _speed * Time.deltaTime;
+        }
+
+        public virtual void DamagePlayer(PlayerHealth health)
+        {
+            health.HealthController.TakeDamage(_damage);
+            Destroy(gameObject);
+        }
+    }
+}
