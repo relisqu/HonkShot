@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using DG.Tweening;
+using Scripts.Audio;
 using Scripts.Camera;
 using Scripts.Health;
 using UnityEngine;
@@ -20,6 +21,7 @@ namespace Scripts.Enemies
 
         public IEnumerator DeathSequence()
         {
+            AudioManager.Instance.PlayOneShot(SoundChanelType.Player,"takeDamage", 1f);
             CameraShakeHandler.Instance.ShakeCameraOutsideOfQueue(0.4f, 10f);
             yield return new WaitForSeconds(0.2f);
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -27,6 +29,7 @@ namespace Scripts.Enemies
 
         private void HealthController_Damaged()
         {
+            AudioManager.Instance.PlayOneShot(SoundChanelType.Player,"takeDamage", 0.5f);
             CameraShakeHandler.Instance.ShakeCameraOutsideOfQueue(0.2f, 3f);
         }
 

@@ -23,10 +23,13 @@ namespace Scripts.LevelObjects.MoveRoads
         [FormerlySerializedAs("rotationSpeed")]
         private PlayerMovement _playerMovement;
 
-        private void Awake()
+        private bool _wasInRoadBeforeDrag;
+
+        private void PlayerMovement_DragFinished(Vector2 obj)
         {
-            _playerMovement = FindObjectOfType<PlayerMovement>();
+            if (_wasTouched) _wasInRoadBeforeDrag = true;
         }
+
 
         private Vector2 _closestPoint;
         private float _closestPointT;
@@ -50,6 +53,7 @@ namespace Scripts.LevelObjects.MoveRoads
 
             if (distance < _playerDistance)
             {
+                if (_wasInRoadBeforeDrag) return;
                 if (_wasTouched)
                 {
                     _attackPointsObject.IncreaseStayPoints();
@@ -69,6 +73,7 @@ namespace Scripts.LevelObjects.MoveRoads
                 {
                     _attackPointsObject.EarnStayPoints();
                     _wasTouched = false;
+                    _wasInRoadBeforeDrag = false;
                 }
             }
         }
@@ -117,6 +122,17 @@ namespace Scripts.LevelObjects.MoveRoads
             Gizmos.DrawWireSphere(_closestPoint, 0.2f);
             var angle = _splineContainer.Spline.EvaluateTangent(_closestPointT);
             Gizmos.DrawLine(_closestPoint, _closestPoint + 0.5f * new Vector2(angle.x, angle.y));
+        }
+
+        private void Awake()
+        {
+            _playerMovement = FindObjectOfType<PlayerMovement>();
+            _playerMovement.DragFinished += PlayerMovement_DragFinished;
+        }
+
+        private void OnDestroy()
+        {
+            _playerMovement.DragFinished -= PlayerMovement_DragFinished;
         }
     }
 }

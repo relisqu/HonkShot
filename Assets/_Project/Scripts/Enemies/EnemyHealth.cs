@@ -1,7 +1,9 @@
 ﻿using System;
 using DG.Tweening;
+using Scripts.Audio;
 using Scripts.Camera;
 using Scripts.Health;
+using Scripts.Player;
 using Scripts.UI;
 using UnityEngine;
 
@@ -15,6 +17,7 @@ namespace Scripts.Enemies
 
         private void HealthController_Died()
         {
+            AudioManager.Instance.PlayOneShot(SoundChanelType.Enemy, "killEnemy");
             CameraShakeHandler.Instance.ShakeCamera(0.2f, 2f);
             new UIFactory().CreateExplosionParticle(transform.position);
             Destroy(gameObject);
@@ -24,7 +27,9 @@ namespace Scripts.Enemies
 
         private void HealthController_Damaged()
         {
+            AudioManager.Instance.PlayOneShot(SoundChanelType.Enemy, "damageEnemy");
             if (_punchTween != null) return;
+
             _punchTween = transform.DOPunchScale(0.4f * Vector3.one, 0.2f).OnComplete(() => { _punchTween = null; });
         }
 
@@ -35,6 +40,11 @@ namespace Scripts.Enemies
 
         private void OnTriggerEnter2D(Collider2D other)
         {
+            if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _))
+            {
+                return;
+            }
+
             if (_healthController.IsInvincible) return;
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
@@ -44,6 +54,10 @@ namespace Scripts.Enemies
 
         private void OnTriggerStay2D(Collider2D other)
         {
+            if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _))
+            {
+                return;
+            }
             if (_healthController.IsInvincible) return;
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
@@ -53,6 +67,10 @@ namespace Scripts.Enemies
 
         private void OnCollisionStay2D(Collision2D other)
         {
+            if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _))
+            {
+                return;
+            }
             if (_healthController.IsInvincible) return;
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
@@ -62,6 +80,11 @@ namespace Scripts.Enemies
 
         private void OnCollisionEnter2D(Collision2D other)
         {
+            if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _))
+            {
+                Debug.Log("AAAAAAA");
+                return;
+            }
             if (_healthController.IsInvincible) return;
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {

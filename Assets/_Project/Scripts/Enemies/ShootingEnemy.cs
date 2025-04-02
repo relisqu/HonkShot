@@ -10,6 +10,7 @@ namespace Scripts.Enemies
         [SerializeField] private float _shootInterval = 1.5f;
         [SerializeField] private EnemyHealth _enemyHealth;
 
+        [SerializeField] private Animator _shooterAnimator;
         private Coroutine _shootingRoutine;
 
         private void OnEnable()
@@ -18,6 +19,7 @@ namespace Scripts.Enemies
             {
                 _shootingModule = GetComponentInChildren<ShootingModule>();
             }
+
             _shootingRoutine = StartCoroutine(ShootingRoutine());
         }
 
@@ -27,13 +29,29 @@ namespace Scripts.Enemies
                 StopCoroutine(_shootingRoutine);
         }
 
+        public void PlayShootStartAnimation()
+        {
+            _shooterAnimator.SetTrigger("startShooting");
+        }
+
+        public void FinishShootingAnimation()
+        {
+            _shooterAnimator.SetTrigger("finishShooting");
+            
+        }
+
+        public void TryShoot()
+        {
+            _shootingModule.TryShoot(FinishShootingAnimation);
+        }
+
         private IEnumerator ShootingRoutine()
         {
             while (_enemyHealth.IsAlive())
             {
                 yield return new WaitForSeconds(_shootInterval);
                 Debug.Log("Trying shooting");
-                _shootingModule.TryShoot();
+                PlayShootStartAnimation();
             }
         }
     }

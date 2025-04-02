@@ -1,4 +1,7 @@
-﻿namespace Scripts.Enemies
+﻿using System;
+using Scripts.Enemies.Bullets;
+
+namespace Scripts.Enemies
 {
     using UnityEngine;
 
@@ -9,7 +12,7 @@
             [SerializeField] private int _bulletCount = 8;
             [SerializeField] private float _startRotation = 0f;
 
-            protected override void Shoot()
+            protected override void Shoot(Action onShootFinish)
             {
                 float angleStep = 360f / _bulletCount;
                 float angle = _startRotation;
@@ -17,8 +20,18 @@
                 for (int i = 0; i < _bulletCount; i++)
                 {
                     Quaternion rotation = Quaternion.Euler(0, 0, angle);
-                    Instantiate(_bulletPrefab, transform.position, rotation);
+                    var bullet = Instantiate(_bulletPrefab, transform.position, rotation);
                     angle += angleStep;
+                    if (!bullet.TryGetComponent(out BaseBullet bulletComponent))
+                    {
+                        var bulletBullet = bullet.GetComponentInChildren<BaseBullet>();
+                        bulletBullet.OnReady += onShootFinish;
+                    }
+                    else
+                    {
+                
+                        bulletComponent.OnReady += onShootFinish;
+                    }
                 }
             }
 

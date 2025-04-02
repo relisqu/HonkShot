@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8194322183709586651}
   - component: {fileID: 8892220327176162850}
   - component: {fileID: 7948760330329805806}
+  - component: {fileID: 625492768961433126}
   m_Layer: 0
   m_Name: SphereBouncer
   m_TagString: Untagged
@@ -117,6 +118,19 @@ MonoBehaviour:
   attackPointsObjectType: 2
   _pointsPerTouchCount: 25
   PointsPerStayCount: 0
+--- !u!114 &625492768961433126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 416369986994364037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0129d19e6cc4b7eaddf0af5f97397bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bounceObject: {fileID: 8194322183709586651}
 --- !u!1 &3395884907201968812
 GameObject:
   m_ObjectHideFlags: 0

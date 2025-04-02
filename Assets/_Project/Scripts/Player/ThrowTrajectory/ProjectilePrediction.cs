@@ -62,8 +62,8 @@ namespace Scripts.Player
         private void CreatePhysicsScene()
         {
             if(LevelManager.Instance.CurrentRoom== null) return;
-            _simulationScene =
-                SceneManager.CreateScene("Simulation", new CreateSceneParameters(LocalPhysicsMode.Physics2D));
+            if(SceneManager.GetSceneByName("Simulation").IsValid()) return;
+            _simulationScene =SceneManager.CreateScene("Simulation", new CreateSceneParameters(LocalPhysicsMode.Physics2D));
             _physicsScene = _simulationScene.GetPhysicsScene2D();
 
             foreach (Transform obj in LevelManager.Instance.CurrentRoom.ObstaclesTransform)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Scripts.Audio;
 using Scripts.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -38,6 +39,7 @@ namespace Scripts.PointSystem
             var textParticle = new UIFactory().CreateUITextParticle(transform.position);
             textParticle.ShowText(Mathf.Sign(points) > 0 ? $"+{points}" : $"-{points}");
             textParticle.SetScale(points / AveragePointsPerBounce);
+            AudioManager.Instance.PlayOneShot(SoundChanelType.UI, "scorePoint", points / AveragePointsPerBounce);
         }
 
         public void GenerateFirePointParticle()

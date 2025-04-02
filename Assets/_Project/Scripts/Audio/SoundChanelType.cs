@@ -5,6 +5,7 @@
         Player,
         Enemy,
         Music,
+        LevelObjects,
         Environment,
         UI
     }

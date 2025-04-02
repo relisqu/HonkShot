@@ -32,6 +32,7 @@ namespace Scripts.Audio
 
             foreach (SoundChanelType chanelType in Enum.GetValues(typeof(SoundChanelType)))
             {
+                Debug.Log(chanelType);
                 _audioSources.Add(chanelType, gameObject.AddComponent<AudioSource>());
                 _volumes.Add(chanelType, DefaultVolume);
             }

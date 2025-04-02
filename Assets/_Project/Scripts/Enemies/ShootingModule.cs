@@ -1,4 +1,5 @@
 ﻿using System;
+using Scripts.Enemies.Bullets;
 using Scripts.PointSystem;
 using UnityEngine;
 
@@ -17,18 +18,29 @@ namespace Scripts.Enemies
             _player = PointReceiver.Instance.transform;
         }
 
-        public void TryShoot()
+        public void TryShoot(Action onShootFinish)
         {
-            if (_player == null) return;
+            Debug.Log("try");
+            if (_player == null)
+            {
+                Debug.Log("null");
+                onShootFinish?.Invoke();
+            }
 
             float distance = Vector2.Distance(transform.position, _player.position);
             if (!_hasMaxDistance || distance <= _shootDistance)
             {
-                Shoot();
+                Debug.Log("Shoot");
+                Shoot(onShootFinish);
+            }
+            else
+            {
+                Debug.Log("distance <= _shootDistance");
+                onShootFinish?.Invoke();
             }
         }
 
-        protected abstract void Shoot();
+        protected abstract void Shoot(Action onShootFinish);
 
         private void OnDrawGizmos()
         {

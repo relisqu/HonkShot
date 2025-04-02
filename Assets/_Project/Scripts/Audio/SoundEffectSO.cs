@@ -14,7 +14,7 @@ namespace Scripts.Audio
 
         [Required] public AudioClip[] clips;
 
-        [MinMaxSlider(0, 1)] [BoxGroup("config")]
+        [MinMaxSlider(0, 5)] [BoxGroup("config")]
         public Vector2 volume = new Vector2(0.5f, 0.5f);
 
         // Pitch / Semitones

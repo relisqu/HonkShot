@@ -1,4 +1,5 @@
-﻿using UnityEngine.Serialization;
+﻿using System;
+using UnityEngine.Serialization;
 
 namespace Scripts.Enemies.Bullets
 {
@@ -10,11 +11,16 @@ namespace Scripts.Enemies.Bullets
         [SerializeField] protected float _maxLifetime = 3f;
         [SerializeField] protected float _damage = 3f;
         [SerializeField] protected Transform _baseTransform;
+        public Action OnReady;
 
-        private void Start()
+        private void Awake()
         {
             if (_baseTransform == null)
                 _baseTransform = transform;
+        }
+
+        private void Start()
+        {
             Destroy(gameObject, _maxLifetime);
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using DG.Tweening;
 using UnityEngine;
 
 namespace Scripts.Enemies.Bullets
@@ -9,6 +10,7 @@ namespace Scripts.Enemies.Bullets
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private LayerMask _obstacleLayer;
         [SerializeField] private Color _prefireColor;
+        [SerializeField] private Color _fireColor;
 
         [SerializeField] private float _maxRange = 5f;
 
@@ -30,21 +32,25 @@ namespace Scripts.Enemies.Bullets
             RaycastHit2D hit = Physics2D.Raycast(_startPosition, direction, _maxRange, _obstacleLayer);
 
             Vector3 position = Vector3.zero;
+            var localScale = transform.localScale;
             if (hit.collider != null)
             {
                 Debug.Log(hit.collider.gameObject.name);
-                _baseTransform.localScale = new Vector3( _baseTransform.localScale.x, hit.distance, _baseTransform.localScale.z);
+                localScale = new Vector3(_baseTransform.localScale.x, hit.distance, _baseTransform.localScale.z);
             }
             else
             {
-                _baseTransform.localScale = new Vector3( _baseTransform.localScale.x, _maxRange, _baseTransform.localScale.z);
+                localScale = new Vector3(_baseTransform.localScale.x, _maxRange, _baseTransform.localScale.z);
             }
 
-
+            _baseTransform.localScale = new Vector3(0, localScale.y, _baseTransform.localScale.z);
+            _baseTransform.DOScale(localScale, 0.1f);
             _spriteRenderer.color = _prefireColor;
+
             yield return new WaitForSeconds(_prefireDuration);
-            _spriteRenderer.color = Color.red;
+            _spriteRenderer.DOColor(_fireColor, 0.1f);
             _isFired = true;
+            OnReady?.Invoke();
             StartCoroutine(DestroyAfterTime());
         }
 
@@ -56,15 +62,15 @@ namespace Scripts.Enemies.Bullets
         private IEnumerator DestroyAfterTime()
         {
             yield return new WaitForSeconds(_maxLifetime);
-            Destroy(gameObject);
+            _baseTransform.DOScale(new Vector3(0, _baseTransform.localScale.y, _baseTransform.localScale.z), 0.1f)
+                .OnComplete(
+                    () => { Destroy(gameObject); });
         }
 
         public override void DamagePlayer(PlayerHealth health)
         {
-            Debug.Log("DamagePlayer"+ _isFired);
             if (_isFired)
             {
-                Debug.Log("Damage!!!Player");
                 health.HealthController.TakeDamage(_damage);
             }
         }
