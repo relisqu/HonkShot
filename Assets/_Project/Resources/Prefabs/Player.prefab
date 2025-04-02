@@ -99,7 +99,7 @@ MonoBehaviour:
   _playerStatus: {fileID: 2410884018478326342}
   _playerBallMovement: {fileID: 2855041829269072723}
   _inputHandler: {fileID: 1987869121514748207}
-  _defaultSpeed: 160
+  _defaultSpeed: 200
   _playerDashController: {fileID: 2937765415697391777}
 --- !u!114 &2410884018478326342
 MonoBehaviour:
@@ -456,6 +456,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f00ea968663544f0bd7606fea7f65177, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerBallMovement: {fileID: 2855041829269072723}
+  _dependsOnSpeed: 1
+  _minBonusCoeffSpeed: 8
+  _maxBonusCoeffSpeed: 20
+  _maxSpeedCoeff: 2
 --- !u!114 &8510904863215499170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6108,7 +6113,7 @@ MonoBehaviour:
   - {x: 0.10794151, y: -0.058086753, z: 0}
   m_ShapePathHash: 0
   m_Mesh: {fileID: 0}
-  m_InstanceId: -1450
+  m_InstanceId: -11216
   m_LocalBounds:
     m_Center: {x: -0.029509544, y: 0.022883058, z: 0}
     m_Extent: {x: 0.13745105, y: 0.08096981, z: 0}
@@ -6316,7 +6321,7 @@ MonoBehaviour:
   - {x: -0.1628086, y: -0.3367374, z: 0}
   m_ShapePathHash: -1285002581
   m_Mesh: {fileID: 0}
-  m_InstanceId: -1480
+  m_InstanceId: -11246
   m_LocalBounds:
     m_Center: {x: -0.0014715195, y: 0.048728973, z: 0}
     m_Extent: {x: 0.38826895, y: 0.4069312, z: 0}
