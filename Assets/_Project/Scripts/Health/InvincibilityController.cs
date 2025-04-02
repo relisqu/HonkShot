@@ -9,6 +9,7 @@ namespace Scripts.Health
     {
         private HealthController _healthController;
         [SerializeField] private float _iFrameDuration;
+        public float IrameDuration => _iFrameDuration;
 
         private void HealthController_Damaged()
         {

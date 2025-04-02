@@ -12,7 +12,6 @@ namespace Scripts.PointSystem
 
         [SerializeField] private float _perTypeCoefficient = 1f;
         [SerializeField] private float _baseDamage;
-
         private int _maxPointsCount;
         private float _currentPointsAttack;
         public Action ChangedCurrentPoints;
@@ -68,7 +67,7 @@ namespace Scripts.PointSystem
 
         public void AddMaxPoints()
         {
-            var intPoints = Mathf.RoundToInt(GetAttackPoints() - _baseDamage);
+            var intPoints = Mathf.RoundToInt(GetAttackPoints());
             if (intPoints <= 0)
             {
                 return;
@@ -82,10 +81,13 @@ namespace Scripts.PointSystem
         public float GetAttackPoints()
         {
             var coeff = 1 + _pointObjectTypes.Count * _perTypeCoefficient;
-            var damage = _baseDamage + _currentPointsAttack * coeff;
-            return damage;
+            return _currentPointsAttack * coeff;
         }
 
+        public float GetBaseDamage()
+        {
+            return _baseDamage;
+        }
         public void ResetAttack()
         {
             _bouncesCount = 0;

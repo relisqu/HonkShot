@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using Scripts.Health;
 using Scripts.Player;
 using Scripts.PointSystem;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Scripts.Enemies
@@ -12,6 +14,13 @@ namespace Scripts.Enemies
     {
         [Header("Path Settings")] [SerializeField]
         private List<Transform> _pathPoints = new();
+
+        [InfoBox("We have 3 points with index 1,2,3." +
+                 "\n YoYo type will walk 1 2 3 2 1 2 3." +
+                 "\n Closed type will walk 1 2 3 1 2 3."
+        )]
+        [SerializeField]
+        private WalkingType _walkingType = WalkingType.Closed;
 
         [SerializeField] private float _moveSpeed = 2f;
         [SerializeField] private SpriteRenderer _prefireSpriteRenderer;
@@ -72,10 +81,31 @@ namespace Scripts.Enemies
                     yield return null;
                 }
 
-                _currentTargetIndex = (_currentTargetIndex + 1) % _pathPoints.Count;
+                switch (_walkingType)
+                {
+                    case WalkingType.YoYo:
+
+                        if (_currentTargetIndex == 0)
+                        {
+                            _currentDirection = 1;
+                        }
+                        else if (_currentTargetIndex >= _pathPoints.Count - 1)
+                        {
+                            _currentDirection = -1;
+                        }
+
+                        _currentTargetIndex = (_currentTargetIndex + 1 * _currentDirection) % _pathPoints.Count;
+                        break;
+                    case WalkingType.Closed:
+                        _currentTargetIndex = (_currentTargetIndex + 1) % _pathPoints.Count;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
         }
 
+        private int _currentDirection = 1;
 
         private IEnumerator AttackRoutine()
         {
@@ -121,10 +151,19 @@ namespace Scripts.Enemies
                 }
             }
 
-            if (_pathPoints.Count >= 2)
+            if (_pathPoints.Count >= 2 && _walkingType == WalkingType.Closed)
             {
                 Gizmos.DrawLine(_pathPoints[0].position, _pathPoints[^1].position);
             }
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, _attackRange);
         }
+    }
+
+    public enum WalkingType
+    {
+        YoYo,
+        Closed,
     }
 }

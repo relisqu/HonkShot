@@ -10,7 +10,7 @@ namespace Scripts.Other
     {
         [SerializeField] private HealthController _healthController;
         [SerializeField] private AnimationCurve _blinkCurve;
-        [SerializeField] private float _blinkDuration = 0.5f;
+        [SerializeField] private InvincibilityController _invincibilityController;
         private List<SpriteRenderer> _spriteRenderers = new();
         private Coroutine _blinkCoroutine;
 
@@ -39,11 +39,11 @@ namespace Scripts.Other
 
             while (_healthController.IsInvincible)
             {
-                float alpha = _blinkCurve.Evaluate(timer / _blinkDuration);
+                float alpha = _blinkCurve.Evaluate(timer / _invincibilityController.IrameDuration);
                 SetSpriteAlpha(alpha);
 
                 timer += Time.deltaTime;
-                if (timer >= _blinkDuration)
+                if (timer >= _invincibilityController.IrameDuration)
                 {
                     timer = 0f; // Loop animation
                 }
