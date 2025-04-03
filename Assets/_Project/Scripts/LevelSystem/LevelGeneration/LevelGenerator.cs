@@ -12,6 +12,7 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         private List<Room> _spawnedRooms = new List<Room>();
         private bool _levelLocked = true;
+        public IReadOnlyList<Room> Rooms => _spawnedRooms;
 
         private void Awake()
         {

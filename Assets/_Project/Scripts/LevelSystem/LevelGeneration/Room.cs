@@ -17,7 +17,12 @@ namespace Scripts.LevelSystem.LevelGeneration
         private List<EnemyHealth> _enemyHealths = new List<EnemyHealth>();
         public Transform SpawnPointTransform => _spawnPointTransform;
 
-        private void Start()
+        private void Awake()
+        {
+            UpdateEnemyInfo();
+        }
+
+        public void UpdateEnemyInfo()
         {
             var enemies = GetComponentsInChildren<EnemyHealth>();
             _enemyHealths = enemies.ToList();
@@ -72,5 +77,7 @@ namespace Scripts.LevelSystem.LevelGeneration
                 Gizmos.DrawSphere(_spawnPointTransform.position, 0.3f);
             }
         }
+
+        public bool IsActive() => _isActive;
     }
 }

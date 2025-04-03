@@ -9,7 +9,7 @@ namespace Scripts.Health
         [SerializeField] private float _defaultHealth;
 
         private bool _isInvincible;
-        private float _currentHealth = 1;
+        private float _currentHealth = 10;
 
 
         public Action OnDied;
