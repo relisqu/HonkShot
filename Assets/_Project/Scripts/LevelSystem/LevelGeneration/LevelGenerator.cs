@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Scripts.Other;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Scripts.LevelSystem.LevelGeneration
 {

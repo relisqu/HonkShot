@@ -1,5 +1,7 @@
 ﻿using System;
 using Scripts.Other;
+using Scripts.Player;
+using Scripts.PointSystem;
 using UnityEngine;
 
 namespace Scripts.LevelSystem.LevelGeneration
@@ -27,10 +29,12 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         public void EnterRoom(Room room)
         {
+            Debug.Log($"Trying to enter room {room}");
             if (room == null) return;
             _currentRoom = room;
             _currentRoom.SetActive();
             EnteredRoom?.Invoke();
+            PointReceiver.Instance.transform.root.position = _currentRoom.SpawnPointTransform.position;
         }
     }
 }

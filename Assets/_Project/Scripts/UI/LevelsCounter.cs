@@ -23,13 +23,6 @@ namespace Scripts.UI
             LevelManager.Instance.CompletedRoom -= LevelManager_CompletedRoom;
         }
 
-        private void Update()
-        {
-            foreach (var room in _levelGenerator.Rooms)
-            {
-             Debug.Log(room.IsCleared());   
-            }
-        }
 
         private void LevelManager_CompletedRoom()
         {
