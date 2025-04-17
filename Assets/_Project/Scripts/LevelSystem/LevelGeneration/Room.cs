@@ -51,7 +51,8 @@ namespace Scripts.LevelSystem.LevelGeneration
         {
             Debug.Log($"Room {gameObject.name} unlocked!");
             _door.Open();
-            LevelManager.Instance.CompletedRoom?.Invoke();
+            if (LevelManager.Instance)
+                LevelManager.Instance.CompletedRoom?.Invoke();
         }
 
         public bool IsCleared()

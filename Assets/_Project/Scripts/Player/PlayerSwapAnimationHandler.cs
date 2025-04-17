@@ -34,9 +34,14 @@ namespace Scripts.Player
 
         private float _lastHorizontalVelocity = 0f;
 
+        private void Start()
+        {
+            
+            _playerStatus.AnimationStateMachine().SetAnimator(_playerAnimator);
+        }
+
         private void OnEnable()
         {
-            _playerStatus.AnimationStateMachine().SetAnimator(_playerAnimator);
             _playerStatus.OnSwapToBall += PlayerStatus_SwapToBall;
             _playerMovement.DragStarted += PlayerMovement_DragStarted;
             _playerMovement.DragFinished += PlayerMovement_DragFinished;

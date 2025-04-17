@@ -83,7 +83,8 @@ namespace Scripts.Player
         public void ThrowRigidbody(Rigidbody2D rigidbody, Vector2 dragForce)
         {
             var forceMagnitude = Mathf.Min(dragForce.magnitude, _maxForceMagnitude);
-            rigidbody.AddForce(dragForce.normalized * (-forceMagnitude * _forceModifier), ForceMode2D.Impulse);
+            var currentVelocity = rigidbody.velocity.magnitude + forceMagnitude;
+            rigidbody.velocity = dragForce.normalized * (-forceMagnitude * _forceModifier);
         }
 
         private void OnCollisionEnter2D(Collision2D other)

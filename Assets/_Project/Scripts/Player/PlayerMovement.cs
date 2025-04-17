@@ -15,7 +15,6 @@ namespace Scripts.Player
         [SerializeField] private PlayerStatus _playerStatus;
         [SerializeField] private PlayerBallMovement _playerBallMovement;
         [SerializeField] private InputHandler _inputHandler;
-        [SerializeField] private float _defaultSpeed;
 
         [SerializeField] private PlayerDashController _playerDashController;
         public Action DragStarted;
@@ -61,7 +60,6 @@ namespace Scripts.Player
                     
                     break;
                 case PlayerState.Swapping:
-                    _rigidbody2D.velocity = Vector2.zero;
                     break;
                 default:
                     break;

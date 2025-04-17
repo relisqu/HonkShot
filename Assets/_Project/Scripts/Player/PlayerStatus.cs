@@ -8,10 +8,15 @@ namespace Scripts.Player
     public class PlayerStatus : MonoBehaviour
     {
         private PlayerState _playerState;
+        private PlayerState _preSwapState;
+        private PlayerState _preHiddenState;
         private AnimationStateMachine _animationStateMachine;
+
         [SerializeField] private GameObject _idlePlayerGameObject;
         [SerializeField] private GameObject _ballPlayerGameObject;
         [SerializeField] private HealthController _healthController;
+
+        private bool _isHidden;
 
         public PlayerState PlayerState => _playerState;
         public Action OnSwapToBall;
@@ -40,13 +45,12 @@ namespace Scripts.Player
             SetDefaultState();
         }
 
+
         public void SetDefaultState()
         {
             SetPlayerState(PlayerState.Idle);
             AnimationStateMachine().SetDefaultState(_playerState);
         }
-
-        private PlayerState _preSwapState;
 
         public void SetPlayerState(PlayerState playerState)
         {
@@ -58,7 +62,6 @@ namespace Scripts.Player
             if (_playerState == playerState) return;
 
             _playerState = playerState;
-            
             AnimationStateMachine().ChangeState(_playerState);
 
             switch (_playerState)
@@ -69,15 +72,43 @@ namespace Scripts.Player
                 case PlayerState.Swapping:
                     OnSwapToIdle?.Invoke();
                     break;
-
-                default:
-                    break;
             }
         }
 
         public void ResetSwapState()
         {
             SetPlayerState(_preSwapState);
+        }
+
+        public void HidePlayer()
+        {
+            if (_isHidden) return;
+
+            _isHidden = true;
+            _preHiddenState = _playerState;
+
+            CurrentGameObject.SetActive(false);
+        }
+
+        public void RevealPlayer()
+        {
+            if (!_isHidden) return;
+
+            _isHidden = false;
+
+            // Reactivate idle or ball object depending on stored state
+            if (_preHiddenState == PlayerState.Ball)
+            {
+                _ballPlayerGameObject.SetActive(true);
+                _idlePlayerGameObject.SetActive(false);
+            }
+            else
+            {
+                _idlePlayerGameObject.SetActive(true);
+                _ballPlayerGameObject.SetActive(false);
+            }
+
+            SetPlayerState(_preHiddenState);
         }
     }
 }

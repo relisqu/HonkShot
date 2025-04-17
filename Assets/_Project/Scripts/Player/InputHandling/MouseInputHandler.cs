@@ -62,7 +62,7 @@ namespace Scripts.Player.InputHandling
             OnDragStarted?.Invoke();
             _dragStartPos = (Vector2)_playerTransform.position;
             var currentPoint = (Vector2)_camera.ScreenToWorldPoint(_mousePositionAction.action.ReadValue<Vector2>());
-            _dragCurPos = currentPoint - _dragStartPos;
+            _dragStartPos = currentPoint;
         }
 
         private void OnDragRelease(InputAction.CallbackContext context)

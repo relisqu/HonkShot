@@ -31,6 +31,7 @@ GameObject:
   - component: {fileID: 4941326817299355536}
   - component: {fileID: 344756555288879489}
   - component: {fileID: 8510904863215499170}
+  - component: {fileID: 2659441165359654782}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -100,7 +101,6 @@ MonoBehaviour:
   _playerStatus: {fileID: 2410884018478326342}
   _playerBallMovement: {fileID: 2855041829269072723}
   _inputHandler: {fileID: 1987869121514748207}
-  _defaultSpeed: 200
   _playerDashController: {fileID: 2937765415697391777}
 --- !u!114 &2410884018478326342
 MonoBehaviour:
@@ -134,8 +134,8 @@ MonoBehaviour:
   _playerStatus: {fileID: 2410884018478326342}
   _playerDashController: {fileID: 2937765415697391777}
   _forceModifier: 15
-  _maxForceMagnitude: 6
-  _minBallForce: 1.5
+  _maxForceMagnitude: 9
+  _minBallForce: 3
   _additionalDragStartTime: 5
   _additionalDragForce: 0.3
 --- !u!114 &5510771135622167037
@@ -475,6 +475,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _healthController: {fileID: 3918436742719914326}
+--- !u!114 &2659441165359654782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 225159964537138388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60543cc636e64583bc348bde90f103fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _healthController: {fileID: 3918436742719914326}
+  _holeContactDamage: 20
 --- !u!1 &334979677366588079
 GameObject:
   m_ObjectHideFlags: 0
