@@ -46,10 +46,8 @@ namespace Scripts.Player.Dash
                 if (_currentDashCount < _maxDashCount)
                 {
                     AddDash();
-                    yield return new WaitForSeconds(1 / _dashRegenerationRate);
                 }
-
-                yield return null;
+                yield return new WaitForSeconds(1 / _dashRegenerationRate);
             }
 
             yield return null;

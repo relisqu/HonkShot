@@ -22,6 +22,8 @@ namespace Scripts.Player
         [FormerlySerializedAs("_maxForce")] [SerializeField]
         private float _maxForceMagnitude;
 
+        [SerializeField] private float _maxDragForceMagnitude = 20f;
+
         [SerializeField] private float _minBallForce;
 
         [Header("Ball Movement Parameters")] [Space] [SerializeField]
@@ -80,11 +82,25 @@ namespace Scripts.Player
             _throwStartTime = Time.time;
         }
 
+        public float GetDragVelocityMagnitude(Rigidbody2D rigidbody, Vector2 dragForce)
+        {
+            var forceMagnitude = Mathf.Min(dragForce.magnitude, _maxForceMagnitude) * _forceModifier;
+            var currentVelocity = rigidbody.velocity.magnitude;
+            Debug.Log(rigidbody.velocity + " " + currentVelocity + " " + forceMagnitude);
+            if (currentVelocity + forceMagnitude > _maxDragForceMagnitude)
+            {
+                forceMagnitude = Mathf.Max(0, _maxDragForceMagnitude - currentVelocity);
+            }
+
+            Debug.Log("Result " + currentVelocity + " " + forceMagnitude);
+
+            return currentVelocity + forceMagnitude;
+        }
+
         public void ThrowRigidbody(Rigidbody2D rigidbody, Vector2 dragForce)
         {
-            var forceMagnitude = Mathf.Min(dragForce.magnitude, _maxForceMagnitude);
-            var currentVelocity = rigidbody.velocity.magnitude + forceMagnitude;
-            rigidbody.velocity = dragForce.normalized * (-forceMagnitude * _forceModifier);
+            var currentVelocity = GetDragVelocityMagnitude(rigidbody, dragForce);
+            rigidbody.velocity = -currentVelocity * dragForce.normalized;
         }
 
         private void OnCollisionEnter2D(Collision2D other)

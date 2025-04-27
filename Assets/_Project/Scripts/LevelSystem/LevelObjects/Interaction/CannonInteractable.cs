@@ -26,12 +26,12 @@ namespace Scripts.LevelSystem.LevelObjects.Interaction
             if (_collider != null)
                 _collider.enabled = false;
 
-            //gameObject.SetActive(false);
+            gameObject.SetActive(false);
         }
 
         public virtual void OnExitCannon(Vector2 shootDirection, float shootForce)
         {
-           // gameObject.SetActive(true);
+            gameObject.SetActive(true);
 
             if (_rb != null)
             {

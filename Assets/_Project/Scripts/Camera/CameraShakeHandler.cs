@@ -8,7 +8,7 @@ namespace Scripts.Camera
 {
     public class CameraShakeHandler : MonoBehaviour
     {
-        [SerializeField] private CinemachineVirtualCamera _virtualCamera;
+        [SerializeField] public CinemachineVirtualCamera _virtualCamera;
 
         public static CameraShakeHandler Instance;
 

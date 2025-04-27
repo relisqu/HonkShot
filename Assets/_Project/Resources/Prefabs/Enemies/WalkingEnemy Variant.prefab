@@ -5344,6 +5344,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 343632519465822393, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
+      propertyPath: _holeContactDamage
+      value: 35
+      objectReference: {fileID: 0}
     - target: {fileID: 589001987056322555, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
@@ -5413,22 +5417,8 @@ PrefabInstance:
       addedObject: {fileID: 4061638289939788687}
     - targetCorrespondingSourceObject: {fileID: 5852712469276863939, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1063197356563220244}
-    - targetCorrespondingSourceObject: {fileID: 5852712469276863939, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 4640674561603493434}
   m_SourcePrefab: {fileID: 100100000, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
---- !u!114 &1834656323582462977 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7693177714894649285, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
-  m_PrefabInstance: {fileID: 8337757664607058884}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2489550034644669959}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6a970c6e1874b059cac451be3c32112, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2489550034644669959 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5852712469276863939, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
@@ -5501,10 +5491,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efb27c1c1d41401190991f3944cb8993, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pathPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  _pathPoints: []
   _walkingType: 1
   _moveSpeed: 1.5
   _prefireSpriteRenderer: {fileID: 6575056289791866893}
@@ -5576,20 +5563,6 @@ CapsuleCollider2D:
   m_Offset: {x: -0.0027351836, y: 0.1203397}
   m_Size: {x: 0.5131731, y: 0.2232622}
   m_Direction: 1
---- !u!114 &1063197356563220244
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2489550034644669959}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60543cc636e64583bc348bde90f103fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _healthController: {fileID: 1834656323582462977}
-  _holeContactDamage: 20
 --- !u!114 &4640674561603493434
 MonoBehaviour:
   m_ObjectHideFlags: 0

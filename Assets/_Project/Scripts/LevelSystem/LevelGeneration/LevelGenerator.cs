@@ -8,6 +8,7 @@ namespace Scripts.LevelSystem.LevelGeneration
 {
     public class LevelGenerator : MonoBehaviour
     {
+        [SerializeField] private StagePoolSO _tutorialPoolSO;
         [SerializeField] private StagePoolSO _stagePoolSO;
         [SerializeField] private int _roomCount = 5;
         [SerializeField] private float _roomHeight = 10f;
@@ -21,10 +22,6 @@ namespace Scripts.LevelSystem.LevelGeneration
             if (DebugMode.Instance.GeneratingLevels)
             {
                 GenerateLevel();
-            }
-            else
-            {
-                AstarPath.active.Scan();
             }
         }
 
@@ -43,7 +40,6 @@ namespace Scripts.LevelSystem.LevelGeneration
                 spawnPosition += Vector3.up * _roomHeight;
             }
 
-            AstarPath.active.Scan();
             foreach (var room in _spawnedRooms)
             {
                 room.gameObject.SetActive(false);

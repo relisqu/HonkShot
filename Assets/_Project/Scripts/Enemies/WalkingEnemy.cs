@@ -47,7 +47,7 @@ namespace Scripts.Enemies
 
         private bool _isAttacking = false;
 
-        private void Start()
+        private void OnEnable()
         {
             if (_pathPoints.Count == 0)
             {

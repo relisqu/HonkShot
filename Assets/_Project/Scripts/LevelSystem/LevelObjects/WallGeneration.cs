@@ -30,6 +30,19 @@ namespace Scripts.LevelSystem.LevelObjects
         [Button]
         public void GenerateWalls()
         {
+            Spline levelSprite = _levelField.spline;
+
+            for (int i = 0; i < levelSprite.GetPointCount(); i++)
+            {
+                // Check if point is a corner
+                if (levelSprite.GetCorner(i))
+                {
+                    levelSprite.SetHeight(i, 0.1f);
+                }
+            }
+
+            // Update the SpriteShape after modifications
+            _levelField.RefreshSpriteShape();
             if (_wallPrefab == null || _wallsContainer == null || _levelField == null)
             {
                 Debug.LogError("Please assign all required references.");

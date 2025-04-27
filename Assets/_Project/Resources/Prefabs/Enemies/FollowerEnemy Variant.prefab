@@ -5185,15 +5185,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08c555eb8623dad469117542bae91a89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _movementSpeed: 4
-  _nextWaypointDistance: 0.2
+  _movementSpeed: 80
+  _avoidanceForce: 40
+  _raycastDistance: 2
+  _avoidanceCheckInterval: 0.2
+  _obstacleMask:
+    serializedVersion: 2
+    m_Bits: 640
   _attackRange: 2
   _attackInterval: 1
   _attackWarningTime: 0.5
   _damage: 15
   _attackParticles: {fileID: 8953944627575627259}
   _prefireSpriteColor: {r: 0, g: 0, b: 0, a: 0}
-  _seeker: {fileID: 7487574990984273981}
   _rb: {fileID: 2487992082099074866}
   _animator: {fileID: 6950300862890426516}
 --- !u!114 &7487574990984273981
