@@ -86,13 +86,10 @@ namespace Scripts.Player
         {
             var forceMagnitude = Mathf.Min(dragForce.magnitude, _maxForceMagnitude) * _forceModifier;
             var currentVelocity = rigidbody.velocity.magnitude;
-            Debug.Log(rigidbody.velocity + " " + currentVelocity + " " + forceMagnitude);
             if (currentVelocity + forceMagnitude > _maxDragForceMagnitude)
             {
                 forceMagnitude = Mathf.Max(0, _maxDragForceMagnitude - currentVelocity);
             }
-
-            Debug.Log("Result " + currentVelocity + " " + forceMagnitude);
 
             return currentVelocity + forceMagnitude;
         }

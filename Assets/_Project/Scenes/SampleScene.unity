@@ -1564,10 +1564,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _line: {fileID: 248256112}
   _maxPhysicsFrameIterations: 100
+  _simulationStepMultiplier: 2
+  _maxBounces: 3
   _inputHandler: {fileID: 5850454434361405571}
   _playerMovement: {fileID: 5850454434361405551}
   _playerBallMovement: {fileID: 5850454434361405533}
   _playerGhostProjectile: {fileID: 2079709955187385698, guid: 72030431323d65b46aa8d022fd951b8d, type: 3}
+  _simulationRefreshInterval: 0.05
 --- !u!1 &923077866
 GameObject:
   m_ObjectHideFlags: 0
@@ -3467,7 +3470,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6146716230266282233, guid: b8dcb691fb914fa439c6b7b7d3e7a75a, type: 3}
       propertyPath: m_BlockingMask.m_Bits
-      value: 4294967295
+      value: 2147485687
       objectReference: {fileID: 0}
     - target: {fileID: 6235996582248860465, guid: b8dcb691fb914fa439c6b7b7d3e7a75a, type: 3}
       propertyPath: m_IsActive

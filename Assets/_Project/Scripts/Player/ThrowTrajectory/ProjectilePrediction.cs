@@ -42,8 +42,11 @@ namespace Scripts.Player
         private Vector2 _lastDragDirection;
         private bool _needsRecalculation = true;
         private const float _dragChangeThreshold = 0.1f;
-        private int _frameCounter;
-        private const int _framesBetweenSimulations = 3;
+
+        [SerializeField]
+        private float _simulationRefreshInterval = 0.05f; // seconds (unscaled) between trajectory refreshes
+
+        private float _nextSimTime;
 
         // Pooled projectile
         private PlayerGhostProjectile _pooledGhostProjectile;
@@ -98,6 +101,46 @@ namespace Scripts.Player
             TryCreateSimulationSceneIfNeeded();
         }
 
+        /// <summary>Recursively copies position, rotation and scale from src → dst hierarchy.</summary>
+        /// <summary>
+        /// Recursively copies position/rotation/scale from src → dst hierarchy.
+        /// If the source hierarchy lost some children since the clone was made,
+        /// the corresponding ghost children are de‑activated so that they no longer
+        /// contribute to collisions in the simulation scene.
+        /// </summary>
+        private static void CopyTransformRecursive(Transform src, Transform dst)
+        {
+            if (!src)
+            {
+                if (dst.gameObject.activeSelf) dst.gameObject.SetActive(false);
+                return;
+            }
+
+            if (!dst.gameObject.activeSelf) dst.gameObject.SetActive(true);
+
+            dst.position   = src.position;
+            dst.rotation   = src.rotation;
+            dst.localScale = src.localScale;
+
+            int srcChildren = src.childCount;
+            int dstChildren = dst.childCount;
+            int common      = Mathf.Min(srcChildren, dstChildren);
+
+            // Sync the children that still exist in both hierarchies
+            for (int i = 0; i < common; i++)
+            {
+                CopyTransformRecursive(src.GetChild(i), dst.GetChild(i));
+            }
+
+            // Disable ghost children that no longer have a source counterpart
+            for (int i = common; i < dstChildren; i++)
+            {
+                var ghostChild = dst.GetChild(i);
+                if (ghostChild.gameObject.activeSelf)
+                    ghostChild.gameObject.SetActive(false);
+            }
+        }
+        
         private void OnDragFinished(Vector2 _)
         {
             _isDragging = false;
@@ -125,16 +168,12 @@ namespace Scripts.Player
                 }
                 else if (pair.Value)
                 {
-                    pair.Value.gameObject.SetActive(true);
-                    pair.Value.position = pair.Key.position;
-                    pair.Value.rotation = pair.Key.rotation;
+                    CopyTransformRecursive(pair.Key, pair.Value);
                 }
             }
 
             if (_isDragging)
             {
-                _frameCounter++;
-
                 Vector2 currentDrag = _inputHandler.GetCurrentDrag();
                 if (Vector2.Distance(currentDrag, _lastDragDirection) > _dragChangeThreshold)
                 {
@@ -142,8 +181,11 @@ namespace Scripts.Player
                     _needsRecalculation = true;
                 }
 
-                if (_needsRecalculation || _frameCounter % _framesBetweenSimulations == 0)
+                if (_needsRecalculation || Time.unscaledTime >= _nextSimTime)
+                {
                     SimulateTrajectory();
+                    _nextSimTime = Time.unscaledTime + _simulationRefreshInterval;
+                }
             }
         }
 
@@ -158,21 +200,17 @@ namespace Scripts.Player
             _physicsScene = _simulationScene.GetPhysicsScene2D();
 
             foreach (Transform obj in LevelManager.Instance.CurrentRoom.ObstaclesTransform)
-                CloneHierarchy(obj, _simulationScene);
+                if (ShouldBeCloned(obj))
+                    CloneHierarchy(obj, _simulationScene);
         }
 
         private void CloneHierarchy(Transform source, Scene targetScene)
         {
             var ghost = Instantiate(source.gameObject, source.position, source.rotation);
+            DisableBehavioursRecursive(ghost.transform);
             SetLayerRecursively(ghost.transform, _simulationGhostLayer);
             SceneManager.MoveGameObjectToScene(ghost, targetScene);
             _spawnedObjects[source] = ghost.transform;
-
-            for (int i = 0; i < source.childCount; i++)
-            {
-                var child = source.GetChild(i);
-                if (ShouldBeCloned(child)) CloneHierarchy(child, targetScene);
-            }
         }
 
         private void SetLayerRecursively(Transform root, int layer)
@@ -182,15 +220,31 @@ namespace Scripts.Player
                 SetLayerRecursively(root.GetChild(i), layer);
         }
 
-        private static readonly string[] _visualPrefixes = { "visual", "canvas" };
+
+        private static readonly string[] _visualPrefixes = { "visual", "canvas", "shadow", "particle" };
 
         private bool ShouldBeCloned(Transform t)
         {
+            if (_spawnedObjects.ContainsKey(t)) return false;
             string name = t.name.ToLower().Trim();
             foreach (var p in _visualPrefixes)
-                if (name.StartsWith(p))
+                if (name.Contains(p))
                     return false;
-            return t.GetComponent<Collider2D>();
+            return t.gameObject.activeInHierarchy;
+        }
+
+
+        /// <summary>
+        /// Disables all MonoBehaviour components on the ghost clone so that AI, audio, and damage scripts do not
+        /// affect gameplay, while keeping colliders & rigidbodies active for physics‑only simulation.
+        /// </summary>
+        private static void DisableBehavioursRecursive(Transform root)
+        {
+            foreach (var mb in root.GetComponentsInChildren<MonoBehaviour>(false))
+            {
+                // keep this script (Projection) or other whitelisted ones if ever needed
+                mb.enabled = false;
+            }
         }
 
         // ─────────────────────────── Trajectory sim ──────────────────────
@@ -220,7 +274,7 @@ namespace Scripts.Player
             _playerBallMovement.ThrowRigidbody(rb, _lastDragDirection);
 
             // simulation variables
-            float simDt = Time.fixedUnscaledDeltaTime * _simulationStepMultiplier;
+            float simDt = Time.fixedUnscaledDeltaTime;
             int idx = 0;
             int bounceCount = 0;
             Vector2 prevVelocity = rb.velocity;
@@ -232,12 +286,11 @@ namespace Scripts.Player
             {
                 _physicsScene.Simulate(simDt);
                 proj.BouncingObject.SetCurrentVelocity(rb.velocity);
-
                 _line.SetPosition(idx++, proj.transform.position);
                 if (rb.velocity.sqrMagnitude > 0.0001f && Vector2.Angle(prevVelocity, rb.velocity) > 5f)
                 {
+                    Debug.Log(idx);
                     bounceCount++;
-                    Debug.Log(bounceCount + " " + idx);
                 }
 
                 prevVelocity = rb.velocity;
