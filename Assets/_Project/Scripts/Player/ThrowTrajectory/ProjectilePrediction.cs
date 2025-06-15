@@ -27,6 +27,8 @@ namespace Scripts.Player
         private const float _dragChangeThreshold = 0.1f;
 
         private PlayerGhostProjectile _pooledGhostProjectile;
+        private int _frameCounter = 0;
+        private const int _framesBetweenSimulations = 3;
 
         private void OnEnable()
         {
@@ -72,8 +74,13 @@ namespace Scripts.Player
 
             foreach (var pair in _spawnedObjects)
             {
-                if (pair.Key && pair.Value)
+                if (!pair.Key)
                 {
+                    if (pair.Value) pair.Value.gameObject.SetActive(false);
+                }
+                else if (pair.Value)
+                {
+                    pair.Value.gameObject.SetActive(true);
                     pair.Value.position = pair.Key.position;
                     pair.Value.rotation = pair.Key.rotation;
                 }
@@ -81,6 +88,8 @@ namespace Scripts.Player
 
             if (_isDragging)
             {
+                _frameCounter++;
+
                 Vector2 currentDrag = _inputHandler.GetCurrentDrag();
                 if (Vector2.Distance(currentDrag, _lastDragDirection) > _dragChangeThreshold)
                 {
@@ -88,7 +97,7 @@ namespace Scripts.Player
                     _needsRecalculation = true;
                 }
 
-                if (_needsRecalculation)
+                if (_needsRecalculation && _frameCounter % _framesBetweenSimulations == 0)
                 {
                     SimulateTrajectory();
                 }
@@ -106,10 +115,8 @@ namespace Scripts.Player
 
             foreach (Transform obj in LevelManager.Instance.CurrentRoom.ObstaclesTransform)
             {
-                if (IsGhostRelevant(obj))
-                {
+                if (ShouldBeCloned(obj))
                     CloneHierarchy(obj, _simulationScene);
-                }
             }
         }
 
@@ -124,21 +131,25 @@ namespace Scripts.Player
             for (int i = 0; i < source.childCount; i++)
             {
                 var child = source.GetChild(i);
-                if (IsGhostRelevant(child))
+                if (ShouldBeCloned(child))
                     CloneHierarchy(child, targetScene);
             }
         }
 
-        private bool IsGhostRelevant(Transform obj)
+        const string VISUAL = "visual";
+        const string CANVAS = "canvas";
+
+        private bool ShouldBeCloned(Transform target)
         {
-            return !obj.gameObject.isStatic && obj.GetComponent<Collider2D>() != null;
+            return !target.name.ToLower().Trim().StartsWith(VISUAL) &&
+                   !target.name.ToLower().Trim().StartsWith(CANVAS);
         }
 
         private void SimulateTrajectory()
         {
             _needsRecalculation = false;
 
-            if (!_pooledGhostProjectile)
+            if (_pooledGhostProjectile == null)
             {
                 _pooledGhostProjectile = Instantiate(_playerGhostProjectile);
                 SetLayerRecursively(_pooledGhostProjectile.transform, _simulationGhostLayer);
@@ -152,6 +163,7 @@ namespace Scripts.Player
             projectile.transform.rotation = Quaternion.identity;
 
             var rb = projectile.Rigidbody2D;
+            rb.simulated = true;
             rb.velocity = Vector2.zero;
             rb.angularVelocity = 0f;
 
@@ -159,13 +171,14 @@ namespace Scripts.Player
             projectile.BouncingObject.SetCurrentVelocity(rb.velocity);
 
             _line.positionCount = _maxPhysicsFrameIterations;
-            for (int i = 0; i < _maxPhysicsFrameIterations; i++)
+            for (int i = 0; i < _maxPhysicsFrameIterations / 2; i++)
             {
-                _physicsScene.Simulate(Time.fixedUnscaledDeltaTime);
+                _physicsScene.Simulate(Time.fixedUnscaledDeltaTime * 2);
                 projectile.BouncingObject.SetCurrentVelocity(rb.velocity);
                 _line.SetPosition(i, projectile.transform.position);
             }
 
+            rb.simulated = false;
             projectile.gameObject.SetActive(false);
         }
 
