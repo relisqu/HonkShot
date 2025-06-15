@@ -29,8 +29,7 @@ namespace Scripts.LevelSystem.LevelObjects
             // Cancel any existing tween for this transform
             if (_activeTweens.TryGetValue(targetTransform, out var existingTween))
             {
-                existingTween.Kill();
-                ForceResetTransform(targetTransform);
+                return;
             }
 
             holeDamageable.GetComponent<Animator>().speed = 0;
