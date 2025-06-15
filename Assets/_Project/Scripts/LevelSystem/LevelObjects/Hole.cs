@@ -61,16 +61,18 @@ namespace Scripts.LevelSystem.LevelObjects
 
         private void TeleportObject(Transform targetTransform, HoleDamageable holeDamageable)
         {
+            holeDamageable.TakeDamage();
+            if (!holeDamageable || !holeDamageable.isActiveAndEnabled || !holeDamageable.HealthController.IsAlive)
+                return;
+
+            ForceResetTransform(targetTransform);
+            targetTransform.GetComponent<Animator>().speed = 1;
             Transform spawn = LevelManager.Instance.CurrentRoom.SpawnPointTransform;
             if (spawn != null)
             {
                 Vector2 offset = Random.insideUnitCircle * teleportOffset;
                 targetTransform.position = spawn.position + (Vector3)offset;
             }
-
-            holeDamageable.TakeDamage();
-            ForceResetTransform(targetTransform);
-            targetTransform.GetComponent<Animator>().speed = 1;
         }
 
         private void ForceResetTransform(Transform target)
