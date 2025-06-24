@@ -327,7 +327,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7693177714894649285, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
       propertyPath: _defaultHealth
-      value: 25
+      value: 12.5
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5324517961717222888, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
@@ -346,7 +346,21 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5852712469276863939, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 703417576114919930}
+    - targetCorrespondingSourceObject: {fileID: 5852712469276863939, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1472542978482411911}
   m_SourcePrefab: {fileID: 100100000, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
+--- !u!114 &585702595512133030 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5556656538779411491, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
+  m_PrefabInstance: {fileID: 4989391104031457669}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1442526534013627462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db10873588a04fc9b4428b8fa464850c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1442526534013627462 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5852712469276863939, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
@@ -386,6 +400,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 5908898368358605036}
+--- !u!114 &1472542978482411911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1442526534013627462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d886bf8670f5a8b4486f88c0ccf4b84d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _chaseRange: 5
+  _usesFasterSpeedCloseToPlayer: 1
+  _minSpeedCoeff: 0
+  _moveSpeed: 1
+  _obstacleMask:
+    serializedVersion: 2
+    m_Bits: 128
+  _enemyHealth: {fileID: 585702595512133030}
 --- !u!4 &5026559839346656279 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 70946318289896850, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
