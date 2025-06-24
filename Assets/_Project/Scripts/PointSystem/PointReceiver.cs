@@ -25,8 +25,11 @@ namespace Scripts.PointSystem
             new Dictionary<AttackPointsObjectType, int>();
 
         private Dictionary<string, float> _multipliers = new Dictionary<string, float>();
-        public float PointsMultiplier {
-            get {
+
+        public float PointsMultiplier
+        {
+            get
+            {
                 float result = 1f;
                 foreach (var m in _multipliers.Values)
                     result *= m;
@@ -50,15 +53,24 @@ namespace Scripts.PointSystem
         }
 
 
-        public float AveragePointsPerBounce => _currentPointsAttack / _bouncesCount;
+        public float AveragePointsPerBounce => _maxPointsCount * 1f / _bouncesCount;
 
         private int _bouncesCount = 0;
 
         public void GeneratePointsParticle(int points)
         {
             var textParticle = new UIFactory().CreateUITextParticle(transform.position);
-            textParticle.ShowText(Mathf.Sign(points) > 0 ? $"+{points}" : $"-{points}");
-            textParticle.SetScale(points / AveragePointsPerBounce);
+            textParticle.ShowText(Mathf.Sign(points) >= 0 ? $"+{points}" : $"-{points}");
+            Debug.Log(AveragePointsPerBounce);
+            if (AveragePointsPerBounce <= 0)
+            {
+                textParticle.SetScale(1f);
+            }
+            else
+            {
+                textParticle.SetScale(points / AveragePointsPerBounce);
+            }
+
             AudioManager.Instance.PlayOneShot(SoundChanelType.UI, "scorePoint", points / AveragePointsPerBounce);
         }
 
@@ -70,10 +82,10 @@ namespace Scripts.PointSystem
 
         public void AddPoints(AttackPointsObjectType attackPointsObjectType, float points)
         {
-            _currentPointsAttack += points * PointsMultiplier;
+            _currentPointsAttack += points;
             _bouncesCount++;
             ChangedCurrentPoints?.Invoke();
-            GeneratePointsParticle((int)points);
+            GeneratePointsParticle((int)(points*PointsMultiplier));
 
             if (attackPointsObjectType == AttackPointsObjectType.None)
                 return;
@@ -103,13 +115,14 @@ namespace Scripts.PointSystem
         public float GetAttackPoints()
         {
             var coeff = 1 + _pointObjectTypes.Count * _perTypeCoefficient;
-            return _currentPointsAttack * coeff * PointsMultiplier;
+            return coeff * PointsMultiplier* _currentPointsAttack;
         }
 
         public float GetBaseDamage()
         {
             return _baseDamage;
         }
+
         public void ResetAttack()
         {
             _bouncesCount = 0;
