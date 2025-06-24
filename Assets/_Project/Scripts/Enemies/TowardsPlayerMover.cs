@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Scripts.PointSystem;
+using UnityEngine.UI;
 
 namespace Scripts.Enemies
 {
@@ -68,4 +69,5 @@ namespace Scripts.Enemies
             Gizmos.DrawWireSphere(transform.position, _chaseRange);
         }
     }
+
 }

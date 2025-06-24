@@ -15,6 +15,7 @@ namespace Scripts.Player
         [SerializeField] private InputHandler _inputHandler;
         [SerializeField] private PlayerStatus _playerStatus;
         [SerializeField] private PlayerDashController _playerDashController;
+        [SerializeField] private GooseFireSystem _gooseFireSystem;
 
         [Header("Input Handling Parameters")] [Space] [SerializeField]
         private float _forceModifier;
@@ -33,9 +34,16 @@ namespace Scripts.Player
         public float MaxForceMagnitude => _maxForceMagnitude;
 
         private float _throwStartTime;
+        private float _prevSpeed;
 
         private float _defaultDragValue;
         public float CurrentSpeed => _rigidbody2D.velocity.magnitude;
+
+        private void Awake()
+        {
+            if (_gooseFireSystem == null)
+                _gooseFireSystem = GetComponent<GooseFireSystem>();
+        }
 
         private void Start()
         {
@@ -44,10 +52,19 @@ namespace Scripts.Player
 
         private void Update()
         {
+            float currentSpeed = _rigidbody2D.velocity.magnitude;
+            if (_gooseFireSystem)
+            {
+                if (currentSpeed > _prevSpeed + 0.01f)
+                    _gooseFireSystem.OnAcceleration();
+                else if (currentSpeed < _prevSpeed - 0.01f)
+                    _gooseFireSystem.OnDeceleration();
+            }
+            _prevSpeed = currentSpeed;
+
             if (_playerStatus.PlayerState == PlayerState.Ball && Time.time - _throwStartTime > _additionalDragStartTime)
             {
                 var additionalDragForce = Mathf.Clamp01(_additionalDragForce * Time.deltaTime);
-                Debug.Log($"START ADDITIONAL DRAG {additionalDragForce * additionalDragForce}");
                 _rigidbody2D.drag += additionalDragForce * additionalDragForce;
             }
             else
@@ -80,6 +97,8 @@ namespace Scripts.Player
             ThrowRigidbody(_rigidbody2D, dragForce);
             _playerStatus.SetPlayerState(PlayerState.Ball);
             _throwStartTime = Time.time;
+            if (_gooseFireSystem != null)
+                _gooseFireSystem.OnLaunchOrAcceleration();
         }
 
         public float GetDragVelocityMagnitude(Rigidbody2D rigidbody, Vector2 dragForce)

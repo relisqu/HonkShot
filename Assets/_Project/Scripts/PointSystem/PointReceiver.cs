@@ -24,6 +24,26 @@ namespace Scripts.PointSystem
         private Dictionary<AttackPointsObjectType, int> _pointObjectTypes =
             new Dictionary<AttackPointsObjectType, int>();
 
+        private Dictionary<string, float> _multipliers = new Dictionary<string, float>();
+        public float PointsMultiplier {
+            get {
+                float result = 1f;
+                foreach (var m in _multipliers.Values)
+                    result *= m;
+                return result;
+            }
+        }
+
+        public void AddMultiplier(string key, float value)
+        {
+            _multipliers[key] = value;
+        }
+
+        public void RemoveMultiplier(string key)
+        {
+            _multipliers.Remove(key);
+        }
+
         private void Awake()
         {
             Instance = this;
@@ -50,7 +70,7 @@ namespace Scripts.PointSystem
 
         public void AddPoints(AttackPointsObjectType attackPointsObjectType, float points)
         {
-            _currentPointsAttack += points;
+            _currentPointsAttack += points * PointsMultiplier;
             _bouncesCount++;
             ChangedCurrentPoints?.Invoke();
             GeneratePointsParticle((int)points);
@@ -83,7 +103,7 @@ namespace Scripts.PointSystem
         public float GetAttackPoints()
         {
             var coeff = 1 + _pointObjectTypes.Count * _perTypeCoefficient;
-            return _currentPointsAttack * coeff;
+            return _currentPointsAttack * coeff * PointsMultiplier;
         }
 
         public float GetBaseDamage()

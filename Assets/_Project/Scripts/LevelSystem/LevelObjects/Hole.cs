@@ -24,6 +24,8 @@ namespace Scripts.LevelSystem.LevelObjects
         {
             if (!collision.TryGetComponent(out HoleDamageable holeDamageable)) return;
 
+            if (holeDamageable.HealthController.IsInvincible) return;
+            
             var targetTransform = holeDamageable.transform;
 
             // Cancel any existing tween for this transform

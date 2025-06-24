@@ -17,10 +17,19 @@ namespace Scripts.Player
         [SerializeField] private InputHandler _inputHandler;
 
         [SerializeField] private PlayerDashController _playerDashController;
+        [SerializeField] private GooseFireSystem _gooseFireSystem;
+
         public Action DragStarted;
         public Action<Vector2> DragFinished;
 
         private bool _isDragging;
+        private float _prevSpeed;
+
+        private void Awake()
+        {
+            if (_gooseFireSystem == null)
+                _gooseFireSystem = GetComponent<GooseFireSystem>();
+        }
 
         private void OnEnable()
         {
@@ -54,6 +63,15 @@ namespace Scripts.Player
         }
         private void FixedUpdate()
         {
+            float currentSpeed = _rigidbody2D.velocity.magnitude;
+            if (_gooseFireSystem != null)
+            {
+                if (currentSpeed > _prevSpeed + 0.01f)
+                    _gooseFireSystem.OnAcceleration();
+                else if (currentSpeed < _prevSpeed - 0.01f)
+                    _gooseFireSystem.OnDeceleration();
+            }
+            _prevSpeed = currentSpeed;
             switch (_playerStatus.PlayerState)
             {
                 case PlayerState.Ball:
