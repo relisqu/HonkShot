@@ -14,6 +14,7 @@ namespace Scripts.LevelSystem.LevelGeneration
         [SerializeField] private float _roomHeight = 10f;
 
         private List<Room> _spawnedRooms = new List<Room>();
+        private List<RoomModel> _shuffledRoomModels = new List<RoomModel>();
         private bool _levelLocked = true;
         public IReadOnlyList<Room> Rooms => _spawnedRooms;
 
@@ -25,47 +26,47 @@ namespace Scripts.LevelSystem.LevelGeneration
             }
         }
 
-        private void GenerateLevel()
+        public void GenerateLevel()
         {
+            ClearRooms();
+            ShuffleRoomModels();
             Vector3 spawnPosition = Vector3.zero;
-
-            for (int i = 0; i < _roomCount; i++)
+            for (int i = 0; i < _roomCount && i < _shuffledRoomModels.Count; i++)
             {
-                var selectedRoom = GetRandomRoom();
-                if (selectedRoom == null) continue;
-
-                Room roomInstance = Instantiate(selectedRoom, spawnPosition, Quaternion.identity, transform);
+                var model = _shuffledRoomModels[i];
+                if (model.RoomPrefab == null) continue;
+                Room roomInstance = Instantiate(model.RoomPrefab, spawnPosition, Quaternion.identity, transform);
                 if (_spawnedRooms.Count > 0) _spawnedRooms[^1].SetNextRoom(roomInstance);
                 _spawnedRooms.Add(roomInstance);
             }
-
             foreach (var room in _spawnedRooms)
             {
                 room.gameObject.SetActive(false);
             }
         }
 
-        private Room GetRandomRoom()
+        private void ShuffleRoomModels()
         {
-            float totalChance = 0f;
-            foreach (var entry in _stagePoolSO.RoomModels)
+            _shuffledRoomModels.Clear();
+            _shuffledRoomModels.AddRange(_stagePoolSO.RoomModels);
+            var rng = new System.Random();
+            int n = _shuffledRoomModels.Count;
+            while (n > 1)
             {
-                totalChance += entry.SpawnChance;
+                n--;
+                int k = rng.Next(n + 1);
+                (_shuffledRoomModels[k], _shuffledRoomModels[n]) = (_shuffledRoomModels[n], _shuffledRoomModels[k]);
             }
+        }
 
-            float randomPoint = Random.value * totalChance;
-            float cumulativeChance = 0f;
-
-            foreach (var entry in _stagePoolSO.RoomModels)
+        public void ClearRooms()
+        {
+            foreach (var room in _spawnedRooms)
             {
-                cumulativeChance += entry.SpawnChance;
-                if (randomPoint <= cumulativeChance)
-                {
-                    return entry.RoomPrefab;
-                }
+                if (room != null)
+                    Destroy(room.gameObject);
             }
-
-            return null;
+            _spawnedRooms.Clear();
         }
 
         private void UnlockLevel()

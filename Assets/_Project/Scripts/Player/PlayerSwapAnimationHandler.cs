@@ -8,6 +8,7 @@ using Scripts.Player.InputHandling;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
+using System.Collections;
 
 namespace Scripts.Player
 {
@@ -41,6 +42,9 @@ namespace Scripts.Player
         private Tweener _dragShakeTweener;
         private TweenerCore<float, float, FloatOptions> _slowdownTween;
         private Tweener _zoomTween;
+
+        private Coroutine _sweatEmitRoutine;
+        private bool _isEmittingSweat = false;
 
         private void Start()
         {
@@ -83,7 +87,6 @@ namespace Scripts.Player
 
             HandleCharacterScaling();
             HandleCameraZoom();
-            EmitSweatParticles();
         }
 
         private void HandleCharacterScaling()
@@ -131,6 +134,7 @@ namespace Scripts.Player
             _originalSize = _virtualCamera.m_Lens.OrthographicSize;
             _playerAnimator.SetTrigger(DragStart);
             SlowDownGame();
+            StartSweatEmission();
         }
 
         private void PlayerMovement_DragFinished(Vector2 _)
@@ -138,6 +142,7 @@ namespace Scripts.Player
             ResetCameraZoom();
             ResetCharacterScale();
             ResetTimeScale();
+            StopSweatEmission();
         }
 
         #endregion
@@ -172,16 +177,6 @@ namespace Scripts.Player
         #endregion
 
         #region Utility Functions
-
-        private void EmitSweatParticles()
-        {
-            var dragMagnitude = _inputHandler.GetCurrentDrag().magnitude;
-            var forceMagnitude = Mathf.Min(dragMagnitude, _playerBallMovement.MaxForceMagnitude);
-            var forceScale = forceMagnitude / _playerBallMovement.MaxForceMagnitude;
-
-            var randomValue = Random.Range(0.4f, forceScale * 3f);
-            _playerSweatParticleSystem.Emit((int)randomValue);
-        }
 
         private void SlowDownGame()
         {
@@ -238,5 +233,37 @@ namespace Scripts.Player
         }
 
         #endregion
+
+        private void StartSweatEmission()
+        {
+            if (_sweatEmitRoutine == null)
+            {
+                _isEmittingSweat = true;
+                _sweatEmitRoutine = StartCoroutine(EmitSweatParticlesRoutine());
+            }
+        }
+
+        private void StopSweatEmission()
+        {
+            _isEmittingSweat = false;
+            if (_sweatEmitRoutine != null)
+            {
+                StopCoroutine(_sweatEmitRoutine);
+                _sweatEmitRoutine = null;
+            }
+        }
+
+        private IEnumerator EmitSweatParticlesRoutine()
+        {
+            while (_isEmittingSweat)
+            {
+                var dragMagnitude = _inputHandler.GetCurrentDrag().magnitude;
+                var forceMagnitude = Mathf.Min(dragMagnitude, _playerBallMovement.MaxForceMagnitude);
+                var forceScale = forceMagnitude / _playerBallMovement.MaxForceMagnitude;
+                var randomValue = Random.Range(0.4f, forceScale * 3f);
+                _playerSweatParticleSystem.Emit((int)randomValue);
+                yield return new WaitForSeconds(0.01f); // Adjust interval as needed
+            }
+        }
     }
 }

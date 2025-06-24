@@ -4,6 +4,7 @@ using System.Linq;
 using Assets.Scripts.LevelCreator;
 using Scripts.Enemies;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Scripts.LevelSystem.LevelGeneration
 {
@@ -11,16 +12,16 @@ namespace Scripts.LevelSystem.LevelGeneration
     {
         [SerializeField] private Door _door;
         [SerializeField] private Transform _spawnPointTransform;
-        [SerializeField] private Transform _portalSpawnPoint;
+        [FormerlySerializedAs("_portalSpawnPoint")] [SerializeField] private Transform exitPortalSpawnPoint;
         [SerializeField] public Transform ObstaclesTransform;
         private bool _isActive = false;
 
         private List<EnemyHealth> _enemyHealths = new List<EnemyHealth>();
         public Transform SpawnPointTransform => _spawnPointTransform;
-        public Transform PortalSpawnPoint
+        public Transform ExitPortalSpawnPoint
         {
-            get => _portalSpawnPoint;
-            set => _portalSpawnPoint = value;
+            get => exitPortalSpawnPoint;
+            set => exitPortalSpawnPoint = value;
         }
 
         private void Awake()
@@ -83,10 +84,10 @@ namespace Scripts.LevelSystem.LevelGeneration
                 Gizmos.color = Color.white;
                 Gizmos.DrawSphere(_spawnPointTransform.position, 0.3f);
             }
-            if (_portalSpawnPoint != null)
+            if (exitPortalSpawnPoint != null)
             {
                 Gizmos.color = Color.cyan;
-                Gizmos.DrawSphere(_portalSpawnPoint.position, 0.4f);
+                Gizmos.DrawSphere(exitPortalSpawnPoint.position, 0.4f);
             }
         }
 

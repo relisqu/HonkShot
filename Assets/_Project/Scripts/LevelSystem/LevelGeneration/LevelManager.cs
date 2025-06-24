@@ -54,20 +54,20 @@ namespace Scripts.LevelSystem.LevelGeneration
         private IEnumerator LevelStartRoutine()
         {
             TimeManager.Instance.PauseGame();
-            if (!_currentRoom.PortalSpawnPoint)
+            if (!_currentRoom.ExitPortalSpawnPoint)
             {
-                _currentRoom.PortalSpawnPoint = _currentRoom.SpawnPointTransform;
+                _currentRoom.ExitPortalSpawnPoint = _currentRoom.SpawnPointTransform;
             }
 
             if (_activePortal) Destroy(_activePortal);
-            _activePortal = Instantiate(_portalPrefab, _currentRoom.PortalSpawnPoint.position, Quaternion.identity);
+            _activePortal = Instantiate(_portalPrefab, _currentRoom.SpawnPointTransform.position, Quaternion.identity);
 
 
             var playerTransform = PointReceiver.Instance.transform;
             var portalScript = _activePortal;
             if (portalScript)
             {
-                playerTransform.position = _currentRoom.PortalSpawnPoint.position;
+                playerTransform.position = _currentRoom.SpawnPointTransform.position;
                 portalScript.PlayJumpOut(playerTransform);
             }
 
@@ -86,7 +86,7 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         private IEnumerator LevelEndRoutine()
         {
-            _activePortal = Instantiate(_portalPrefab, _currentRoom.PortalSpawnPoint.position, Quaternion.identity);
+            _activePortal = Instantiate(_portalPrefab, _currentRoom.ExitPortalSpawnPoint.position, Quaternion.identity);
 
             bool portalClosed = false;
             _activePortal.OnPortalTrigger += () => { _projection.DestroySimulation(); };
@@ -112,8 +112,12 @@ namespace Scripts.LevelSystem.LevelGeneration
             }
             else
             {
-                Debug.Log("All rooms complete!");
-                // TODO: Show win screen or end game
+                // All rooms complete, generate a new batch and continue
+                _levelGenerator.GenerateLevel();
+                _currentRoomIndex = 0;
+                var newRoom = _levelGenerator.GetRoom(_currentRoomIndex);
+                if (newRoom)
+                    EnterRoom(newRoom);
             }
 
             yield return null;
