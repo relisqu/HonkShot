@@ -58,7 +58,6 @@ namespace Scripts.Player
             if (_isUltimate)
             {
                 StopHonk();
-                Debug.Log("ULTING");
                 ChangeFire(-_ultimateFireDrainPerSecond * Time.deltaTime);
                 if (_fire <= 0)
                 {
@@ -67,7 +66,6 @@ namespace Scripts.Player
             }
             else if (_isHonk)
             {
-                Debug.Log("Honking");
                 ChangeFire(-_honkFireDrainPerSecond * Time.deltaTime);
                 if (_fire <= 0)
                 {
@@ -76,7 +74,6 @@ namespace Scripts.Player
             }
             else
             {
-                Debug.Log("small default fire drain");
                 ChangeFire(-_fireLossPerSecond * Time.deltaTime);
             }
         }
@@ -106,7 +103,6 @@ namespace Scripts.Player
         {
             float prev = _fire;
             _fire = Mathf.Clamp(_fire + amount, 0, _maxFire);
-            Debug.Log($"Fire: {_fire}");
             if (!_isUltimate && _fire >= _maxFire)
             {
                 StartUltimate();
@@ -116,7 +112,6 @@ namespace Scripts.Player
 
         private void StartUltimate()
         {
-            Debug.Log("ULT TIME");
             _isUltimate = true;
             if (Scripts.PointSystem.PointReceiver.Instance )
                 Scripts.PointSystem.PointReceiver.Instance.AddMultiplier("ultimate", _ultimateMultiplySystem);

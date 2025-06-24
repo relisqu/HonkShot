@@ -1,4 +1,5 @@
 ﻿using System;
+using Scripts.LevelSystem.LevelGeneration;
 using UnityEngine;
 
 namespace Scripts.Player
@@ -16,11 +17,19 @@ namespace Scripts.Player
             _startTrailParticleSystemScale = _trailParticles.shape.scale;
         }
 
+        private void Start()
+        {
+            LevelManager.Instance.EnteredRoom += () =>
+            {
+                if (_trailParticles)
+                    _trailParticles.Clear();
+            };
+        }
 
         private void Update()
         {
             var distance = (_trailParticles.transform.position - _playerMovement.transform.position).magnitude;
-            
+
 
             _trailParticles.transform.position = _playerMovement.transform.position;
             if (distance < 1f && _playerMovement.GetVelocity().sqrMagnitude > 0.1f)

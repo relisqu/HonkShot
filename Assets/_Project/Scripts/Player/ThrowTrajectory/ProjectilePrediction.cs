@@ -192,7 +192,7 @@ namespace Scripts.Player
         // ─────────────────────────── Scene setup ─────────────────────────
         private void TryCreateSimulationSceneIfNeeded()
         {
-            if (_simulationScene.IsValid() && _simulationScene.isLoaded) return;
+            if (_simulationScene.IsValid()) return;
             if (!LevelManager.Instance.CurrentRoom) return;
 
             _simulationScene =
@@ -300,6 +300,17 @@ namespace Scripts.Player
 
             rb.simulated = false;
             proj.gameObject.SetActive(false);
+        }
+
+        public bool IsSimulationReady()
+        {
+            return _simulationScene.IsValid() && _simulationScene.isLoaded;
+        }
+
+        public void DestroySimulation()
+        {
+            if (_simulationScene.IsValid() && _simulationScene.isLoaded)
+                SceneManager.UnloadSceneAsync(_simulationScene);
         }
     }
 }

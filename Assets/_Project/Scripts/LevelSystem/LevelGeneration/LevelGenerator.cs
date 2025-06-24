@@ -37,7 +37,6 @@ namespace Scripts.LevelSystem.LevelGeneration
                 Room roomInstance = Instantiate(selectedRoom, spawnPosition, Quaternion.identity, transform);
                 if (_spawnedRooms.Count > 0) _spawnedRooms[^1].SetNextRoom(roomInstance);
                 _spawnedRooms.Add(roomInstance);
-                spawnPosition += Vector3.up * _roomHeight;
             }
 
             foreach (var room in _spawnedRooms)

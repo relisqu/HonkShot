@@ -94,5 +94,6 @@ namespace Scripts.Player
         {
             return _rigidbody2D;
         }
+
     }
 }

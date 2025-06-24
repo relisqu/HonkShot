@@ -60,6 +60,7 @@ namespace Scripts.Player
                 else if (currentSpeed < _prevSpeed - 0.01f)
                     _gooseFireSystem.OnDeceleration();
             }
+
             _prevSpeed = currentSpeed;
 
             if (_playerStatus.PlayerState == PlayerState.Ball && Time.time - _throwStartTime > _additionalDragStartTime)
@@ -130,6 +131,11 @@ namespace Scripts.Player
 
                 AudioManager.Instance.PlayOneShot(SoundChanelType.Player, "gooseCollision", force);
             }
+        }
+
+        public void StopMovement()
+        {
+            _rigidbody2D.velocity = Vector2.zero;
         }
     }
 }
