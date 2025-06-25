@@ -33,13 +33,13 @@ namespace Scripts.LevelSystem.LevelObjects.Interaction
         {
             gameObject.SetActive(true);
 
-            if (_rb != null)
+            if (_rb)
             {
                 _rb.isKinematic = false;
                 _rb.velocity = shootDirection.normalized * shootForce;
             }
 
-            if (_collider != null)
+            if (_collider)
                 _collider.enabled = true;
         }
     }

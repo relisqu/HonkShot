@@ -4,6 +4,7 @@ using Scripts.Player;
 using Scripts.PointSystem;
 using UnityEngine;
 using System.Collections;
+using Scripts.UI;
 
 namespace Scripts.LevelSystem.LevelGeneration
 {
@@ -20,13 +21,15 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         [SerializeField] private Portal _portalPrefab;
         [SerializeField] private float _timeTransitionDuration = 1.2f;
-        private Portal _activePortal;
         private bool _waitingForPlayer;
 
         [SerializeField] private LevelGenerator _levelGenerator;
         private int _currentRoomIndex = 0;
 
         [SerializeField] private Scripts.Player.Projection _projection;
+
+        [SerializeField] private ItemSelectionUI _itemSelectionUI;
+        private int _levelsCompleted = 0;
 
         private void Awake()
         {
@@ -59,12 +62,11 @@ namespace Scripts.LevelSystem.LevelGeneration
                 _currentRoom.ExitPortalSpawnPoint = _currentRoom.SpawnPointTransform;
             }
 
-            if (_activePortal) Destroy(_activePortal);
-            _activePortal = Instantiate(_portalPrefab, _currentRoom.SpawnPointTransform.position, Quaternion.identity);
+            var portalScript = Instantiate(_portalPrefab, _currentRoom.SpawnPointTransform.position,
+                Quaternion.identity);
 
 
             var playerTransform = PointReceiver.Instance.transform;
-            var portalScript = _activePortal;
             if (portalScript)
             {
                 playerTransform.position = _currentRoom.SpawnPointTransform.position;
@@ -84,13 +86,35 @@ namespace Scripts.LevelSystem.LevelGeneration
             TimeManager.Instance.ResumeGame();
         }
 
+        private bool ShouldGiveItems()
+        {
+            // Every 3 levels, show item selection before portal
+            return _levelsCompleted % 1 == 0;
+        }
+
+        public void ShowItemSelectionUI()
+        {
+            
+            if (ShouldGiveItems())
+            {
+                bool itemSelected = false;
+                int selectedItem = -1;
+                _itemSelectionUI.Show((itemIndex) =>
+                {
+                    itemSelected = true;
+                    selectedItem = itemIndex;
+                    // TODO: Grant item to player here if needed
+                });
+            }
+        }
         private IEnumerator LevelEndRoutine()
         {
-            _activePortal = Instantiate(_portalPrefab, _currentRoom.ExitPortalSpawnPoint.position, Quaternion.identity);
+            _levelsCompleted++;
+            var portal = Instantiate(_portalPrefab, _currentRoom.ExitPortalSpawnPoint.position, Quaternion.identity);
 
             bool portalClosed = false;
-            _activePortal.OnPortalTrigger += () => { _projection.DestroySimulation(); };
-            _activePortal.OnPortalClosed += () => portalClosed = true;
+            portal.OnPortalTrigger += () => { _projection.DestroySimulation(); };
+            portal.OnPortalClosed += () => portalClosed = true;
             while (!portalClosed)
                 yield return null;
 
@@ -106,6 +130,13 @@ namespace Scripts.LevelSystem.LevelGeneration
 
             _previousRoom = _currentRoom;
 
+            ShowItemSelectionUI();
+
+            while (_itemSelectionUI.IsActive)
+            {
+                yield return null;
+            }
+            
             if (nextRoom)
             {
                 EnterRoom(nextRoom);

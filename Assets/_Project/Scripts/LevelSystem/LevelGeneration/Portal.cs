@@ -1,6 +1,7 @@
 using System;
 using DG.Tweening;
 using Scripts.Player;
+using Scripts.Player.InputHandling;
 using UnityEngine;
 
 namespace Scripts.LevelSystem.LevelGeneration
@@ -33,7 +34,8 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         public void PlayHide()
         {
-            transform.DOScale(Vector3.zero, swirlDuration).SetEase(Ease.InBack).SetUpdate(true).OnComplete(() => {
+            transform.DOScale(Vector3.zero, swirlDuration).SetEase(Ease.InBack).SetUpdate(true).OnComplete(() =>
+            {
                 OnPortalClosed?.Invoke();
                 Destroy(gameObject);
             });
@@ -41,23 +43,26 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         private void OnTriggerEnter2D(Collider2D other)
         {
+            // Pause input globally
             OnPortalTrigger?.Invoke();
             if (_isJumpingOut) return;
             if (other.TryGetComponent(out PlayerBallMovement player))
             {
-                player.StopMovement();
                 if (_isSucking) return;
+                if (InputHandler.Instance) InputHandler.Instance.SetInputEnabled(false);
                 _isSucking = true;
+                player.StopMovement();
                 Sequence swirlSequence = DOTween.Sequence();
-                var transform = player.transform;
-                swirlSequence.Append(transform.DOScale(swirlScale, swirlDuration)
+                var playerTransform = player.transform;
+                swirlSequence.Append(playerTransform.DOScale(swirlScale, swirlDuration)
                     .SetEase(Ease.InCirc).SetUpdate(true));
-                swirlSequence.Join(transform.DORotate(new Vector3(0, 0, 720f), swirlDuration,
+                swirlSequence.Join(playerTransform.DORotate(new Vector3(0, 0, 720f), swirlDuration,
                     RotateMode.FastBeyond360).SetUpdate(true));
-                swirlSequence.Join(transform.DOMove(transform.position, swirlDuration * 0.8f)
+                swirlSequence.Join(player.transform.DOMove(transform.position, swirlDuration * 0.8f)
                     .SetEase(Ease.Linear).SetUpdate(true));
                 swirlSequence.SetUpdate(true);
-                swirlSequence.OnComplete(() => {
+                swirlSequence.OnComplete(() =>
+                {
                     _isSucking = false;
                     PlayHide();
                     OnPlayerEnter?.Invoke();
@@ -77,9 +82,15 @@ namespace Scripts.LevelSystem.LevelGeneration
             transform.rotation = Quaternion.identity;
             Sequence jumpOutSequence = DOTween.Sequence();
             jumpOutSequence.Append(transform.DOScale(endScale, duration).SetEase(Ease.OutCirc).SetUpdate(true));
-            jumpOutSequence.Join(transform.DORotate(new Vector3(0, 0, -720f), duration, RotateMode.FastBeyond360).SetUpdate(true));
+            jumpOutSequence.Join(transform.DORotate(new Vector3(0, 0, -720f), duration, RotateMode.FastBeyond360)
+                .SetUpdate(true));
             jumpOutSequence.SetUpdate(true);
-            jumpOutSequence.OnComplete(() => { PlayHide(); });
+            jumpOutSequence.OnComplete(() =>
+            {
+                // Resume input globally
+                if (InputHandler.Instance) InputHandler.Instance.SetInputEnabled(true);
+                PlayHide();
+            });
         }
     }
 }

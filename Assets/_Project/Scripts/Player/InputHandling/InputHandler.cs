@@ -6,6 +6,8 @@ namespace Scripts.Player.InputHandling
 {
     public class InputHandler : MonoBehaviour
     {
+        public static InputHandler Instance { get; private set; }
+
         [SerializeField] private InputActionReference _pressActionReference;
         [SerializeField] private InputActionReference _movementActionReference;
         [SerializeField] private Transform _playerTransform;
@@ -13,13 +15,23 @@ namespace Scripts.Player.InputHandling
         [SerializeField] private PlayerInput _playerInput;
 
         private IInputHandler _currentInputHandler;
+        private bool _inputEnabled = true;
 
         public event Action OnDragStarted;
         public event Action<Vector2> OnDragFinished;
         public bool IsDragging => _currentInputHandler.IsDragging;
 
+        public void SetInputEnabled(bool enabled)
+        {
+            Debug.Log(enabled);
+            _inputEnabled = enabled;
+        }
+
+        public bool IsInputEnabled => _inputEnabled;
+
         private void Awake()
         {
+            Instance = this;
             _pressActionReference.action.Enable();
         }
 
@@ -30,37 +42,51 @@ namespace Scripts.Player.InputHandling
 
         private void Update()
         {
-            _currentInputHandler?.UpdateCurrentMovementDelta();
+            if (IsInputEnabled)
+                _currentInputHandler?.UpdateCurrentMovementDelta();
+        }
+
+        public void InputHandler_DragStarted()
+        {
+            if (IsInputEnabled)
+                OnDragStarted?.Invoke();
+        }
+
+        public void InputHandler_DragFinished(Vector2 dragFinished)
+        {
+            if (IsInputEnabled)
+                OnDragFinished?.Invoke(dragFinished);
         }
 
         private void ChangeControlScheme(string newControlScheme)
         {
             if (_currentInputHandler != null)
             {
-                _currentInputHandler.OnDragStarted -= OnDragStarted;
-                _currentInputHandler.OnDragFinished -= OnDragFinished;
+                _currentInputHandler.OnDragStarted -= InputHandler_DragStarted;
+                _currentInputHandler.OnDragFinished -= InputHandler_DragFinished;
                 _currentInputHandler.Disable();
             }
+
             switch (newControlScheme)
             {
                 case "controller":
                     _currentInputHandler = new ControllerInputHandler(_movementActionReference, _pressActionReference);
                     break;
                 case "keyboard":
-                    _currentInputHandler = new MouseInputHandler(_movementActionReference, _pressActionReference, _playerTransform, _camera);
+                    _currentInputHandler = new MouseInputHandler(_movementActionReference, _pressActionReference,
+                        _playerTransform, _camera);
                     break;
                 default:
                     Debug.LogWarning($"Unknown control scheme: {newControlScheme}");
                     break;
             }
-            
+
             if (_currentInputHandler != null)
             {
-                _currentInputHandler.OnDragStarted += OnDragStarted;
-                _currentInputHandler.OnDragFinished += OnDragFinished;
+                _currentInputHandler.OnDragStarted += InputHandler_DragStarted;
+                _currentInputHandler.OnDragFinished += InputHandler_DragFinished;
                 _currentInputHandler?.Enable();
             }
-
         }
 
         private void PlayerInput_ControlsChanged(PlayerInput playerInput)
@@ -77,16 +103,18 @@ namespace Scripts.Player.InputHandling
         {
             if (_currentInputHandler != null)
             {
-                _currentInputHandler.OnDragStarted -= OnDragStarted;
-                _currentInputHandler.OnDragFinished -= OnDragFinished;
+                _currentInputHandler.OnDragStarted -= InputHandler_DragStarted;
+                _currentInputHandler.OnDragFinished -= InputHandler_DragFinished;
                 _currentInputHandler.Disable();
             }
+
             _playerInput.onControlsChanged -= PlayerInput_ControlsChanged;
         }
 
 
         public Vector2 GetCurrentDrag()
         {
+            if (!_inputEnabled) return Vector2.zero;
             return _currentInputHandler?.GetCurrentDrag() ?? Vector2.zero;
         }
     }

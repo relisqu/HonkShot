@@ -2,6 +2,8 @@
 using Scripts.Health;
 using Scripts.LevelSystem.LevelObjects.Interaction;
 using UnityEngine;
+using DG.Tweening;
+using Scripts.Player.InputHandling;
 
 namespace Scripts.LevelSystem.LevelObjects
 {
@@ -23,9 +25,13 @@ namespace Scripts.LevelSystem.LevelObjects
 
         private float _angle = 0f;
         private float _direction = 1f;
+        private Vector3 _originalScale;
+
         private void Awake()
         {
             _startRotation = transform.eulerAngles.z;
+            if (rotatingPart != null)
+                _originalScale = rotatingPart.localScale;
         }
 
         private void Update()
@@ -60,6 +66,12 @@ namespace Scripts.LevelSystem.LevelObjects
 
         private IEnumerator HandleCannon(CannonInteractable interactable)
         {
+            // Pause input globally
+            if (InputHandler.Instance) InputHandler.Instance.SetInputEnabled(false);
+            // Squash: shrink Y, widen X
+            if (rotatingPart)
+                rotatingPart.DOScale(new Vector3(_originalScale.x * 1.2f, _originalScale.y * 0.7f, _originalScale.z), 0.15f).SetEase(Ease.OutQuad);
+
             interactable.OnEnterCannon();
 
             yield return new WaitForSeconds(pauseTime);
@@ -68,6 +80,12 @@ namespace Scripts.LevelSystem.LevelObjects
             Debug.Log(shootDirection);
             interactable.OnExitCannon(shootDirection, shootForce);
 
+            // Bounce back to normal with a springy effect
+            if (rotatingPart)
+                rotatingPart.DOScale(_originalScale, 0.25f).SetEase(Ease.OutBack);
+
+            // Resume input globally
+            if (InputHandler.Instance) InputHandler.Instance.SetInputEnabled(true);
             _containedObject = null;
         }
 
