@@ -350,6 +350,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5852712469276863939, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2471180646255435654}
+    - targetCorrespondingSourceObject: {fileID: 5852712469276863939, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 277740957663452608}
   m_SourcePrefab: {fileID: 100100000, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
 --- !u!1 &397435779891146254 stripped
 GameObject:
@@ -390,6 +393,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 4473289204172405289}
+--- !u!114 &277740957663452608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 397435779891146254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d886bf8670f5a8b4486f88c0ccf4b84d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _chaseRange: 2.5
+  _usesFasterSpeedCloseToPlayer: 1
+  _minSpeedCoeff: 0.1
+  _moveSpeed: 2
+  _obstacleMask:
+    serializedVersion: 2
+    m_Bits: 128
+  _enemyHealth: {fileID: 1848673673691686894}
+--- !u!114 &1848673673691686894 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5556656538779411491, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
+  m_PrefabInstance: {fileID: 6105468527866414029}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 397435779891146254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db10873588a04fc9b4428b8fa464850c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &6072811678234609247 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 70946318289896850, guid: 5009313536c6a134c80ac8756244d15a, type: 3}

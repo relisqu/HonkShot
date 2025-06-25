@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 593031549532996138}
-  - component: {fileID: 1675295850128061035}
+  - component: {fileID: -4335250037546333057}
   m_Layer: 0
-  m_Name: AttackItem1 2
+  m_Name: StickyMineItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1675295850128061035
+--- !u!114 &-4335250037546333057
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,8 +41,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5203821231805720934}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3b1d3496bbd436479a8e3a72d80d82a, type: 3}
+  m_Script: {fileID: 11500000, guid: 4bf94d9662a32c14ea85def29209aaa6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  addValue: 0
-  multValue: 2
+  minePrefab: {fileID: 7590852400415587284, guid: 614baf4d0cb8c4c47bbf78de90f37d0a, type: 3}
+  explosionDelay: 1
+  explosionDamage: 20

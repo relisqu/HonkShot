@@ -90,7 +90,7 @@ namespace Scripts.LevelSystem.LevelGeneration
         private bool ShouldGiveItems()
         {
             // Every 3 levels, show item selection before portal
-            return _levelsCompleted % 1 == 0;
+            return _levelsCompleted % 3 == 0;
         }
 
         public void ShowItemSelectionUI()

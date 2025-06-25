@@ -49,6 +49,7 @@ namespace Scripts.Enemies
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
                 _healthController.TakeDamage(playerAttackController.GetDamage());
+                playerAttackController.Damage(gameObject);
             }
         }
 
@@ -62,6 +63,7 @@ namespace Scripts.Enemies
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
                 _healthController.TakeDamage(playerAttackController.GetDamage());
+                playerAttackController.Damage(gameObject);
             }
         }
 
@@ -75,6 +77,7 @@ namespace Scripts.Enemies
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
                 _healthController.TakeDamage(playerAttackController.GetDamage());
+                playerAttackController.Damage(gameObject);
             }
         }
 
@@ -89,6 +92,7 @@ namespace Scripts.Enemies
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
                 _healthController.TakeDamage(playerAttackController.GetDamage());
+                playerAttackController.Damage(gameObject);
             }
         }
 

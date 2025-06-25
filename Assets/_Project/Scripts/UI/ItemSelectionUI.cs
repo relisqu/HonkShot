@@ -4,12 +4,14 @@ using System;
 using Scripts.Items;
 using System.Collections.Generic;
 using Scripts.PointSystem;
+using UnityEngine.EventSystems;
+using DG.Tweening;
 
 namespace Scripts.UI
 {
     public class ItemSelectionUI : MonoBehaviour
     {
-        public Button[] itemButtons; // Assign in inspector
+        public ItemSelectionSlotUI[] slots; // Assign in inspector
         public GameObject panel; // Assign in inspector
 
         private Action<int> _onItemSelected;
@@ -25,12 +27,18 @@ namespace Scripts.UI
             panel.SetActive(true);
             var items = _itemManager.GetRandomItems(3);
             _onItemSelected = onItemSelected;
-            if (items.Count < 3) Skip();
-            for (int i = 0; i < itemButtons.Length; i++)
+            if (items.Count <= 0) Skip();
+            for (int i = 0; i < slots.Length; i++)
             {
-                int index = i;
-                itemButtons[i].onClick.RemoveAllListeners();
-                itemButtons[i].onClick.AddListener(() => SelectItem(items[index]));
+                if (i < items.Count)
+                {
+                    slots[i].gameObject.SetActive(true);
+                    slots[i].Setup(items[i], OnItemSelected);
+                }
+                else
+                {
+                    slots[i].gameObject.SetActive(false);
+                }
             }
         }
 
@@ -40,11 +48,12 @@ namespace Scripts.UI
             panel.SetActive(false);
         }
 
-        private void SelectItem(PlayerItemSO playerItem)
+        private void OnItemSelected(PlayerItemSO item)
         {
             _isActive = false;
             panel.SetActive(false);
-            _playerInventory.AddItem(playerItem);
+            _playerInventory.AddItem(item);
         }
     }
+
 }

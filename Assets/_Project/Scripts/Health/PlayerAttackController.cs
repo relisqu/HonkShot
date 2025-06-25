@@ -1,4 +1,5 @@
-﻿using Scripts.Player;
+﻿using System;
+using Scripts.Player;
 using Scripts.PointSystem;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -26,6 +27,7 @@ namespace Scripts.Health
 
         // Stat modifier system for damage
         private List<StatModifier> damageModifiers = new List<StatModifier>();
+        public Action<GameObject> OnHit;
 
         public void AddDamageModifier(StatModifier mod)
         {
@@ -49,6 +51,11 @@ namespace Scripts.Health
             }
             Debug.Log($"Damage:: {result}");
             return result;
+        }
+
+        public void Damage(GameObject target)
+        {
+            OnHit?.Invoke(target);
         }
 
         public override float GetDamage()

@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 593031549532996138}
-  - component: {fileID: 1675295850128061035}
+  - component: {fileID: 9009440106425711936}
   m_Layer: 0
-  m_Name: AttackItem1 2
+  m_Name: VampiricItemOnKill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1675295850128061035
+--- !u!114 &9009440106425711936
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,8 +41,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5203821231805720934}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3b1d3496bbd436479a8e3a72d80d82a, type: 3}
+  m_Script: {fileID: 11500000, guid: c8bbc6bba0d0fc24fa7d69a3fb90fccc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  addValue: 0
-  multValue: 2
+  healPercent: 0.05

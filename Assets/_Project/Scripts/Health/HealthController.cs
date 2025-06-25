@@ -1,5 +1,8 @@
 ﻿using System;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
+using Scripts.Items;
 
 namespace Scripts.Health
 {
@@ -11,7 +14,10 @@ namespace Scripts.Health
         private bool _isInvincible;
         private float _currentHealth = 10;
 
+        // Stat modifier system for damage taken
+        private List<StatModifier> damageTakenModifiers = new List<StatModifier>();
 
+        public Action OnTakeDamageTriggered;
         public Action OnDied;
         public Action OnDamaged;
         public bool IsInvincible => _isInvincible;
@@ -35,8 +41,11 @@ namespace Scripts.Health
             {
                 return;
             }
-
-            _currentHealth -= damageAmount;
+            
+            OnTakeDamageTriggered?.Invoke();
+            
+            float finalDamage = CalculateDamageTaken(damageAmount);
+            _currentHealth -= finalDamage;
 
             if (_currentHealth < 0)
             {
@@ -52,7 +61,6 @@ namespace Scripts.Health
                 OnDamaged?.Invoke();
             }
         }
-
 
         public void AddHealth(float amountToAdd)
         {
@@ -72,6 +80,35 @@ namespace Scripts.Health
         public void SetInvincible(bool isInvincible)
         {
             _isInvincible = isInvincible;
+        }
+
+        public void AddDamageTakenModifier(StatModifier mod)
+        {
+            damageTakenModifiers.Add(mod);
+            damageTakenModifiers = damageTakenModifiers.OrderBy(m => m.order).ToList();
+        }
+
+        public void RemoveDamageTakenModifier(StatModifier mod)
+        {
+            damageTakenModifiers.Remove(mod);
+        }
+
+        public float CalculateDamageTaken(float baseDamage)
+        {
+            float result = baseDamage;
+            foreach (var mod in damageTakenModifiers)
+            {
+                if (mod.type == StatModType.Add)
+                    result += mod.value;
+                else if (mod.type == StatModType.Mult)
+                    result *= mod.value;
+            }
+            return result;
+        }
+
+        public float GetMaxHealth()
+        {
+            return _maxHealth;
         }
     }
 }
