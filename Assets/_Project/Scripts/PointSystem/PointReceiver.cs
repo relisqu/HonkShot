@@ -85,7 +85,7 @@ namespace Scripts.PointSystem
             _currentPointsAttack += points;
             _bouncesCount++;
             ChangedCurrentPoints?.Invoke();
-            GeneratePointsParticle((int)(points*PointsMultiplier));
+            GeneratePointsParticle((int)(points));
 
             if (attackPointsObjectType == AttackPointsObjectType.None)
                 return;
@@ -101,7 +101,7 @@ namespace Scripts.PointSystem
 
         public void AddMaxPoints()
         {
-            var intPoints = Mathf.RoundToInt(GetAttackPoints());
+            var intPoints = Mathf.RoundToInt(PointsMultiplier*GetAttackPoints());
             if (intPoints <= 0)
             {
                 return;
@@ -115,7 +115,7 @@ namespace Scripts.PointSystem
         public float GetAttackPoints()
         {
             var coeff = 1 + _pointObjectTypes.Count * _perTypeCoefficient;
-            return coeff * PointsMultiplier* _currentPointsAttack;
+            return coeff *  _currentPointsAttack;
         }
 
         public float GetBaseDamage()

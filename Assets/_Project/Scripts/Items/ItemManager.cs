@@ -5,12 +5,13 @@ namespace Scripts.Items
 {
     public class ItemManager : MonoBehaviour
     {
-        public List<PlayerItemSO> allItems; // Assign all item SOs in inspector
+        public List<PlayerItemSO> allItems; 
+        public PlayerInventory playerInventory;
 
-        public List<PlayerItemSO> GetRandomItems(int count, PlayerInventory inventory)
+        public List<PlayerItemSO> GetRandomItems(int count)
         {
             var available = new List<PlayerItemSO>(allItems);
-            available.RemoveAll(item => inventory.HasItem(item));
+            available.RemoveAll(item => playerInventory.HasItem(item));
             var result = new List<PlayerItemSO>();
             for (int i = 0; i < count && available.Count > 0; i++)
             {

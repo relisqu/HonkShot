@@ -2,6 +2,9 @@
 using Scripts.PointSystem;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
+using Scripts.Items;
 
 namespace Scripts.Health
 {
@@ -21,6 +24,32 @@ namespace Scripts.Health
         [ShowIf("_dependsOnSpeed")] [SerializeField]
         private float _maxSpeedCoeff = 2f;
 
+        // Stat modifier system for damage
+        private List<StatModifier> damageModifiers = new List<StatModifier>();
+
+        public void AddDamageModifier(StatModifier mod)
+        {
+            damageModifiers.Add(mod);
+        }
+
+        public void RemoveDamageModifier(StatModifier mod)
+        {
+            damageModifiers.Remove(mod);
+        }
+
+        public float CalculateDamage(float baseDamage)
+        {
+            float result = baseDamage;
+            foreach (var mod in damageModifiers)
+            {
+                if (mod.type == StatModType.Add)
+                    result += mod.value;
+                else if (mod.type == StatModType.Mult)
+                    result *= mod.value;
+            }
+            Debug.Log($"Damage:: {result}");
+            return result;
+        }
 
         public override float GetDamage()
         {
@@ -41,7 +70,8 @@ namespace Scripts.Health
                 Debug.Log("AppliedCoeff: " + bonusSpeedCoeff);
             }
 
-            return damage + attackDamage;
+            float baseTotal = damage + attackDamage;
+            return CalculateDamage(baseTotal);
         }
 
         public float GetSpeedModifier()

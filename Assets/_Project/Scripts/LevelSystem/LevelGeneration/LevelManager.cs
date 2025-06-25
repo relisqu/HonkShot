@@ -4,6 +4,7 @@ using Scripts.Player;
 using Scripts.PointSystem;
 using UnityEngine;
 using System.Collections;
+using Scripts.Items;
 using Scripts.UI;
 
 namespace Scripts.LevelSystem.LevelGeneration
@@ -99,12 +100,7 @@ namespace Scripts.LevelSystem.LevelGeneration
             {
                 bool itemSelected = false;
                 int selectedItem = -1;
-                _itemSelectionUI.Show((itemIndex) =>
-                {
-                    itemSelected = true;
-                    selectedItem = itemIndex;
-                    // TODO: Grant item to player here if needed
-                });
+                _itemSelectionUI.ShowItems(null);
             }
         }
         private IEnumerator LevelEndRoutine()

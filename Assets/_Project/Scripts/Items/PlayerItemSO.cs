@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Scripts.Items
 {
     [CreateAssetMenu(fileName = "Item", menuName = "ScriptableObjects/Items", order = 1)]
-    public abstract class PlayerItemSO : ScriptableObject
+    public class PlayerItemSO : ScriptableObject
     {
         public string itemName;
         [TextArea] public string description;
