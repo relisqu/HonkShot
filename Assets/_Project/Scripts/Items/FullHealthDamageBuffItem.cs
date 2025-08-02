@@ -1,59 +1,76 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Scripts.Health;
 using Scripts.Items;
 
 public class FullHealthDamageBuffItem : MonoBehaviour
 {
-    public float multValue = 2f; // e.g., x2 damage at full health
-    private StatModifier _activeModifier;
-    private PlayerAttackController _attack;
-    private HealthController _health;
+    public List<NumericStatModifier> NumericalStatModifiers;
+
+    private PlayerAttackController _attackController;
+    private HealthController _healthController;
 
     void Start()
     {
-        _attack = GetComponentInParent<PlayerAttackController>();
-        _health = GetComponentInParent<HealthController>();
-        if (_health != null)
+        _attackController = GetComponentInParent<PlayerAttackController>();
+        _healthController = GetComponentInParent<HealthController>();
+        if (_healthController != null)
         {
-            _health.OnTakeDamageTriggered += CheckBuff;
+            _healthController.OnTakeDamageTriggered += CheckBuff;
         }
+
         CheckBuff();
     }
 
     void OnDestroy()
     {
-        if (_health != null)
+        if (_healthController != null)
         {
-            _health.OnTakeDamageTriggered -= CheckBuff;
+            _healthController.OnTakeDamageTriggered -= CheckBuff;
         }
-        RemoveBuff();
+
+        RemoveBuffs();
     }
 
     private void CheckBuff()
     {
-        if (_health && _attack)
+        if (_healthController && _attackController)
         {
-            if (_health.RemainingHealthPercentage >= 1f)
+            if (_healthController.RemainingHealthPercentage >= 1f)
             {
-                if (_activeModifier == null)
+                foreach (var statModifier in NumericalStatModifiers)
                 {
-                    _activeModifier = new StatModifier(StatModType.Mult, multValue, 0);
-                    _attack.AddDamageModifier(_activeModifier);
+                    if (_attackController.NumericStatModifierSystem.GetModifier(statModifier.Id) == null)
+                    {
+                        statModifier.SetOrder(_attackController.NumericStatModifierSystem.GetLastOrder());
+                        _attackController.NumericStatModifierSystem.AddModifier(statModifier);
+                    }
                 }
             }
             else
             {
-                RemoveBuff();
+                RemoveBuffs();
             }
         }
     }
 
-    private void RemoveBuff()
+    private void AddBuffs()
     {
-        if (_activeModifier != null && _attack != null)
+        foreach (var statModifier in NumericalStatModifiers)
         {
-            _attack.RemoveDamageModifier(_activeModifier);
-            _activeModifier = null;
+            if (_attackController.NumericStatModifierSystem.GetModifier(statModifier.Id) == null)
+            {
+                statModifier.SetOrder(_attackController.NumericStatModifierSystem.GetLastOrder());
+                _attackController.NumericStatModifierSystem.AddModifier(statModifier);
+            }
         }
     }
-} 
+
+    private void RemoveBuffs()
+    {
+        foreach (var statModifier in NumericalStatModifiers)
+        {
+            _attackController.NumericStatModifierSystem.RemoveModifier(statModifier.Id);
+        }
+    }
+}

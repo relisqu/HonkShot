@@ -45,7 +45,7 @@ namespace Scripts.Enemies
                 return;
             }
 
-            if (_healthController.IsInvincible) return;
+            if (_healthController.IsInvincible()) return;
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
                 _healthController.TakeDamage(playerAttackController.GetDamage());
@@ -59,7 +59,7 @@ namespace Scripts.Enemies
             {
                 return;
             }
-            if (_healthController.IsInvincible) return;
+            if (_healthController.IsInvincible()) return;
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
                 _healthController.TakeDamage(playerAttackController.GetDamage());
@@ -73,7 +73,7 @@ namespace Scripts.Enemies
             {
                 return;
             }
-            if (_healthController.IsInvincible) return;
+            if (_healthController.IsInvincible()) return;
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
                 _healthController.TakeDamage(playerAttackController.GetDamage());
@@ -88,7 +88,7 @@ namespace Scripts.Enemies
                 Debug.Log("AAAAAAA");
                 return;
             }
-            if (_healthController.IsInvincible) return;
+            if (_healthController.IsInvincible()) return;
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
                 _healthController.TakeDamage(playerAttackController.GetDamage());

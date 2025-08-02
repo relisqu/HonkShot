@@ -11,48 +11,62 @@ namespace Scripts.Health
         [SerializeField] private float _maxHealth;
         [SerializeField] private float _defaultHealth;
 
-        private bool _isInvincible;
-        private float _currentHealth = 10;
+        private float _defaultCurrentHealth = 10;
 
-        // Stat modifier system for damage taken
-        private List<StatModifier> damageTakenModifiers = new List<StatModifier>();
+        private BoolStatModifierSystem _invisibilitySystem = new BoolStatModifierSystem();
+        private NumericStatModifierSystem _damageTakenModifierSystem = new NumericStatModifierSystem();
+        private NumericStatModifierSystem _maxHpModifierSystem = new NumericStatModifierSystem();
 
         public Action OnTakeDamageTriggered;
         public Action OnDied;
         public Action OnDamaged;
-        public bool IsInvincible => _isInvincible;
-        public bool IsAlive => _currentHealth > 0;
 
-        public float RemainingHealthPercentage => _currentHealth / _defaultHealth;
+
+        public bool IsAlive => GetCurrentHealth() > 0;
+
+        public float RemainingHealthPercentage => GetCurrentHealth() / _defaultHealth;
+        public NumericStatModifierSystem DamageTakenModifierSystem => _damageTakenModifierSystem;
+        public NumericStatModifierSystem MaxHpModifierSystem => _maxHpModifierSystem;
+        public BoolStatModifierSystem InvisibilitySystem => _invisibilitySystem;
+
+        public bool IsInvincible()
+        {
+            return _invisibilitySystem.Calculate(false);
+        }
 
         private void Awake()
         {
-            _currentHealth = _defaultHealth;
+            _defaultCurrentHealth = _defaultHealth;
+        }
+
+        public float GetCurrentHealth()
+        {
+            return _defaultCurrentHealth;
         }
 
         public void TakeDamage(float damageAmount)
         {
-            if (_currentHealth == 0)
-            {
-                return;
-            }
-
-            if (IsInvincible)
-            {
-                return;
-            }
-            
             OnTakeDamageTriggered?.Invoke();
-            
-            float finalDamage = CalculateDamageTaken(damageAmount);
-            _currentHealth -= finalDamage;
-
-            if (_currentHealth < 0)
+            if (_defaultCurrentHealth == 0)
             {
-                _currentHealth = 0;
+                return;
             }
 
-            if (_currentHealth == 0)
+            if (IsInvincible())
+            {
+                return;
+            }
+
+
+            float finalDamage = CalculateDamageTaken(damageAmount);
+            _defaultCurrentHealth -= finalDamage;
+
+            if (_defaultCurrentHealth < 0)
+            {
+                _defaultCurrentHealth = 0;
+            }
+
+            if (_defaultCurrentHealth == 0)
             {
                 OnDied?.Invoke();
             }
@@ -64,46 +78,35 @@ namespace Scripts.Health
 
         public void AddHealth(float amountToAdd)
         {
-            if (_currentHealth >= _maxHealth)
+            if (_defaultCurrentHealth >= _maxHealth)
             {
                 return;
             }
 
-            _currentHealth += amountToAdd;
+            _defaultCurrentHealth += amountToAdd;
 
-            if (_currentHealth > _maxHealth)
+            if (_defaultCurrentHealth > _maxHealth)
             {
-                _currentHealth = _maxHealth;
+                _defaultCurrentHealth = _maxHealth;
             }
         }
 
-        public void SetInvincible(bool isInvincible)
+        public void SetInvincible(int invTag, bool isInvincible)
         {
-            _isInvincible = isInvincible;
-        }
-
-        public void AddDamageTakenModifier(StatModifier mod)
-        {
-            damageTakenModifiers.Add(mod);
-            damageTakenModifiers = damageTakenModifiers.OrderBy(m => m.order).ToList();
-        }
-
-        public void RemoveDamageTakenModifier(StatModifier mod)
-        {
-            damageTakenModifiers.Remove(mod);
+            if (_invisibilitySystem.GetModifier(invTag) != null)
+            {
+                _invisibilitySystem.UpdateModifier(invTag, isInvincible);
+            }
+            else
+            {
+                _invisibilitySystem.AddModifier(new BoolStatModifier(invTag, BoolModType.OverrideIfTrue, isInvincible,
+                    _invisibilitySystem.GetLastOrder() + 1));
+            }
         }
 
         public float CalculateDamageTaken(float baseDamage)
         {
-            float result = baseDamage;
-            foreach (var mod in damageTakenModifiers)
-            {
-                if (mod.type == StatModType.Add)
-                    result += mod.value;
-                else if (mod.type == StatModType.Mult)
-                    result *= mod.value;
-            }
-            return result;
+            return _damageTakenModifierSystem.Calculate(baseDamage);
         }
 
         public float GetMaxHealth()

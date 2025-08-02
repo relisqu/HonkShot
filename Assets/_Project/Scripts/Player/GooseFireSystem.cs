@@ -1,12 +1,14 @@
 using System;
+using Scripts.Health;
 using UnityEngine;
 
 namespace Scripts.Player
 {
     public class GooseFireSystem : MonoBehaviour
     {
-        [Header("Fire Settings")]
-        [SerializeField] private float _ultimateMultiplySystem = 5f;
+        [Header("Fire Settings")] [SerializeField]
+        private float _ultimateMultiplySystem = 5f;
+
         [SerializeField] private float _maxFire = 100f;
         [SerializeField] private float _fireGainPerLaunch = 20f;
         [SerializeField] private float _fireGainPerAcceleration = 5f;
@@ -33,6 +35,7 @@ namespace Scripts.Player
         public bool IsUltimate => _isUltimate;
         public bool IsHonk => _isHonk;
         public float MaxFire => _maxFire;
+
         private void Awake()
         {
             _fire = 0f;
@@ -49,6 +52,7 @@ namespace Scripts.Player
             {
                 StartHonk();
             }
+
             if ((Input.GetKeyUp(_honkKey) && _isHonk) || (_isHonk && _fire <= 0))
             {
                 StopHonk();
@@ -107,13 +111,14 @@ namespace Scripts.Player
             {
                 StartUltimate();
             }
+
             FireChanged?.Invoke(_fire);
         }
 
         private void StartUltimate()
         {
             _isUltimate = true;
-            if (Scripts.PointSystem.PointReceiver.Instance )
+            if (Scripts.PointSystem.PointReceiver.Instance)
                 Scripts.PointSystem.PointReceiver.Instance.AddMultiplier("ultimate", _ultimateMultiplySystem);
             UltimateStarted?.Invoke();
         }
@@ -130,7 +135,7 @@ namespace Scripts.Player
         {
             _isHonk = true;
             if (_healthController)
-                _healthController.SetInvincible(true);
+                _healthController.SetInvincible((int)InvincibilityEnum.HonkMode, true);
             HonkStarted?.Invoke();
         }
 
@@ -138,8 +143,8 @@ namespace Scripts.Player
         {
             _isHonk = false;
             if (_healthController)
-                _healthController.SetInvincible(false);
+                _healthController.SetInvincible((int)InvincibilityEnum.HonkMode, false);
             HonkEnded?.Invoke();
         }
     }
-} 
+}

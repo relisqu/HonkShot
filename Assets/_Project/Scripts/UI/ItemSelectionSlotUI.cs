@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DG.Tweening;
 using Scripts.Items;
+using Scripts.Services.Localization;
 using TMPro;
 
 public class ItemSelectionSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
@@ -19,8 +20,8 @@ public class ItemSelectionSlotUI : MonoBehaviour, IPointerClickHandler, IPointer
         _item = item;
         _onSelected = onSelected;
         if (icon && item.icon) icon.sprite = item.icon;
-        if (nameText) nameText.text = item.itemName;
-        if (descriptionText) descriptionText.text = item.description;
+        if (nameText) nameText.text = LocalizationService.Instance.Get($"item_title_{item.Id}") ;
+        if (descriptionText) descriptionText.text = LocalizationService.Instance.Get($"item_description_{item.Id}") ;
         transform.localScale = Vector3.one;
     }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Scripts.Health
 {
@@ -23,9 +24,9 @@ namespace Scripts.Health
 
         private IEnumerator InvincibilityCoroutine(float invincibilityDuration)
         {
-            _healthController.SetInvincible(true);
+            _healthController.SetInvincible((int)InvincibilityEnum.IFrames, true);
             yield return new WaitForSeconds(invincibilityDuration);
-            _healthController.SetInvincible(false);
+            _healthController.SetInvincible((int)InvincibilityEnum.IFrames, false);
         }
 
         private void Awake()

@@ -25,30 +25,16 @@ namespace Scripts.Health
         [ShowIf("_dependsOnSpeed")] [SerializeField]
         private float _maxSpeedCoeff = 2f;
 
-        // Stat modifier system for damage
-        private List<StatModifier> damageModifiers = new List<StatModifier>();
+        private NumericStatModifierSystem _numericStatModifierSystem = new();
+
+        public NumericStatModifierSystem NumericStatModifierSystem => _numericStatModifierSystem;
         public Action<GameObject> OnHit;
 
-        public void AddDamageModifier(StatModifier mod)
-        {
-            damageModifiers.Add(mod);
-        }
-
-        public void RemoveDamageModifier(StatModifier mod)
-        {
-            damageModifiers.Remove(mod);
-        }
 
         public float CalculateDamage(float baseDamage)
         {
-            float result = baseDamage;
-            foreach (var mod in damageModifiers)
-            {
-                if (mod.type == StatModType.Add)
-                    result += mod.value;
-                else if (mod.type == StatModType.Mult)
-                    result *= mod.value;
-            }
+            float result = _numericStatModifierSystem.Calculate(baseDamage);
+
             Debug.Log($"Damage:: {result}");
             return result;
         }

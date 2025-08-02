@@ -37,7 +37,7 @@ namespace Scripts.Other
         {
             float timer = 0f;
 
-            while (_healthController.IsInvincible)
+            while (_healthController.IsInvincible())
             {
                 float alpha = _blinkCurve.Evaluate(timer / _invincibilityController.IrameDuration);
                 SetSpriteAlpha(alpha);

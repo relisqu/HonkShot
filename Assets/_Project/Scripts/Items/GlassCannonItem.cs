@@ -1,28 +1,33 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Scripts.Items;
 using Scripts.Health;
 
 public class GlassCannonItem : MonoBehaviour
 {
-    public float addValue = 0f; // e.g., +5 damage
-    public float multValue = 1.5f; // e.g., x1.5 damage
-    public float damageTakenMult = 1.5f; // e.g., x1.5 damage taken
+    public List<NumericStatModifier> DamageStatModifiers;
+    public List<NumericStatModifier> HealthStatModifiers;
 
     void Start()
     {
-        var attack = GetComponentInParent<PlayerAttackController>();
-        if (attack)
+        var attackController = GetComponentInParent<PlayerAttackController>();
+        if (attackController)
         {
-            if (addValue != 0f)
-                attack.AddDamageModifier(new StatModifier(StatModType.Add, addValue, 0));
-            if (!Mathf.Approximately(multValue, 1f))
-                attack.AddDamageModifier(new StatModifier(StatModType.Mult, multValue, 0));
+            foreach (var damageStatModifier in DamageStatModifiers)
+            {
+                damageStatModifier.SetOrder(attackController.NumericStatModifierSystem.GetLastOrder() + 1);
+                attackController.NumericStatModifierSystem.AddModifier(damageStatModifier);
+            }
         }
 
         var health = GetComponentInParent<HealthController>();
         if (health)
         {
-            health.AddDamageTakenModifier(new StatModifier(StatModType.Mult, damageTakenMult, 0));
+            foreach (var healthStatModifier in HealthStatModifiers)
+            {
+                healthStatModifier.SetOrder(attackController.NumericStatModifierSystem.GetLastOrder() + 1);
+                health.DamageTakenModifierSystem.AddModifier(healthStatModifier);
+            }
         }
     }
 }
