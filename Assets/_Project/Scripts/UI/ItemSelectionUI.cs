@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Scripts.PointSystem;
 using UnityEngine.EventSystems;
 using DG.Tweening;
+using Scripts.Items.PlayerItemManager;
 
 namespace Scripts.UI
 {

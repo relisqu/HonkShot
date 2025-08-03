@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Scripts.Items
+namespace Scripts.Items.StatSystems
 {
     public enum BoolModType
     {

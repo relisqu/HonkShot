@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Scripts.Items;
 
-namespace Scripts.Items
+namespace Scripts.Items.PlayerItemManager
 {
     public class PlayerInventory : MonoBehaviour
     {

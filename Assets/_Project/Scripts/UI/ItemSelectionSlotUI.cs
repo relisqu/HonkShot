@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DG.Tweening;
 using Scripts.Items;
+using Scripts.Items.PlayerItemManager;
 using Scripts.Services.Localization;
 using TMPro;
 

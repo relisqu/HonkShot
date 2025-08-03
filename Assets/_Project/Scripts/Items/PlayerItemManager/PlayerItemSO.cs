@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace Scripts.Items
+namespace Scripts.Items.PlayerItemManager
 {
     [CreateAssetMenu(fileName = "Item", menuName = "ScriptableObjects/Items", order = 1)]
     public class PlayerItemSO : ScriptableObject
@@ -10,15 +9,16 @@ namespace Scripts.Items
         public string ItemKey;
         public Sprite icon;
         public Sprite inGameSprite;
-        public GameObject itemPrefab;
+        public IItem itemPrefab;
 
         public virtual GameObject OnPickup(GameObject player)
         {
-            if (itemPrefab)
+            if (itemPrefab != null)
             {
-                return Instantiate(itemPrefab, player.transform);
+                return Instantiate(itemPrefab.GameObject, player.transform);
             }
+
             return null;
         }
     }
-} 
+}

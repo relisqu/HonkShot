@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using Scripts.Items;
+using Scripts.Items.StatSystems;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -12,7 +14,9 @@ namespace Scripts.Player.Dash
 
 
         [SerializeField] private bool _canRegenDashes = true;
-        [Tooltip("How many dashes player regenerates per second")][SerializeField] private float _dashRegenerationRate;
+
+        [Tooltip("How many dashes player regenerates per second")] [SerializeField]
+        private float _dashRegenerationRate;
 
         private int _currentDashCount;
 
@@ -20,11 +24,16 @@ namespace Scripts.Player.Dash
         public int CurrentDashCount => _currentDashCount;
         public bool CanDash => _currentDashCount > 0;
         private Coroutine _regenerateDashCoroutine;
-        public int MaxDashCount => _maxDashCount;
+        public int MaxDashCount => GetMaxDashCount();
+        private NumericStatModifierSystem _maxDashModifierSystem = new();
+        public NumericStatModifierSystem MaxDashModifierSystem => _maxDashModifierSystem;
+
+        private NumericStatModifierSystem _dashCooldownModifierSystem = new();
+        public NumericStatModifierSystem DashCooldownModifierSystem => _dashCooldownModifierSystem;
 
         private void Start()
         {
-            _currentDashCount = _maxDashCount;
+            _currentDashCount = MaxDashCount;
             UpdatedDashCount?.Invoke();
             _regenerateDashCoroutine = StartCoroutine(RegenerateDashes());
         }
@@ -32,6 +41,16 @@ namespace Scripts.Player.Dash
         public void OnDestroy()
         {
             StopCoroutine(_regenerateDashCoroutine);
+        }
+
+        public int GetMaxDashCount()
+        {
+            return (int)_maxDashModifierSystem.Calculate(_maxDashCount);
+        }
+
+        public float GetDashRegenerationRate()
+        {
+            return _dashCooldownModifierSystem.Calculate(1 / _dashRegenerationRate);
         }
 
         public IEnumerator RegenerateDashes()
@@ -43,11 +62,12 @@ namespace Scripts.Player.Dash
                     yield return null;
                 }
 
-                if (_currentDashCount < _maxDashCount)
+                if (_currentDashCount < MaxDashCount)
                 {
                     AddDash();
                 }
-                yield return new WaitForSeconds(1 / _dashRegenerationRate);
+
+                yield return new WaitForSeconds(GetDashRegenerationRate());
             }
 
             yield return null;
@@ -62,7 +82,7 @@ namespace Scripts.Player.Dash
 
         public void ResetDashes()
         {
-            _currentDashCount = _maxDashCount;
+            _currentDashCount = MaxDashCount;
             UpdatedDashCount?.Invoke();
         }
 

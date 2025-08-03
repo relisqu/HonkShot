@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System;
-using UnityEngine;
-
-namespace Scripts.Items
+﻿namespace Scripts.Items.StatSystems
 {
     public class NumericStatModifierSystem : StatModifierSystem<float>
     {

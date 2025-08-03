@@ -1,5 +1,7 @@
 ﻿using System;
 using Scripts.Audio;
+using Scripts.Items;
+using Scripts.Items.StatSystems;
 using Scripts.LevelSystem;
 using Scripts.LevelSystem.LevelObjects;
 using Scripts.Player.Dash;
@@ -38,6 +40,10 @@ namespace Scripts.Player
 
         private float _defaultDragValue;
         public float CurrentSpeed => _rigidbody2D.velocity.magnitude;
+
+        private NumericStatModifierSystem _throwForceModifierSystem = new();
+        public NumericStatModifierSystem ThrowForceModifierSystem => _throwForceModifierSystem;
+
 
         private void Awake()
         {
@@ -111,7 +117,8 @@ namespace Scripts.Player
                 forceMagnitude = Mathf.Max(0, _maxDragForceMagnitude - currentVelocity);
             }
 
-            return currentVelocity + forceMagnitude;
+            var resultForce = _throwForceModifierSystem.Calculate(forceMagnitude);
+            return currentVelocity + resultForce;
         }
 
         public void ThrowRigidbody(Rigidbody2D rigidbody, Vector2 dragForce)

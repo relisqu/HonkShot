@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Scripts.Audio;
+using Scripts.Items;
+using Scripts.Items.StatSystems;
 using Scripts.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -13,49 +15,29 @@ namespace Scripts.PointSystem
 
         [SerializeField] private float _perTypeCoefficient = 1f;
         [SerializeField] private float _baseDamage;
+
         private int _maxPointsCount;
         private float _currentPointsAttack;
+        private int CurrentPoints => (int)_currentPointsAttack;
+        private NumericStatModifierSystem _pointReceiveModifierSystem = new();
+        private int _bouncesCount = 0;
+
         public Action ChangedCurrentPoints;
         public Action ChangedMaxPoints;
-        private int CurrentPoints => (int)_currentPointsAttack;
-
-        public int MaxPointsCount => _maxPointsCount;
 
         private Dictionary<AttackPointsObjectType, int> _pointObjectTypes =
-            new Dictionary<AttackPointsObjectType, int>();
+            new();
 
-        private Dictionary<string, float> _multipliers = new Dictionary<string, float>();
+        public int MaxPointsCount => _maxPointsCount;
+        public NumericStatModifierSystem PointReceiveModifierSystem => _pointReceiveModifierSystem;
+        public float AveragePointsPerBounce => _maxPointsCount * 1f / _bouncesCount;
 
-        public float PointsMultiplier
-        {
-            get
-            {
-                float result = 1f;
-                foreach (var m in _multipliers.Values)
-                    result *= m;
-                return result;
-            }
-        }
-
-        public void AddMultiplier(string key, float value)
-        {
-            _multipliers[key] = value;
-        }
-
-        public void RemoveMultiplier(string key)
-        {
-            _multipliers.Remove(key);
-        }
 
         private void Awake()
         {
             Instance = this;
         }
 
-
-        public float AveragePointsPerBounce => _maxPointsCount * 1f / _bouncesCount;
-
-        private int _bouncesCount = 0;
 
         public void GeneratePointsParticle(int points)
         {
@@ -101,7 +83,7 @@ namespace Scripts.PointSystem
 
         public void AddMaxPoints()
         {
-            var intPoints = Mathf.RoundToInt(PointsMultiplier*GetAttackPoints());
+            var intPoints = Mathf.RoundToInt(_pointReceiveModifierSystem.Calculate(GetAttackPoints()));
             if (intPoints <= 0)
             {
                 return;
@@ -115,7 +97,7 @@ namespace Scripts.PointSystem
         public float GetAttackPoints()
         {
             var coeff = 1 + _pointObjectTypes.Count * _perTypeCoefficient;
-            return coeff *  _currentPointsAttack;
+            return coeff * _currentPointsAttack;
         }
 
         public float GetBaseDamage()

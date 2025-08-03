@@ -1,13 +1,16 @@
 using System;
 using Scripts.Health;
+using Scripts.Items;
+using Scripts.Items.StatSystems;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Scripts.Player
 {
     public class GooseFireSystem : MonoBehaviour
     {
-        [Header("Fire Settings")] [SerializeField]
-        private float _ultimateMultiplySystem = 5f;
+        [FormerlySerializedAs("_ultimateMultiplySystem")] [Header("Fire Settings")] [SerializeField]
+        private float _ultimateMultiplyCoefficient = 5f;
 
         [SerializeField] private float _maxFire = 100f;
         [SerializeField] private float _fireGainPerLaunch = 20f;
@@ -29,7 +32,10 @@ namespace Scripts.Player
         private bool _isUltimate;
         private bool _isHonk;
         private bool _canGainFire = true;
-        private Scripts.Health.HealthController _healthController;
+        private HealthController _healthController;
+
+        private NumericStatModifierSystem _playerPointReceiveModifierSystem =
+            PointSystem.PointReceiver.Instance.PointReceiveModifierSystem;
 
         public float Fire => _fire;
         public bool IsUltimate => _isUltimate;
@@ -115,19 +121,23 @@ namespace Scripts.Player
             FireChanged?.Invoke(_fire);
         }
 
+
         private void StartUltimate()
         {
             _isUltimate = true;
-            if (Scripts.PointSystem.PointReceiver.Instance)
-                Scripts.PointSystem.PointReceiver.Instance.AddMultiplier("ultimate", _ultimateMultiplySystem);
+            if (PointSystem.PointReceiver.Instance)
+                _playerPointReceiveModifierSystem.AddModifier(
+                    new NumericStatModifier((int)ModifierTypeEnum.HonkMode, NumericModType.Mult,
+                        _ultimateMultiplyCoefficient,
+                        _playerPointReceiveModifierSystem.GetLastOrder() + 1));
             UltimateStarted?.Invoke();
         }
 
         private void EndUltimate()
         {
             _isUltimate = false;
-            if (Scripts.PointSystem.PointReceiver.Instance)
-                Scripts.PointSystem.PointReceiver.Instance.RemoveMultiplier("ultimate");
+            if (PointSystem.PointReceiver.Instance)
+                _playerPointReceiveModifierSystem.RemoveModifier((int)ModifierTypeEnum.HonkMode);
             UltimateEnded?.Invoke();
         }
 

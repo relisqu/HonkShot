@@ -1,4 +1,4 @@
-﻿namespace Scripts.Items
+﻿namespace Scripts.Items.StatSystems
 {
     public class BoolStatModifierSystem : StatModifierSystem<bool>
     {
