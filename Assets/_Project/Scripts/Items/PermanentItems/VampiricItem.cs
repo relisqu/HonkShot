@@ -1,10 +1,11 @@
 using Scripts.Health;
+using Scripts.Items.PlayerItemManager;
 using Scripts.LevelSystem.LevelGeneration;
 using UnityEngine;
 
 namespace Scripts.Items.PermanentItems
 {
-    public class VampiricItem : MonoBehaviour
+    public class VampiricItem : Item
     {
         public float healPercent = 0.1f; // 10% of max health
 
@@ -49,6 +50,11 @@ namespace Scripts.Items.PermanentItems
                 _health.AddHealth(healAmount);
             }
             _tookDamageThisLevel = false; // Reset for next level
+        }
+
+        public override void InitItem(PlayerItemSO playerItemSO)
+        {
+            throw new System.NotImplementedException();
         }
     }
 } 

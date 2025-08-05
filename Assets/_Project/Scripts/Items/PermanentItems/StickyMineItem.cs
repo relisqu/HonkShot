@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Scripts.Items.PermanentItems
 {
-    public class StickyMineItem : MonoBehaviour, IItem
+    public class StickyMineItem : Item
     {
         public StickyMine minePrefab;
         public float explosionDelay = 1f;
@@ -42,7 +42,7 @@ namespace Scripts.Items.PermanentItems
             }
         }
 
-        public void InitItem(PlayerItemSO playerItemSO)
+        public override void InitItem(PlayerItemSO playerItemSO)
         {
         }
     }

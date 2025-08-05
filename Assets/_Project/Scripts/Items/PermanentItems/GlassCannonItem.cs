@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Scripts.Items.PermanentItems
 {
-    public class GlassCannonItem : MonoBehaviour, IItem
+    public class GlassCannonItem : Item
     {
         public List<NumericStatModifier> DamageStatModifiers;
         public List<NumericStatModifier> HealthStatModifiers;
@@ -30,13 +30,13 @@ namespace Scripts.Items.PermanentItems
             {
                 foreach (var healthStatModifier in HealthStatModifiers)
                 {
-                    healthStatModifier.SetOrder(attackController.NumericStatModifierSystem.GetLastOrder() + 1);
+                    healthStatModifier.SetOrder(health.DamageTakenModifierSystem.GetLastOrder() + 1);
                     health.DamageTakenModifierSystem.AddModifier(healthStatModifier);
                 }
             }
         }
 
-        public void InitItem(PlayerItemSO playerItemSO)
+        public override void InitItem(PlayerItemSO playerItemSO)
         {
             foreach (var numericStatModifier in DamageStatModifiers)
             {

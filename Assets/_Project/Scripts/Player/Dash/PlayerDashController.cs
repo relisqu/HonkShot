@@ -76,6 +76,7 @@ namespace Scripts.Player.Dash
         public void AddDash()
         {
             _currentDashCount++;
+            _currentDashCount = Mathf.Min(_currentDashCount, _maxDashCount);
             Debug.Log($"New dash added: {_currentDashCount}");
             UpdatedDashCount?.Invoke();
         }

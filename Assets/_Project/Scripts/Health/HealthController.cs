@@ -11,6 +11,7 @@ namespace Scripts.Health
     {
         [SerializeField] private float _maxHealth;
         [SerializeField] private float _defaultHealth;
+        [SerializeField] private ShieldController _shieldController;
 
         private float _defaultCurrentHealth = 10;
 
@@ -38,6 +39,7 @@ namespace Scripts.Health
         private void Awake()
         {
             _defaultCurrentHealth = _defaultHealth;
+            _shieldController = GetComponent<ShieldController>();
         }
 
         public float GetCurrentHealth()
@@ -47,7 +49,6 @@ namespace Scripts.Health
 
         public void TakeDamage(float damageAmount)
         {
-            OnTakeDamageTriggered?.Invoke();
             if (_defaultCurrentHealth == 0)
             {
                 return;
@@ -57,23 +58,34 @@ namespace Scripts.Health
             {
                 return;
             }
+            OnTakeDamageTriggered?.Invoke();
 
-
+            // Process damage through shields first
             float finalDamage = CalculateDamageTaken(damageAmount);
-            _defaultCurrentHealth -= finalDamage;
-
-            if (_defaultCurrentHealth < 0)
+            
+            if (_shieldController)
             {
-                _defaultCurrentHealth = 0;
+                finalDamage = _shieldController.ProcessDamageThroughShields(damageAmount);
             }
 
-            if (_defaultCurrentHealth == 0)
+            // Apply remaining damage to health
+            if (finalDamage > 0)
             {
-                OnDied?.Invoke();
-            }
-            else
-            {
-                OnDamaged?.Invoke();
+                _defaultCurrentHealth -= finalDamage;
+
+                if (_defaultCurrentHealth < 0)
+                {
+                    _defaultCurrentHealth = 0;
+                }
+
+                if (_defaultCurrentHealth == 0)
+                {
+                    OnDied?.Invoke();
+                }
+                else
+                {
+                    OnDamaged?.Invoke();
+                }
             }
         }
 

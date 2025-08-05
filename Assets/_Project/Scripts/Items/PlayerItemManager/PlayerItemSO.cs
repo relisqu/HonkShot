@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Scripts.Items.PlayerItemManager
 {
@@ -9,13 +11,15 @@ namespace Scripts.Items.PlayerItemManager
         public string ItemKey;
         public Sprite icon;
         public Sprite inGameSprite;
-        public IItem itemPrefab;
+        [FormerlySerializedAs("itemPrefabs")] public Item itemPrefab;
 
-        public virtual GameObject OnPickup(GameObject player)
+        public virtual Item OnPickup(GameObject player)
         {
-            if (itemPrefab != null)
+            if (itemPrefab)
             {
-                return Instantiate(itemPrefab.GameObject, player.transform);
+                var item = Instantiate(itemPrefab, player.transform);
+                item.InitItem(this);
+                return item;
             }
 
             return null;

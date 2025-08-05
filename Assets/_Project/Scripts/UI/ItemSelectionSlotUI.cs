@@ -20,9 +20,30 @@ public class ItemSelectionSlotUI : MonoBehaviour, IPointerClickHandler, IPointer
     {
         _item = item;
         _onSelected = onSelected;
-        if (icon && item.icon) icon.sprite = item.icon;
-        if (nameText) nameText.text = LocalizationService.Instance.Get($"item_title_{item.Id}") ;
-        if (descriptionText) descriptionText.text = LocalizationService.Instance.Get($"item_description_{item.Id}") ;
+        if (icon && item.icon)
+        {
+            icon.sprite = item.icon;
+        }
+        else
+        {
+            icon.sprite = null;
+        }
+
+        if (nameText)
+        {
+            nameText.text = LocalizationService.Instance.Get($"item_title_{item.Id}");
+            descriptionText.text = null;
+        }
+
+        if (descriptionText)
+        {
+            descriptionText.text = LocalizationService.Instance.Get($"item_description_{item.Id}");
+        }
+        else
+        {
+            descriptionText.text = null;
+        }
+
         transform.localScale = Vector3.one;
     }
 
@@ -40,4 +61,4 @@ public class ItemSelectionSlotUI : MonoBehaviour, IPointerClickHandler, IPointer
     {
         transform.DOScale(1f, 0.15f).SetEase(Ease.OutBack);
     }
-} 
+}

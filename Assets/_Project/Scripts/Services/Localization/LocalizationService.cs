@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Scripts.Services.Localization
 {
-    public class LocalizationService : ILocalizationService
+    public class LocalizationService : MonoBehaviour, ILocalizationService
     {
         private Dictionary<string, string> _dictionary = new();
 

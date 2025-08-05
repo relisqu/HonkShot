@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 
 namespace Scripts.Items.PermanentItems
 {
-    public class DamageBuffItem : MonoBehaviour, IItem
+    public class DamageBuffItem : Item
     {
         [FormerlySerializedAs("NumericStatModifiers")] public List<NumericStatModifier> DamageStatModifiers;
 
@@ -23,7 +23,7 @@ namespace Scripts.Items.PermanentItems
             }
         }
 
-        public void InitItem(PlayerItemSO playerItemSO)
+        public override void InitItem(PlayerItemSO playerItemSO)
         {
             foreach (var numericStatModifier in DamageStatModifiers)
             {

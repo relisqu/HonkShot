@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Scripts.Items.PermanentItems
 {
-    public class VampiricOnKillItem : MonoBehaviour, IItem
+    public class VampiricOnKillItem : Item
     {
         public float healPercent = 0.05f; // 5% of max health per kill
 
@@ -62,7 +62,7 @@ namespace Scripts.Items.PermanentItems
             }
         }
 
-        public void InitItem(PlayerItemSO playerItemSO)
+        public override void InitItem(PlayerItemSO playerItemSO)
         {
             throw new System.NotImplementedException();
         }

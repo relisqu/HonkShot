@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Scripts.Items.PlayerItemManager
 {
@@ -7,6 +9,13 @@ namespace Scripts.Items.PlayerItemManager
     {
         public List<PlayerItemSO> allItems; 
         public PlayerInventory playerInventory;
+
+        public static ItemManager instance;
+        private void Awake()
+        {
+            instance = this;
+            
+        }
 
         public List<PlayerItemSO> GetRandomItems(int count)
         {

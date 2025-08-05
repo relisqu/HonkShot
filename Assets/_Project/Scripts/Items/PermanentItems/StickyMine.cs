@@ -26,7 +26,7 @@ namespace Scripts.Items.PermanentItems
             float scaleTime = 0.2f;
             float waitTime = Mathf.Max(0, _delay - scaleTime);
             yield return new WaitForSeconds(waitTime);
-            transform.DOScale(1f, scaleTime).SetEase(Ease.InBack);
+            transform.DOScale(2f, scaleTime).SetEase(Ease.InBack);
             yield return new WaitForSeconds(scaleTime);
             if (_enemy)
             {

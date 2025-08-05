@@ -43,6 +43,7 @@ namespace Scripts.Enemies
         private Animator _animator;
 
         [SerializeField] private EnemyHealth _enemyHealth;
+        [SerializeField] private Rigidbody2D _rigidbody2D;
 
 
         private bool _isAttacking = false;
@@ -76,8 +77,10 @@ namespace Scripts.Enemies
                         yield return null;
                     }
 
-                    transform.position = Vector2.MoveTowards(transform.position, targetPoint.position,
-                        _moveSpeed * Time.deltaTime);
+                    _rigidbody2D.AddForce((targetPoint.position - transform.position) * (_moveSpeed * Time.deltaTime),
+                        ForceMode2D.Impulse);
+                    // transform.position = Vector2.MoveTowards(transform.position, targetPoint.position,
+                    //      _moveSpeed * Time.deltaTime);
                     yield return null;
                 }
 
@@ -114,6 +117,7 @@ namespace Scripts.Enemies
                 if (_isAttacking) yield return null;
                 yield return new WaitForSeconds(_attackInterval);
 
+                _rigidbody2D.velocity = Vector2.zero;
                 _animator.SetBool("IsWalking", false);
                 _isAttacking = true;
 

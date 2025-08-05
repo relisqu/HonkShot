@@ -71,7 +71,18 @@ namespace Scripts.Player
                 LevelManager.Instance.EnteredRoom -= OnRoomEntered;
         }
 
-        private void Start() => TryCreateSimulationSceneIfNeeded();
+        public static Projection Instance { get; private set; }
+
+        private void Start()
+        {
+            Instance = this;
+            TryCreateSimulationSceneIfNeeded();
+        }
+
+        public void EnableLine(bool value)
+        {
+            _line.enabled = value;
+        }
 
         private void OnDestroy()
         {
@@ -118,13 +129,13 @@ namespace Scripts.Player
 
             if (!dst.gameObject.activeSelf) dst.gameObject.SetActive(true);
 
-            dst.position   = src.position;
-            dst.rotation   = src.rotation;
+            dst.position = src.position;
+            dst.rotation = src.rotation;
             dst.localScale = src.localScale;
 
             int srcChildren = src.childCount;
             int dstChildren = dst.childCount;
-            int common      = Mathf.Min(srcChildren, dstChildren);
+            int common = Mathf.Min(srcChildren, dstChildren);
 
             // Sync the children that still exist in both hierarchies
             for (int i = 0; i < common; i++)
@@ -140,7 +151,7 @@ namespace Scripts.Player
                     ghostChild.gameObject.SetActive(false);
             }
         }
-        
+
         private void OnDragFinished(Vector2 _)
         {
             _isDragging = false;

@@ -34,7 +34,7 @@ namespace Scripts.Player
         private bool _canGainFire = true;
         private HealthController _healthController;
 
-        private NumericStatModifierSystem _playerPointReceiveModifierSystem =
+        private NumericStatModifierSystem _playerPointReceiveModifierSystem =>
             PointSystem.PointReceiver.Instance.PointReceiveModifierSystem;
 
         public float Fire => _fire;
@@ -126,11 +126,15 @@ namespace Scripts.Player
         {
             _isUltimate = true;
             if (PointSystem.PointReceiver.Instance)
+            {
+                Debug.Log(_playerPointReceiveModifierSystem == null);
+                
                 _playerPointReceiveModifierSystem.AddModifier(
                     new NumericStatModifier((int)ModifierTypeEnum.HonkMode, NumericModType.Mult,
                         _ultimateMultiplyCoefficient,
                         _playerPointReceiveModifierSystem.GetLastOrder() + 1));
-            UltimateStarted?.Invoke();
+                UltimateStarted?.Invoke();
+            }
         }
 
         private void EndUltimate()
