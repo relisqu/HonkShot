@@ -31,13 +31,12 @@ public class ItemSelectionSlotUI : MonoBehaviour, IPointerClickHandler, IPointer
 
         if (nameText)
         {
-            nameText.text = LocalizationService.Instance.Get($"item_title_{item.Id}");
-            descriptionText.text = null;
+            nameText.text = LocalizationService.Instance.Get($"item_{item.Id}_title");
         }
 
         if (descriptionText)
         {
-            descriptionText.text = LocalizationService.Instance.Get($"item_description_{item.Id}");
+            descriptionText.text = LocalizationService.Instance.Get($"item_{item.Id}_description");
         }
         else
         {
