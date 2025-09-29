@@ -1,5 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
+using Zenject;
 
 namespace Scripts.Services.Localization
 {
@@ -12,11 +13,15 @@ namespace Scripts.Services.Localization
         
         private TMP_Text _text;
 
+        [Inject]
+        public void Construct(ILocalizationService localizationService)
+        {
+            _localizationService = localizationService;
+            _text = GetComponent<TMP_Text>();
+        }
+
         private void Start()
         {
-            _localizationService = LocalizationService.Instance;
-            _text = GetComponent<TMP_Text>();
-            
             _localizationService.LanguageChanged += LocalizationService_LanguageChanged;
             UpdateText();
         }

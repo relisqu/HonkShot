@@ -6,15 +6,24 @@ using Scripts.Items;
 using Scripts.Items.PlayerItemManager;
 using Scripts.Services.Localization;
 using TMPro;
+using Zenject;
 
 public class ItemSelectionSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
+    private ILocalizationService _localizationService;
+
     public Image icon;
     public TMP_Text nameText;
     public TMP_Text descriptionText;
 
     private PlayerItemSO _item;
     private System.Action<PlayerItemSO> _onSelected;
+
+    [Inject]
+    private void Construct(ILocalizationService localizationService)
+    {
+        _localizationService = localizationService;
+    }
 
     public void Setup(PlayerItemSO item, System.Action<PlayerItemSO> onSelected)
     {
@@ -31,12 +40,12 @@ public class ItemSelectionSlotUI : MonoBehaviour, IPointerClickHandler, IPointer
 
         if (nameText)
         {
-            nameText.text = LocalizationService.Instance.Get($"item_{item.Id}_title");
+            nameText.text = _localizationService.Get($"item_{item.Id}_title");
         }
 
         if (descriptionText)
         {
-            descriptionText.text = LocalizationService.Instance.Get($"item_{item.Id}_description");
+            descriptionText.text = _localizationService.Get($"item_{item.Id}_description");
         }
         else
         {

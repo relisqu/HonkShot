@@ -17,17 +17,18 @@ namespace Scripts.Services.Localization.Editor
         private const int FirstLanguageKeyColumnIndex = 2;
         private const int LanguageKeyRowIndex = 0;
         private const int FirstValueRowIndex = 1;
-        
+
         private UnityWebRequest _unityWebRequest;
         private LocalizationSettings _localizationSettings;
-        
+
         private string TableUri => string.Format(UriFormat, LocalizationSettings.TableId, LocalizationSettings.SheetId);
         public UnityWebRequest UnityWebRequest => _unityWebRequest;
         public LocalizationSettings LocalizationSettings => _localizationSettings;
         public bool IsProcessed => _unityWebRequest != null;
 
-        public LocalizationHandler() => 
-            _localizationSettings = EditorSettingsUtility.LoadOrCreate<LocalizationSettings>(LocalizationSettings.FileName);
+        public LocalizationHandler() =>
+            _localizationSettings =
+                EditorSettingsUtility.LoadOrCreate<LocalizationSettings>(LocalizationSettings.FileName);
 
         public void Update()
         {
@@ -55,7 +56,7 @@ namespace Scripts.Services.Localization.Editor
                         string filePath = Path.Combine(LocalizationSettings.InternalFolder, keyValuePair.Key + ".txt");
                         SaveToFile(keyValuePair.Value, filePath);
                     }
-                    
+
                     dictionaries = ParsingText(_unityWebRequest.downloadHandler.text, false);
 
                     foreach (var keyValuePair in dictionaries)
@@ -98,7 +99,7 @@ namespace Scripts.Services.Localization.Editor
 
             if (string.IsNullOrEmpty(text))
                 throw new Exception("ParsingText. Text is empty!");
-        
+
             string[] lines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             List<string> languageKeys = lines[LanguageKeyRowIndex]
                 .Split('	')
@@ -107,10 +108,10 @@ namespace Scripts.Services.Localization.Editor
 
             if (languageKeys.Count <= FirstLanguageKeyColumnIndex)
                 throw new Exception("ParsingText. No columns languages found in file");
-            
+
             languageKeys.RemoveRange(0, FirstLanguageKeyColumnIndex);
 
-            foreach (var languageKey in languageKeys) 
+            foreach (var languageKey in languageKeys)
                 dictionaries.Add(languageKey, new Dictionary<string, string>());
 
             for (int i = FirstValueRowIndex; i < lines.Length; i++)
@@ -122,13 +123,13 @@ namespace Scripts.Services.Localization.Editor
 
                 if (innerOnly && string.IsNullOrEmpty(columns[InnerColumnIndex]))
                     continue;
-                
+
                 var index = FirstLanguageKeyColumnIndex;
                 foreach (var dictionary in dictionaries.Values)
                 {
                     if (dictionary.ContainsKey(columns[KeyColumnIndex]))
                         throw new Exception($"ParsingText. Duplicate key {columns[KeyColumnIndex]}");
-                        
+
                     dictionary.Add(columns[KeyColumnIndex], columns[index]);
                     index++;
                 }
@@ -141,10 +142,10 @@ namespace Scripts.Services.Localization.Editor
         private void SaveToFile(Dictionary<string, string> dictionary, string filePath)
         {
             var lines = new List<string>();
-        
+
             foreach (var keyValuePair in dictionary)
                 lines.Add(keyValuePair.Key + " ~ " + keyValuePair.Value);
-        
+
             File.WriteAllLines(filePath, lines);
             AssetDatabase.Refresh();
             Debug.Log($"SaveToFile. Complete {filePath} dictionary.count: {dictionary.Count}");

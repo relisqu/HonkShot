@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
+
 namespace Scripts.Services.Localization
 {
     [RequireComponent(typeof(Text))]
@@ -11,6 +13,7 @@ namespace Scripts.Services.Localization
         
         private Text _text;
 
+        [Inject]
         public void Construct(ILocalizationService localizationService)
         {
             _localizationService = localizationService;
