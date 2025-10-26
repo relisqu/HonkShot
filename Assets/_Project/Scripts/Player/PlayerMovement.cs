@@ -64,7 +64,7 @@ namespace Scripts.Player
         private void FixedUpdate()
         {
             float currentSpeed = _rigidbody2D.velocity.magnitude;
-            if (_gooseFireSystem != null)
+            if (_gooseFireSystem)
             {
                 if (currentSpeed > _prevSpeed + 0.01f)
                     _gooseFireSystem.OnAcceleration();

@@ -17,6 +17,7 @@ namespace Scripts.LevelSystem.LevelObjects
 
         private void FixedUpdate()
         {
+            if (_rigidbody2D.velocity.magnitude < 0.001f) return;
             _currentVelocity = _rigidbody2D.velocity;
         }
 
@@ -38,9 +39,5 @@ namespace Scripts.LevelSystem.LevelObjects
             _rigidbody2D.velocity
                 = newDirection * _currentVelocity.magnitude * bounceObject.Bounciness;
         }
-
-
-       
-
     }
 }

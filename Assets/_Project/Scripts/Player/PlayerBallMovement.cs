@@ -59,14 +59,7 @@ namespace Scripts.Player
         private void Update()
         {
             float currentSpeed = _rigidbody2D.velocity.magnitude;
-            if (_gooseFireSystem)
-            {
-                if (currentSpeed > _prevSpeed + 0.01f)
-                    _gooseFireSystem.OnAcceleration();
-                else if (currentSpeed < _prevSpeed - 0.01f)
-                    _gooseFireSystem.OnDeceleration();
-            }
-
+            
             _prevSpeed = currentSpeed;
 
             if (_playerStatus.PlayerState == PlayerState.Ball && Time.time - _throwStartTime > _additionalDragStartTime)
