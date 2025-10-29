@@ -17,8 +17,8 @@ namespace Scripts.LevelSystem.LevelObjects
 
         private void FixedUpdate()
         {
-            if (_rigidbody2D.velocity.magnitude < 0.001f) return;
-            _currentVelocity = _rigidbody2D.velocity;
+            if (_rigidbody2D.linearVelocity.magnitude < 0.001f) return;
+            _currentVelocity = _rigidbody2D.linearVelocity;
         }
 
         private void OnCollisionEnter2D(Collision2D other)
@@ -36,7 +36,7 @@ namespace Scripts.LevelSystem.LevelObjects
             averageNormal /= other.contactCount;
             var newDirection = Vector2.Reflect(direction, averageNormal);
 
-            _rigidbody2D.velocity
+            _rigidbody2D.linearVelocity
                 = newDirection * _currentVelocity.magnitude * bounceObject.Bounciness;
         }
     }

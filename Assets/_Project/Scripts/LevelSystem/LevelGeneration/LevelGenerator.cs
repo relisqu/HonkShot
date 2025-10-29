@@ -34,7 +34,7 @@ namespace Scripts.LevelSystem.LevelGeneration
             for (int i = 0; i < _roomCount && i < _shuffledRoomModels.Count; i++)
             {
                 var model = _shuffledRoomModels[i];
-                if (model.RoomPrefab == null) continue;
+                if (!model.RoomPrefab) continue;
                 Room roomInstance = Instantiate(model.RoomPrefab, spawnPosition, Quaternion.identity, transform);
                 if (_spawnedRooms.Count > 0) _spawnedRooms[^1].SetNextRoom(roomInstance);
                 _spawnedRooms.Add(roomInstance);

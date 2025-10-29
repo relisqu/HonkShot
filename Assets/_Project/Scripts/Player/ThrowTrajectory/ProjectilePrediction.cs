@@ -279,7 +279,7 @@ namespace Scripts.Player
 
             var rb = proj.Rigidbody2D;
             rb.simulated = true;
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
 
             _playerBallMovement.ThrowRigidbody(rb, _lastDragDirection);
@@ -288,7 +288,7 @@ namespace Scripts.Player
             float simDt = Time.fixedUnscaledDeltaTime;
             int idx = 0;
             int bounceCount = 0;
-            Vector2 prevVelocity = rb.velocity;
+            Vector2 prevVelocity = rb.linearVelocity;
 
             _line.positionCount = _maxPhysicsFrameIterations;
             _line.SetPosition(idx++, proj.transform.position);
@@ -296,15 +296,15 @@ namespace Scripts.Player
             while (idx < _maxPhysicsFrameIterations && bounceCount <= _maxBounces)
             {
                 _physicsScene.Simulate(simDt);
-                proj.BouncingObject.SetCurrentVelocity(rb.velocity);
+                proj.BouncingObject.SetCurrentVelocity(rb.linearVelocity);
                 _line.SetPosition(idx++, proj.transform.position);
-                if (rb.velocity.sqrMagnitude > 0.0001f && Vector2.Angle(prevVelocity, rb.velocity) > 5f)
+                if (rb.linearVelocity.sqrMagnitude > 0.0001f && Vector2.Angle(prevVelocity, rb.linearVelocity) > 5f)
                 {
                     Debug.Log(idx);
                     bounceCount++;
                 }
 
-                prevVelocity = rb.velocity;
+                prevVelocity = rb.linearVelocity;
             }
 
             _line.positionCount = idx;

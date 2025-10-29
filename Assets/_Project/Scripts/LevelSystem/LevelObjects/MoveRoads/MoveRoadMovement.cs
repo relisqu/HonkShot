@@ -109,9 +109,9 @@ namespace Scripts.LevelObjects.MoveRoads
 
             Vector2 forceDirection = new Vector2(angle.x, angle.y).normalized;
             var additionalForce = forceDirection * (_addedForce * Time.deltaTime);
-            var updatedDirection = (forceDirection * rigidbody2D.velocity.magnitude +
+            var updatedDirection = (forceDirection * rigidbody2D.linearVelocity.magnitude +
                                     (Vector2)insideForce.normalized * (Time.deltaTime * _rotationSpeed)).normalized;
-            rigidbody2D.velocity = updatedDirection * (rigidbody2D.velocity.magnitude) + additionalForce;
+            rigidbody2D.linearVelocity = updatedDirection * (rigidbody2D.linearVelocity.magnitude) + additionalForce;
         }
 
         private void OnDrawGizmos()

@@ -17,7 +17,7 @@ namespace Scripts.Player.Interactions
         {
             _playerDashController.ResetDashes();
             _pointReceiver.ResetAttack();
-            _playerMovement.GetRigidbody().velocity = Vector3.zero;
+            _playerMovement.GetRigidbody().linearVelocity = Vector3.zero;
         }
 
         private void LevelManager_EnteredRoom()

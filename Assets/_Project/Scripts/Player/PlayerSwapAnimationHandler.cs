@@ -1,12 +1,11 @@
-﻿using System;
+﻿
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
-using Cinemachine;
+using Unity.Cinemachine;
 using Scripts.Camera;
 using Scripts.Player.InputHandling;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 using System.Collections;
 
@@ -35,7 +34,7 @@ namespace Scripts.Player
         [SerializeField] private float _maxZoomAddOut = 1f;
         [SerializeField] private float _zoomDuration = 0.1f;
 
-        private CinemachineVirtualCamera _virtualCamera;
+        private CinemachineCamera _virtualCamera;
         private float _originalSize;
         private float _lastHorizontalVelocity = 0f;
 
@@ -50,7 +49,7 @@ namespace Scripts.Player
         {
             _playerStatus.AnimationStateMachine().SetAnimator(_playerAnimator);
             _virtualCamera = CameraShakeHandler.Instance._virtualCamera;
-            _originalSize = _virtualCamera.m_Lens.OrthographicSize;
+            _originalSize = _virtualCamera.Lens.OrthographicSize;
         }
 
         private void OnEnable()
@@ -118,8 +117,8 @@ namespace Scripts.Player
             }
 
             _zoomTween = DOTween.To(
-                () => _virtualCamera.m_Lens.OrthographicSize,
-                x => _virtualCamera.m_Lens.OrthographicSize = x,
+                () => _virtualCamera.Lens.OrthographicSize,
+                x => _virtualCamera.Lens.OrthographicSize = x,
                 targetSize,
                 _zoomDuration
             ).SetEase(Ease.OutQuad);
@@ -131,7 +130,7 @@ namespace Scripts.Player
 
         private void PlayerMovement_DragStarted()
         {
-            _originalSize = _virtualCamera.m_Lens.OrthographicSize;
+            _originalSize = _virtualCamera.Lens.OrthographicSize;
             _playerAnimator.SetTrigger(DragStart);
             SlowDownGame();
             StartSweatEmission();
@@ -157,8 +156,8 @@ namespace Scripts.Player
             }
 
             _zoomTween = DOTween.To(
-                () => _virtualCamera.m_Lens.OrthographicSize,
-                x => _virtualCamera.m_Lens.OrthographicSize = x,
+                () => _virtualCamera.Lens.OrthographicSize,
+                x => _virtualCamera.Lens.OrthographicSize = x,
                 _originalSize,
                 _zoomDuration
             ).SetEase(Ease.OutQuad);

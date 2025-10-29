@@ -39,10 +39,13 @@ namespace Scripts.Player
         private float _prevSpeed;
 
         private float _defaultDragValue;
-        public float CurrentSpeed => _rigidbody2D.velocity.magnitude;
+        public float CurrentSpeed => _rigidbody2D.linearVelocity.magnitude;
 
         private NumericStatModifierSystem _throwForceModifierSystem = new();
         public NumericStatModifierSystem ThrowForceModifierSystem => _throwForceModifierSystem;
+
+        private NumericStatModifierSystem _dragForceModifierSystem = new();
+        public NumericStatModifierSystem DragForceModifierSystem => _dragForceModifierSystem;
 
 
         private void Awake()
@@ -53,23 +56,24 @@ namespace Scripts.Player
 
         private void Start()
         {
-            _defaultDragValue = _rigidbody2D.drag;
+            _defaultDragValue = _rigidbody2D.linearDamping;
         }
 
         private void Update()
         {
-            float currentSpeed = _rigidbody2D.velocity.magnitude;
-            
+            float currentSpeed = _rigidbody2D.linearVelocity.magnitude;
+
             _prevSpeed = currentSpeed;
 
-            if (_playerStatus.PlayerState == PlayerState.Ball && Time.time - _throwStartTime > _additionalDragStartTime)
+            if (_playerStatus.PlayerState == PlayerState.Ball &&
+                Time.time - _throwStartTime > _additionalDragStartTime && !_gooseFireSystem.IsUltimate)
             {
                 var additionalDragForce = Mathf.Clamp01(_additionalDragForce * Time.deltaTime);
-                _rigidbody2D.drag += additionalDragForce * additionalDragForce;
+                _rigidbody2D.linearDamping += additionalDragForce * additionalDragForce;
             }
             else
             {
-                _rigidbody2D.drag = _defaultDragValue;
+                _rigidbody2D.linearDamping = _defaultDragValue*_dragForceModifierSystem.Calculate(1f);
             }
         }
 
@@ -104,7 +108,7 @@ namespace Scripts.Player
         public float GetDragVelocityMagnitude(Rigidbody2D rigidbody, Vector2 dragForce)
         {
             var forceMagnitude = Mathf.Min(dragForce.magnitude, _maxForceMagnitude) * _forceModifier;
-            var currentVelocity = rigidbody.velocity.magnitude;
+            var currentVelocity = rigidbody.linearVelocity.magnitude;
             if (currentVelocity + forceMagnitude > _maxDragForceMagnitude)
             {
                 forceMagnitude = Mathf.Max(0, _maxDragForceMagnitude - currentVelocity);
@@ -117,7 +121,7 @@ namespace Scripts.Player
         public void ThrowRigidbody(Rigidbody2D rigidbody, Vector2 dragForce)
         {
             var currentVelocity = GetDragVelocityMagnitude(rigidbody, dragForce);
-            rigidbody.velocity = -currentVelocity * dragForce.normalized;
+            rigidbody.linearVelocity = -currentVelocity * dragForce.normalized;
         }
 
         private void OnCollisionEnter2D(Collision2D other)
@@ -126,7 +130,7 @@ namespace Scripts.Player
 
             if (other.gameObject.TryGetComponent(out LevelSolidObject _))
             {
-                var force = _rigidbody2D.velocity.magnitude / _forceModifier;
+                var force = _rigidbody2D.linearVelocity.magnitude / _forceModifier;
                 force = Mathf.Clamp(force, 0, 1);
 
                 AudioManager.Instance.PlayOneShot(SoundChanelType.Player, "gooseCollision", force);
@@ -135,7 +139,7 @@ namespace Scripts.Player
 
         public void StopMovement()
         {
-            _rigidbody2D.velocity = Vector2.zero;
+            _rigidbody2D.linearVelocity = Vector2.zero;
         }
     }
 }

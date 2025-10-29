@@ -18,8 +18,8 @@ namespace Scripts.LevelSystem.LevelObjects.Interaction
         {
             if (_rb != null)
             {
-                _storedVelocity = _rb.velocity;
-                _rb.velocity = Vector2.zero;
+                _storedVelocity = _rb.linearVelocity;
+                _rb.linearVelocity = Vector2.zero;
                 _rb.isKinematic = true;
             }
 
@@ -36,7 +36,7 @@ namespace Scripts.LevelSystem.LevelObjects.Interaction
             if (_rb)
             {
                 _rb.isKinematic = false;
-                _rb.velocity = shootDirection.normalized * shootForce;
+                _rb.linearVelocity = shootDirection.normalized * shootForce;
             }
 
             if (_collider)

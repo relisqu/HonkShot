@@ -54,6 +54,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -97,6 +100,7 @@ BoxCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 242635994787154272}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 6200000, guid: b4bd32cd6d61a4741a55c8b781c0080e, type: 2}
   m_IncludeLayers:
@@ -120,7 +124,8 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: 1.0193268, y: 0.0026701689}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -131,7 +136,6 @@ BoxCollider2D:
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
   m_Size: {x: 2.6039069, y: 1.0141327}
   m_EdgeRadius: 0
 --- !u!114 &8678994306885995243
@@ -178,7 +182,7 @@ MonoBehaviour:
   PointsPerStayCount: 0
 --- !u!50 &7973082668554485176
 Rigidbody2D:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -189,8 +193,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1000000
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -288,6 +292,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -331,6 +338,7 @@ BoxCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3751262329074867906}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 6200000, guid: b4bd32cd6d61a4741a55c8b781c0080e, type: 2}
   m_IncludeLayers:
@@ -354,7 +362,8 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: 1.0193268, y: 0.0026701689}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -365,7 +374,6 @@ BoxCollider2D:
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
   m_Size: {x: 2.6039069, y: 1.0141327}
   m_EdgeRadius: 0
 --- !u!114 &2099691979137784340
@@ -412,7 +420,7 @@ MonoBehaviour:
   PointsPerStayCount: 0
 --- !u!50 &6373723574654542818
 Rigidbody2D:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -423,8 +431,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1000000
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -491,6 +499,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -534,6 +545,7 @@ BoxCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5437312205809661186}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 6200000, guid: b4bd32cd6d61a4741a55c8b781c0080e, type: 2}
   m_IncludeLayers:
@@ -557,7 +569,8 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: 1.0193268, y: 0.0026701689}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -568,7 +581,6 @@ BoxCollider2D:
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
   m_Size: {x: 2.6039069, y: 1.0141327}
   m_EdgeRadius: 0
 --- !u!114 &8905006524810218164
@@ -615,7 +627,7 @@ MonoBehaviour:
   PointsPerStayCount: 0
 --- !u!50 &9149261547406559161
 Rigidbody2D:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -626,8 +638,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1000000
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -694,6 +706,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -737,6 +752,7 @@ BoxCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5599763756121983109}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 6200000, guid: b4bd32cd6d61a4741a55c8b781c0080e, type: 2}
   m_IncludeLayers:
@@ -760,7 +776,8 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: 1.0193268, y: 0.0026701689}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -771,7 +788,6 @@ BoxCollider2D:
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
   m_Size: {x: 2.6039069, y: 1.0141327}
   m_EdgeRadius: 0
 --- !u!114 &2822639784515690119
@@ -818,7 +834,7 @@ MonoBehaviour:
   PointsPerStayCount: 0
 --- !u!50 &3407647132243662452
 Rigidbody2D:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -829,8 +845,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1000000
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -897,6 +913,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -940,6 +959,7 @@ BoxCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7215702409109232814}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 6200000, guid: b4bd32cd6d61a4741a55c8b781c0080e, type: 2}
   m_IncludeLayers:
@@ -963,7 +983,8 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: 1.0193268, y: 0.0026701689}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -974,7 +995,6 @@ BoxCollider2D:
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
   m_Size: {x: 2.6039069, y: 1.0141327}
   m_EdgeRadius: 0
 --- !u!114 &4531243326036910314
@@ -1021,7 +1041,7 @@ MonoBehaviour:
   PointsPerStayCount: 0
 --- !u!50 &3759719707570024505
 Rigidbody2D:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1032,8 +1052,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1000000
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -1100,6 +1120,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1143,6 +1166,7 @@ BoxCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8438647402634028652}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 6200000, guid: b4bd32cd6d61a4741a55c8b781c0080e, type: 2}
   m_IncludeLayers:
@@ -1166,7 +1190,8 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: 1.0193268, y: 0.0026701689}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -1177,7 +1202,6 @@ BoxCollider2D:
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
   m_Size: {x: 2.6039069, y: 1.0141327}
   m_EdgeRadius: 0
 --- !u!114 &1079213068155051921
@@ -1224,7 +1248,7 @@ MonoBehaviour:
   PointsPerStayCount: 0
 --- !u!50 &3355187454908110632
 Rigidbody2D:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1235,8 +1259,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1000000
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -1303,6 +1327,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1346,6 +1373,7 @@ BoxCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8458330291763802469}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 6200000, guid: b4bd32cd6d61a4741a55c8b781c0080e, type: 2}
   m_IncludeLayers:
@@ -1369,7 +1397,8 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: 1.0193268, y: 0.0026701689}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -1380,7 +1409,6 @@ BoxCollider2D:
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
   m_Size: {x: 2.6039069, y: 1.0141327}
   m_EdgeRadius: 0
 --- !u!114 &2932415453529316476
@@ -1427,7 +1455,7 @@ MonoBehaviour:
   PointsPerStayCount: 0
 --- !u!50 &5728008112859201798
 Rigidbody2D:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1438,8 +1466,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1000000
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -1506,6 +1534,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1549,6 +1580,7 @@ BoxCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8903532873206865956}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 6200000, guid: b4bd32cd6d61a4741a55c8b781c0080e, type: 2}
   m_IncludeLayers:
@@ -1572,7 +1604,8 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: 1.0193268, y: 0.0026701689}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -1583,7 +1616,6 @@ BoxCollider2D:
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
   m_Size: {x: 2.6039069, y: 1.0141327}
   m_EdgeRadius: 0
 --- !u!114 &4479931341951037184
@@ -1630,7 +1662,7 @@ MonoBehaviour:
   PointsPerStayCount: 0
 --- !u!50 &3801251775904843175
 Rigidbody2D:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1641,8 +1673,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1000000
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -1748,11 +1780,11 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5965936511812208652, guid: e1abe9a574318914a95b93f8dc1afab3, type: 3}
-      propertyPath: _pathPoints.Array.data[2]
+      propertyPath: '_pathPoints.Array.data[2]'
       value: 
       objectReference: {fileID: 3212726071201716805}
     - target: {fileID: 5965936511812208652, guid: e1abe9a574318914a95b93f8dc1afab3, type: 3}
-      propertyPath: _pathPoints.Array.data[3]
+      propertyPath: '_pathPoints.Array.data[3]'
       value: 
       objectReference: {fileID: 4634374487538541231}
     m_RemovedComponents: []
@@ -1871,7 +1903,7 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5965936511812208652, guid: e1abe9a574318914a95b93f8dc1afab3, type: 3}
-      propertyPath: _pathPoints.Array.data[2]
+      propertyPath: '_pathPoints.Array.data[2]'
       value: 
       objectReference: {fileID: 3611766651671647060}
     m_RemovedComponents: []
@@ -2037,6 +2069,106 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: -5.59
       objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.size
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[0].corner
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[1].corner
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[2].corner
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[3].corner
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[4].height
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[5].height
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[6].height
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[7].height
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[2].position.x
+      value: -12.160798
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[2].position.y
+      value: 0.8644335
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[3].position.x
+      value: -6.045995
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[3].position.y
+      value: 0.8171809
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[4].position.x
+      value: -5.9865055
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[4].position.y
+      value: 8.344995
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[5].position.x
+      value: 1.2235222
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[5].position.y
+      value: 8.332727
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[6].position.x
+      value: 1.2093859
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[6].position.y
+      value: 0.84995747
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[7].position.x
+      value: 7.718054
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[7].position.y
+      value: 0.81655717
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[4].m_CornerMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[5].m_CornerMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[6].m_CornerMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248756200338254825, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_Spline.m_ControlPoints.Array.data[7].m_CornerMode
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5315875074926699386, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
       propertyPath: m_Spline.m_ControlPoints.Array.size
       value: 8
@@ -2156,6 +2288,14 @@ PrefabInstance:
     - target: {fileID: 5929873346453769892, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
       propertyPath: m_LocalPosition.y
       value: 1.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 6456853925227420390, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -2.85
+      objectReference: {fileID: 0}
+    - target: {fileID: 6456853925227420390, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.062101588
       objectReference: {fileID: 0}
     - target: {fileID: 6469253845170978437, guid: 4e6b04a1c33a4fb4a976f75158c1f899, type: 3}
       propertyPath: m_Name
@@ -2447,7 +2587,7 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5965936511812208652, guid: e1abe9a574318914a95b93f8dc1afab3, type: 3}
-      propertyPath: _pathPoints.Array.data[2]
+      propertyPath: '_pathPoints.Array.data[2]'
       value: 
       objectReference: {fileID: 4694822670049399842}
     m_RemovedComponents: []

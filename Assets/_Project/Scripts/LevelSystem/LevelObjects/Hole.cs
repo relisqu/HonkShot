@@ -35,7 +35,7 @@ namespace Scripts.LevelSystem.LevelObjects
             }
 
             holeDamageable.GetComponent<Animator>().speed = 0;
-            holeDamageable.Rigidbody2D.velocity = Vector2.zero;
+            holeDamageable.Rigidbody2D.linearVelocity = Vector2.zero;
 
             // Create and track new sequence
             Sequence swirlSequence = DOTween.Sequence();

@@ -5,6 +5,7 @@ using Assets.Scripts.LevelCreator;
 using Scripts.Enemies;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.U2D;
 
 namespace Scripts.LevelSystem.LevelGeneration
 {
@@ -12,12 +13,18 @@ namespace Scripts.LevelSystem.LevelGeneration
     {
         [SerializeField] private Door _door;
         [SerializeField] private Transform _spawnPointTransform;
-        [FormerlySerializedAs("_portalSpawnPoint")] [SerializeField] private Transform exitPortalSpawnPoint;
+        [SerializeField] private SpriteShapeController _spriteShapeController;
+
+        [FormerlySerializedAs("_portalSpawnPoint")] [SerializeField]
+        private Transform exitPortalSpawnPoint;
+
         [SerializeField] public Transform ObstaclesTransform;
         private bool _isActive = false;
 
         private List<EnemyHealth> _enemyHealths = new List<EnemyHealth>();
+        public SpriteShapeController SpriteShapeController => _spriteShapeController;
         public Transform SpawnPointTransform => _spawnPointTransform;
+
         public Transform ExitPortalSpawnPoint
         {
             get => exitPortalSpawnPoint;
@@ -84,6 +91,7 @@ namespace Scripts.LevelSystem.LevelGeneration
                 Gizmos.color = Color.white;
                 Gizmos.DrawSphere(_spawnPointTransform.position, 0.3f);
             }
+
             if (exitPortalSpawnPoint != null)
             {
                 Gizmos.color = Color.cyan;

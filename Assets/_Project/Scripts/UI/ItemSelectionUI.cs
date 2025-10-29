@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.Collections;
 using Scripts.Items;
 using System.Collections.Generic;
 using Scripts.PointSystem;
@@ -33,12 +34,26 @@ namespace Scripts.UI
             {
                 if (i < items.Count)
                 {
-                    slots[i].gameObject.SetActive(true);
                     slots[i].Setup(items[i], OnItemSelected);
+                    slots[i].gameObject.SetActive(true);
+                    slots[i].transform.localPosition = new Vector3(1f, 0f, 1f);
+                    StartCoroutine(ShowCoroutine());
                 }
                 else
                 {
                     slots[i].gameObject.SetActive(false);
+                }
+            }
+        }
+
+        public IEnumerator ShowCoroutine()
+        {
+            for (int i = 0; i < slots.Length; i++)
+            {
+                if (slots[i].gameObject.activeSelf)
+                {
+                    slots[i].transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.InElastic);
+                    yield return new WaitForSeconds(0.5f);
                 }
             }
         }
@@ -56,5 +71,4 @@ namespace Scripts.UI
             _playerInventory.AddItem(item);
         }
     }
-
 }

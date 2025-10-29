@@ -72,7 +72,7 @@ namespace Scripts.Items.PermanentItems.CustomItems
                 }
             }
             _damagedEnemies[rigidbody2D] = currentTime;
-            rigidbody2D.AddForce(-rigidbody2D.velocity * SlowSpeed);
+            rigidbody2D.AddForce(-rigidbody2D.linearVelocity * SlowSpeed);
         }
 
 

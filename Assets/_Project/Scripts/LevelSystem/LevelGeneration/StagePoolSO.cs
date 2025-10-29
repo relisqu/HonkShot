@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Scripts.LevelSystem.LevelObjects;
+using Scripts.LevelSystem.TechnicalScripts;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Scripts.LevelSystem.LevelGeneration
@@ -8,5 +11,15 @@ namespace Scripts.LevelSystem.LevelGeneration
     public class StagePoolSO : ScriptableObject
     {
         public List<RoomModel> RoomModels;
+
+        [Button]
+        public void RefreshRooms()
+        {
+            foreach (var roomModel in RoomModels)
+            {
+                roomModel.RoomPrefab.GetComponent<WallGeneration>().CopySpriteShapeSpline();
+                roomModel.RoomPrefab.GetComponent<CornerGenerator>().Generate();
+            }
+        }
     }
 }

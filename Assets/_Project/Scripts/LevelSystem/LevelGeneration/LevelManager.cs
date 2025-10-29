@@ -5,6 +5,7 @@ using Scripts.PointSystem;
 using UnityEngine;
 using System.Collections;
 using Scripts.Items;
+using Scripts.LevelSystem.TechnicalScripts;
 using Scripts.UI;
 
 namespace Scripts.LevelSystem.LevelGeneration
@@ -20,6 +21,7 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         public Room CurrentRoom => _currentRoom;
 
+        [SerializeField] private BackgroundPropSpawner _backgroundPropSpawner;
         [SerializeField] private Portal _portalPrefab;
         [SerializeField] private float _timeTransitionDuration = 1.2f;
         private bool _waitingForPlayer;
@@ -46,6 +48,7 @@ namespace Scripts.LevelSystem.LevelGeneration
         {
             Debug.Log($"Trying to enter room {room}");
             if (!room) return;
+            _backgroundPropSpawner.SetLevel(room.SpriteShapeController);
             if (_currentRoom)
                 Destroy(_currentRoom.gameObject);
             _currentRoom = room;
@@ -95,7 +98,6 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         public void ShowItemSelectionUI()
         {
-            
             if (ShouldGiveItems())
             {
                 bool itemSelected = false;
@@ -103,6 +105,7 @@ namespace Scripts.LevelSystem.LevelGeneration
                 _itemSelectionUI.ShowItems(null);
             }
         }
+
         private IEnumerator LevelEndRoutine()
         {
             _levelsCompleted++;
@@ -132,7 +135,7 @@ namespace Scripts.LevelSystem.LevelGeneration
             {
                 yield return null;
             }
-            
+
             if (nextRoom)
             {
                 EnterRoom(nextRoom);

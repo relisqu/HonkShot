@@ -63,7 +63,7 @@ namespace Scripts.Player
         }
         private void FixedUpdate()
         {
-            float currentSpeed = _rigidbody2D.velocity.magnitude;
+            float currentSpeed = _rigidbody2D.linearVelocity.magnitude;
             if (_gooseFireSystem)
             {
                 if (currentSpeed > _prevSpeed + 0.01f)
@@ -86,7 +86,7 @@ namespace Scripts.Player
 
         public Vector2 GetVelocity()
         {
-            return _rigidbody2D.velocity;
+            return _rigidbody2D.linearVelocity;
         }
 
 

@@ -117,7 +117,7 @@ namespace Scripts.Enemies
                 if (_isAttacking) yield return null;
                 yield return new WaitForSeconds(_attackInterval);
 
-                _rigidbody2D.velocity = Vector2.zero;
+                _rigidbody2D.linearVelocity = Vector2.zero;
                 _animator.SetBool("IsWalking", false);
                 _isAttacking = true;
 

@@ -128,12 +128,12 @@ public class ManiacEnemy : MonoBehaviour
         float distanceToTarget = Vector2.Distance(transform.position, _target.position);
         if (distanceToTarget > _attackRange)
         {
-            _rb.velocity = _currentDirection * _movementSpeed;
+            _rb.linearVelocity = _currentDirection * _movementSpeed;
             _animator.SetBool("IsWalking", true);
         }
         else
         {
-            _rb.velocity = Vector2.zero;
+            _rb.linearVelocity = Vector2.zero;
             _animator.SetBool("IsWalking", false);
         }
     }
@@ -149,7 +149,7 @@ public class ManiacEnemy : MonoBehaviour
             if (distance <= _attackRange)
             {
                 _isAttacking = true;
-                _rb.velocity = Vector2.zero;
+                _rb.linearVelocity = Vector2.zero;
                 _animator.SetBool("IsWalking", false);
                 _animator.SetTrigger("Attack");
 

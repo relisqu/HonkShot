@@ -12,6 +12,8 @@ namespace Scripts.Player
         [FormerlySerializedAs("_ultimateMultiplySystem")] [Header("Fire Settings")] [SerializeField]
         private float _ultimateMultiplyCoefficient = 5f;
 
+        [SerializeField] private float _ultimateDragCoefficient = 0f;
+
         [SerializeField] private float _maxFire = 100f;
         [SerializeField] private float _fireGainPerLaunch = 20f;
         [SerializeField] private float _fireGainPerAcceleration = 5f;
@@ -42,8 +44,12 @@ namespace Scripts.Player
         public bool IsHonk => _isHonk;
         public float MaxFire => _maxFire;
 
+        private PlayerBallMovement _playerBallMovement;
+
         private void Awake()
         {
+            if (_playerBallMovement == null)
+                _playerBallMovement = GetComponent<PlayerBallMovement>();
             _fire = 0f;
             if (_playerStatus == null)
                 _playerStatus = GetComponent<PlayerStatus>();
@@ -128,7 +134,11 @@ namespace Scripts.Player
             if (PointSystem.PointReceiver.Instance)
             {
                 Debug.Log(_playerPointReceiveModifierSystem == null);
-                
+
+                _playerBallMovement.DragForceModifierSystem.AddModifier(
+                    new NumericStatModifier((int)ModifierTypeEnum.HonkMode, NumericModType.Mult,
+                        _ultimateDragCoefficient,
+                        _playerBallMovement.DragForceModifierSystem.GetLastOrder() + 1));
                 _playerPointReceiveModifierSystem.AddModifier(
                     new NumericStatModifier((int)ModifierTypeEnum.HonkMode, NumericModType.Mult,
                         _ultimateMultiplyCoefficient,
@@ -142,6 +152,7 @@ namespace Scripts.Player
             _isUltimate = false;
             if (PointSystem.PointReceiver.Instance)
                 _playerPointReceiveModifierSystem.RemoveModifier((int)ModifierTypeEnum.HonkMode);
+            _playerBallMovement.DragForceModifierSystem.RemoveModifier((int)ModifierTypeEnum.HonkMode);
             UltimateEnded?.Invoke();
         }
 

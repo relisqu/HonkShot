@@ -46,12 +46,12 @@ namespace Scripts.LevelSystem.LevelObjects
 
         public Vector2 GetVelocity()
         {
-            return _rigidbody2D.velocity;
+            return _rigidbody2D.linearVelocity;
         }
 
         private void SetVelocity(Vector2 velocity)
         {
-            _rigidbody2D.velocity = velocity;
+            _rigidbody2D.linearVelocity = velocity;
         }
 
         private void SetPosition(Vector3 newPosition)
