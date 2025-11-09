@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -7,14 +9,28 @@ namespace Scripts.Items.PlayerItemManager
 {
     public class ItemManager : MonoBehaviour
     {
-        public List<PlayerItemSO> allItems; 
+        public List<PlayerItemSO> allItems;
         public PlayerInventory playerInventory;
 
         public static ItemManager instance;
+
         private void Awake()
         {
             instance = this;
-            
+        }
+
+        [Button]
+        public void LoadItems()
+        {
+            var items = Resources.LoadAll<PlayerItemSO>("Data/Items").ToList();
+            foreach (var item in items.ToList())
+            {
+                if (!item.Enabled)
+                {
+                    items.Remove(item);
+                }
+            }
+            allItems = items;
         }
 
         public List<PlayerItemSO> GetRandomItems(int count)
@@ -28,7 +44,8 @@ namespace Scripts.Items.PlayerItemManager
                 result.Add(available[idx]);
                 available.RemoveAt(idx);
             }
+
             return result;
         }
     }
-} 
+}

@@ -84,6 +84,16 @@ namespace Scripts.LevelSystem.LevelGeneration
             _door.SetRoom(roomInstance);
         }
 
+        public void ExitRoom()
+        {
+            DestroyRoom();
+        }
+
+        public void DestroyRoom()
+        {
+            Destroy(gameObject);
+        }
+
         private void OnDrawGizmos()
         {
             if (_spawnPointTransform != null)

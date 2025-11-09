@@ -38,6 +38,7 @@ namespace Scripts.Player.InputHandling
         private void Start()
         {
             ChangeControlScheme(_playerInput.currentControlScheme.ToLower());
+            SetInputEnabled(false);
         }
 
         private void Update()

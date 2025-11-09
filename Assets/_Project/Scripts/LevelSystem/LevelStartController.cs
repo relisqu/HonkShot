@@ -2,20 +2,29 @@
 using Scripts.Audio;
 using Scripts.LevelSystem.LevelGeneration;
 using Scripts.Other;
+using Scripts.Player.InputHandling;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Zenject;
 
 namespace Scripts.LevelSystem
 {
     public class LevelStartController : MonoBehaviour
     {
-        [SerializeField] private LevelGenerator _levelGenerator;
-        [SerializeField] private LevelManager _levelManager;
+        private LevelManager _levelManager;
+
+        [Inject]
+        private void Inject(LevelManager levelManager)
+        {
+            _levelManager = levelManager;
+        }
 
         private void Start()
         {
+            
             AudioManager.Instance.PlaySmooth(SoundChanelType.Music, "levelMusic", true);
-            _levelManager.EnterRoom(_levelGenerator.GetRoom(0));
+            InputHandler.Instance.SetInputEnabled(true);
+            _levelManager.EnterFloor();
         }
 
         private void Update()

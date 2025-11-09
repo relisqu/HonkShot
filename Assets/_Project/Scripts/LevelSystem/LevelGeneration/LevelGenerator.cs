@@ -10,45 +10,59 @@ namespace Scripts.LevelSystem.LevelGeneration
     {
         [SerializeField] private StagePoolSO _tutorialPoolSO;
         [SerializeField] private StagePoolSO _stagePoolSO;
-        [SerializeField] private int _roomCount = 5;
         [SerializeField] private float _roomHeight = 10f;
+        private List<RoomModel> _shuffledRoomModels = new();
 
-        private List<Room> _spawnedRooms = new List<Room>();
-        private List<RoomModel> _shuffledRoomModels = new List<RoomModel>();
-        private bool _levelLocked = true;
-        public IReadOnlyList<Room> Rooms => _spawnedRooms;
+        [Space] [Header("Generation Settings")] [SerializeField]
+        private int _roomCount = 5;
 
         private void Awake()
         {
             if (DebugMode.Instance.GeneratingLevels)
             {
-                GenerateLevel();
             }
         }
 
-        public void GenerateLevel()
+
+        public Floor GenerateFloor()
         {
-            ClearRooms();
+            return GenerateFloor(_roomCount);
+        }
+
+
+        public Floor GenerateFloor(int roomCount)
+        {
+            var rooms = new List<Room>();
             ShuffleRoomModels();
             Vector3 spawnPosition = Vector3.zero;
-            for (int i = 0; i < _roomCount && i < _shuffledRoomModels.Count; i++)
+            for (int i = 0; i < roomCount && i < _shuffledRoomModels.Count; i++)
             {
                 var model = _shuffledRoomModels[i];
                 if (!model.RoomPrefab) continue;
                 Room roomInstance = Instantiate(model.RoomPrefab, spawnPosition, Quaternion.identity, transform);
-                if (_spawnedRooms.Count > 0) _spawnedRooms[^1].SetNextRoom(roomInstance);
-                _spawnedRooms.Add(roomInstance);
+                if (rooms.Count > 0) rooms[^1].SetNextRoom(roomInstance);
+                rooms.Add(roomInstance);
             }
-            foreach (var room in _spawnedRooms)
+
+            foreach (var room in rooms)
             {
                 room.gameObject.SetActive(false);
             }
+
+            return new Floor()
+            {
+                Rooms = rooms
+            };
         }
 
         private void ShuffleRoomModels()
         {
-            _shuffledRoomModels.Clear();
-            _shuffledRoomModels.AddRange(_stagePoolSO.RoomModels);
+            if (_shuffledRoomModels.Count == 0)
+            {
+                _shuffledRoomModels.Clear();
+                _shuffledRoomModels.AddRange(_stagePoolSO.RoomModels);
+            }
+
             var rng = new System.Random();
             int n = _shuffledRoomModels.Count;
             while (n > 1)
@@ -57,29 +71,6 @@ namespace Scripts.LevelSystem.LevelGeneration
                 int k = rng.Next(n + 1);
                 (_shuffledRoomModels[k], _shuffledRoomModels[n]) = (_shuffledRoomModels[n], _shuffledRoomModels[k]);
             }
-        }
-
-        public void ClearRooms()
-        {
-            foreach (var room in _spawnedRooms)
-            {
-                if (room != null)
-                    Destroy(room.gameObject);
-            }
-            _spawnedRooms.Clear();
-        }
-
-        private void UnlockLevel()
-        {
-            _levelLocked = false;
-            Debug.Log("Level unlocked!");
-        }
-
-        public Room GetRoom(int i)
-        {
-            if (_spawnedRooms.Count > i)
-                return _spawnedRooms[i];
-            return null;
         }
     }
 }

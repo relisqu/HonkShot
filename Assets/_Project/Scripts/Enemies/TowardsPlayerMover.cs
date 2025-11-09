@@ -40,7 +40,6 @@ namespace Scripts.Enemies
                 return;
 
             Vector2 dir = (playerPos - myPos).normalized;
-            // Check for wall between enemy and player
             RaycastHit2D hit = Physics2D.Raycast(myPos, dir, (playerPos - myPos).magnitude, _obstacleMask);
             if (hit.collider)
                 return;

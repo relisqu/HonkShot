@@ -8,16 +8,16 @@ namespace Scripts.Items.PlayerItemManager
     public class PlayerItemSO : ScriptableObject
     {
         public int Id;
-        public string ItemKey;
+        [FormerlySerializedAs("ItemKey")] public string ItemNotes;
         public Sprite icon;
-        public Sprite inGameSprite;
-        [FormerlySerializedAs("itemPrefabs")] public Item itemPrefab;
+        [FormerlySerializedAs("itemPrefab")] [FormerlySerializedAs("itemPrefabs")] public Item ItemPrefab;
+        public bool Enabled;
 
         public virtual Item OnPickup(GameObject player)
         {
-            if (itemPrefab)
+            if (ItemPrefab)
             {
-                var item = Instantiate(itemPrefab, player.transform);
+                var item = Instantiate(ItemPrefab, player.transform);
                 item.InitItem(this);
                 return item;
             }

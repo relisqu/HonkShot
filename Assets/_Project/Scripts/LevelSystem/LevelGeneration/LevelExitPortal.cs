@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using DG.Tweening;
 using Scripts.Player;
 using Scripts.Player.InputHandling;
@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Scripts.LevelSystem.LevelGeneration
 {
-    public class Portal : MonoBehaviour
+    public class LevelExitPortal : MonoBehaviour
     {
         public event Action OnPortalTrigger;
         public event Action OnPlayerEnter;
@@ -68,29 +68,6 @@ namespace Scripts.LevelSystem.LevelGeneration
                     OnPlayerEnter?.Invoke();
                 });
             }
-        }
-
-        public void PlayJumpOut(Transform player)
-        {
-            if (_isJumpingOut) return;
-            _isJumpingOut = true;
-            var transform = player.transform;
-            Vector3 startScale = Vector3.one * swirlScale;
-            Vector3 endScale = Vector3.one;
-            float duration = swirlDuration;
-            transform.localScale = startScale;
-            transform.rotation = Quaternion.identity;
-            Sequence jumpOutSequence = DOTween.Sequence();
-            jumpOutSequence.Append(transform.DOScale(endScale, duration).SetEase(Ease.OutCirc).SetUpdate(true));
-            jumpOutSequence.Join(transform.DORotate(new Vector3(0, 0, -720f), duration, RotateMode.FastBeyond360)
-                .SetUpdate(true));
-            jumpOutSequence.SetUpdate(true);
-            jumpOutSequence.OnComplete(() =>
-            {
-                // Resume input globally
-                if (InputHandler.Instance) InputHandler.Instance.SetInputEnabled(true);
-                PlayHide();
-            });
         }
     }
 }

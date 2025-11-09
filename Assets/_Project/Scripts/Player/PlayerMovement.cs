@@ -61,6 +61,7 @@ namespace Scripts.Player
                 DragStarted?.Invoke();
             }
         }
+
         private void FixedUpdate()
         {
             float currentSpeed = _rigidbody2D.linearVelocity.magnitude;
@@ -71,11 +72,12 @@ namespace Scripts.Player
                 else if (currentSpeed < _prevSpeed - 0.01f)
                     _gooseFireSystem.OnDeceleration();
             }
+
             _prevSpeed = currentSpeed;
             switch (_playerStatus.PlayerState)
             {
                 case PlayerState.Ball:
-                    
+
                     break;
                 case PlayerState.Swapping:
                     break;
@@ -84,6 +86,19 @@ namespace Scripts.Player
             }
         }
 
+        public void SetPosition(Vector3 position)
+        {
+            transform.position = position;
+        }
+
+        public Vector3 GetPosition()
+        {
+            return transform.position;
+        }
+        public Transform GetTransform()
+        {
+            return transform;
+        }
         public Vector2 GetVelocity()
         {
             return _rigidbody2D.linearVelocity;

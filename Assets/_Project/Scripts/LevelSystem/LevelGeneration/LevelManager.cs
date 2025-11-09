@@ -5,8 +5,12 @@ using Scripts.PointSystem;
 using UnityEngine;
 using System.Collections;
 using Scripts.Items;
+using Scripts.LevelSystem.LevelGeneration.Factories;
 using Scripts.LevelSystem.TechnicalScripts;
 using Scripts.UI;
+using UnityEngine.Serialization;
+using Zenject;
+using Random = UnityEngine.Random;
 
 namespace Scripts.LevelSystem.LevelGeneration
 {
@@ -14,34 +18,52 @@ namespace Scripts.LevelSystem.LevelGeneration
     {
         public static LevelManager Instance;
 
-        private Room _currentRoom;
-        private Room _previousRoom;
+        private PlayerMovement _playerMovement;
+        private LevelObjectsFactory _levelObjectsFactory;
+        private LevelGenerator _levelGenerator;
+
+        [SerializeField] private BackgroundPropSpawner _backgroundPropSpawner;
+        [SerializeField] private float _timeTransitionDuration = 1.2f;
+
+        [SerializeField] private Projection _projection;
+
+        [SerializeField] private ItemSelectionUI _itemSelectionUI;
+
+        private int _currentRoomIndex = 0;
+        private int _levelsCompleted = 0;
+        private Floor _currentFloor;
+
         public Action EnteredRoom;
         public Action CompletedRoom;
 
-        public Room CurrentRoom => _currentRoom;
+        public Room CurrentRoom => _currentFloor?.VisitedRooms[^1];
 
-        [SerializeField] private BackgroundPropSpawner _backgroundPropSpawner;
-        [SerializeField] private Portal _portalPrefab;
-        [SerializeField] private float _timeTransitionDuration = 1.2f;
-        private bool _waitingForPlayer;
+        [Space] [Header(("Item generation"))] [Range(0f, 1f)] [SerializeField]
+        private float _itemScreenSpawnChance;
 
-        [SerializeField] private LevelGenerator _levelGenerator;
-        private int _currentRoomIndex = 0;
+        [Min(1)]
+        [Tooltip("Once per how many rooms item room will try spawn - if select 1, item will try to spawn every room")]
+        [SerializeField]
+        private int _itemScreenPerRoomRate = 2;
 
-        [SerializeField] private Scripts.Player.Projection _projection;
-
-        [SerializeField] private ItemSelectionUI _itemSelectionUI;
-        private int _levelsCompleted = 0;
+        [Inject]
+        private void Construct(PlayerMovement playerMovement, LevelObjectsFactory levelObjectsFactory,
+            LevelGenerator levelGenerator)
+        {
+            _playerMovement = playerMovement;
+            _levelGenerator = levelGenerator;
+            _levelObjectsFactory = levelObjectsFactory;
+        }
 
         private void Awake()
         {
             Instance = this;
-            if (!DebugMode.Instance.GeneratingLevels)
-            {
-                var room = FindObjectOfType<Room>();
-                _currentRoom = room;
-            }
+        }
+
+        public void EnterFloor()
+        {
+            _currentFloor = _levelGenerator.GenerateFloor();
+            EnterRoom(_currentFloor.Rooms[0]);
         }
 
         public void EnterRoom(Room room)
@@ -49,36 +71,28 @@ namespace Scripts.LevelSystem.LevelGeneration
             Debug.Log($"Trying to enter room {room}");
             if (!room) return;
             _backgroundPropSpawner.SetLevel(room.SpriteShapeController);
-            if (_currentRoom)
-                Destroy(_currentRoom.gameObject);
-            _currentRoom = room;
-            _currentRoom.SetActive();
+            _currentFloor.EnterRoom(room);
+            CurrentRoom.SetActive();
+
             EnteredRoom?.Invoke();
-            PointReceiver.Instance.transform.root.position = _currentRoom.SpawnPointTransform.position;
-            StartCoroutine(LevelStartRoutine());
+            _playerMovement.SetPosition(CurrentRoom.SpawnPointTransform.position);
+
+            StartCoroutine(StartLevelCoroutineRoutine());
         }
 
-        private IEnumerator LevelStartRoutine()
+        private IEnumerator StartLevelCoroutineRoutine()
         {
-            TimeManager.Instance.PauseGame();
-            if (!_currentRoom.ExitPortalSpawnPoint)
+            TimeManager.Instance.SlowGame(0f);
+            if (!CurrentRoom.ExitPortalSpawnPoint)
             {
-                _currentRoom.ExitPortalSpawnPoint = _currentRoom.SpawnPointTransform;
+                CurrentRoom.ExitPortalSpawnPoint = CurrentRoom.SpawnPointTransform;
             }
 
-            var portalScript = Instantiate(_portalPrefab, _currentRoom.SpawnPointTransform.position,
-                Quaternion.identity);
+            var portal = _levelObjectsFactory.SpawnLevelEnterPortal(null);
+            portal.transform.position = CurrentRoom.SpawnPointTransform.position;
+            portal.PlayJumpOut(_playerMovement.GetTransform());
 
-
-            var playerTransform = PointReceiver.Instance.transform;
-            if (portalScript)
-            {
-                playerTransform.position = _currentRoom.SpawnPointTransform.position;
-                portalScript.PlayJumpOut(playerTransform);
-            }
-
-            yield return new WaitForSecondsRealtime(1f); // Replace with actual animation length
-
+            yield return new WaitUntil(portal.FinishedAnimation);
             float t = 0f;
             while (t < _timeTransitionDuration)
             {
@@ -88,12 +102,18 @@ namespace Scripts.LevelSystem.LevelGeneration
             }
 
             TimeManager.Instance.ResumeGame();
+            yield return null;
         }
 
         private bool ShouldGiveItems()
         {
-            // Every 3 levels, show item selection before portal
-            return _levelsCompleted % 1 == 0;
+            var shouldTryGenerateRoom = _levelsCompleted % _itemScreenPerRoomRate == 0;
+            if (shouldTryGenerateRoom)
+            {
+                return Random.value <= _itemScreenSpawnChance;
+            }
+
+            return false;
         }
 
         public void ShowItemSelectionUI()
@@ -106,10 +126,12 @@ namespace Scripts.LevelSystem.LevelGeneration
             }
         }
 
-        private IEnumerator LevelEndRoutine()
+        private IEnumerator EndLevelCoroutine()
         {
             _levelsCompleted++;
-            var portal = Instantiate(_portalPrefab, _currentRoom.ExitPortalSpawnPoint.position, Quaternion.identity);
+
+            var portal = _levelObjectsFactory.SpawnLevelExitPortal(null);
+            portal.transform.position = CurrentRoom.ExitPortalSpawnPoint.position;
 
             bool portalClosed = false;
             portal.OnPortalTrigger += () => { _projection.DestroySimulation(); };
@@ -119,15 +141,10 @@ namespace Scripts.LevelSystem.LevelGeneration
 
             // Prepare for next room
             _currentRoomIndex++;
-            var nextRoom = _levelGenerator.GetRoom(_currentRoomIndex);
+            var nextRoom = _currentFloor.GetRoom(_currentRoomIndex);
 
             // Destroy previous room if needed
-            if (_previousRoom && _previousRoom != _currentRoom)
-            {
-                Destroy(_previousRoom.gameObject);
-            }
-
-            _previousRoom = _currentRoom;
+            CurrentRoom.ExitRoom();
 
             ShowItemSelectionUI();
 
@@ -142,20 +159,20 @@ namespace Scripts.LevelSystem.LevelGeneration
             }
             else
             {
-                // All rooms complete, generate a new batch and continue
-                _levelGenerator.GenerateLevel();
-                _currentRoomIndex = 0;
-                var newRoom = _levelGenerator.GetRoom(_currentRoomIndex);
-                if (newRoom)
-                    EnterRoom(newRoom);
+                FinishFloor();
             }
 
             yield return null;
         }
 
-        public void OnPlayerEnteredPortal()
+        private void FinishFloor()
         {
-            _waitingForPlayer = false;
+            Debug.LogError("Finishing floor");
+        }
+
+        private void OnCompletedRoom()
+        {
+            StartCoroutine(EndLevelCoroutine());
         }
 
         private void OnEnable()
@@ -166,11 +183,6 @@ namespace Scripts.LevelSystem.LevelGeneration
         private void OnDisable()
         {
             CompletedRoom -= OnCompletedRoom;
-        }
-
-        private void OnCompletedRoom()
-        {
-            StartCoroutine(LevelEndRoutine());
         }
     }
 }

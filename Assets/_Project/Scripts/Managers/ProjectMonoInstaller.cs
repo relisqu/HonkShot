@@ -9,11 +9,12 @@ namespace Scripts.Managers
     {
         public override void InstallBindings()
         {
-            Container.BindInterfacesTo<LocalizationService>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<LocalizationService>().AsSingle().NonLazy();
         }
 
-        public void Start()
+        public override void Start()
         {
+            base.Start();
             Container.Resolve<ILocalizationService>().SetLanguage("Ru", LoadLanguageDictionary("Ru"));
         }
 

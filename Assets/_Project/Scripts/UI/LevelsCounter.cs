@@ -14,8 +14,8 @@ namespace Scripts.UI
         private void Start()
         {
             LevelManager.Instance.CompletedRoom += LevelManager_CompletedRoom;
-            _text.SetText(
-                $"Пройдено комнат: 0 из {_levelGenerator.Rooms.Count}");
+        //    _text.SetText(
+          //      $"Пройдено комнат: 0 из {_levelGenerator.Rooms.Count}");
         }
 
         private void OnDestroy()
@@ -26,9 +26,8 @@ namespace Scripts.UI
 
         private void LevelManager_CompletedRoom()
         {
-            
-            _text.SetText(
-                $"Пройдено комнат: {_levelGenerator.Rooms.Count(room => room.IsCleared())} из {_levelGenerator.Rooms.Count}");
+           // _text.SetText(
+          ///      $"Пройдено комнат: {_levelGenerator.Rooms.Count(room => room.IsCleared())} из {_levelGenerator.Rooms.Count}");
         }
     }
 }

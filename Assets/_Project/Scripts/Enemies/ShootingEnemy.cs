@@ -36,8 +36,8 @@ namespace Scripts.Enemies
 
         public void FinishShootingAnimation()
         {
-            _shooterAnimator.SetTrigger("finishShooting");
-            
+            if (_shooterAnimator)
+                _shooterAnimator.SetTrigger("finishShooting");
         }
 
         public void TryShoot()
