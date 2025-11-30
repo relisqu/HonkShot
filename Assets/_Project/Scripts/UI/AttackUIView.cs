@@ -3,6 +3,7 @@ using DG.Tweening;
 using Scripts.PointSystem;
 using TMPro;
 using UnityEngine;
+using Zenject;
 using PointReceiver = Scripts.PointSystem.PointReceiver;
 
 namespace Scripts.UI
@@ -11,6 +12,8 @@ namespace Scripts.UI
     {
         [SerializeField] private TMP_Text _currentScoreText;
         [SerializeField] private TMP_Text _maxScoreText;
+
+        [Inject] private PointReceiver _pointReceiver;
 
         private Tweener _tweener;
 
@@ -25,26 +28,42 @@ namespace Scripts.UI
                 });
             }
 
-            _maxScoreText.text = (int)(PointReceiver.Instance.MaxPointsCount) + "";
+            var pointReceiver = _pointReceiver ?? PointReceiver.Instance; // Fallback to Instance if injection failed
+            if (pointReceiver != null)
+            {
+                _maxScoreText.text = (int)(pointReceiver.MaxPointsCount) + "";
+            }
         }
 
         void PointReceiver_ChangedCurrentPoints()
         {
             Debug.Log("PointReceiver_ChangedCurrentPoints");
-            _currentScoreText.text = (int)(PointReceiver.Instance.GetAttackPoints()) + "";
+            var pointReceiver = _pointReceiver ?? PointReceiver.Instance; // Fallback to Instance if injection failed
+            if (pointReceiver != null)
+            {
+                _currentScoreText.text = (int)(pointReceiver.GetAttackPoints()) + "";
+            }
         }
 
         private void Start()
         {
-            PointReceiver.Instance.ChangedCurrentPoints += PointReceiver_ChangedCurrentPoints;
-            PointReceiver.Instance.ChangedMaxPoints += PointReceiver_ChangedMaxPoints;
-            _currentScoreText.text = (int)(PointReceiver.Instance.GetAttackPoints()) + "";
+            var pointReceiver = _pointReceiver ?? PointReceiver.Instance; // Fallback to Instance if injection failed
+            if (pointReceiver != null)
+            {
+                pointReceiver.ChangedCurrentPoints += PointReceiver_ChangedCurrentPoints;
+                pointReceiver.ChangedMaxPoints += PointReceiver_ChangedMaxPoints;
+                _currentScoreText.text = (int)(pointReceiver.GetAttackPoints()) + "";
+            }
         }
 
         private void OnDestroy()
         {
-            PointReceiver.Instance.ChangedCurrentPoints -= PointReceiver_ChangedCurrentPoints;
-            PointReceiver.Instance.ChangedMaxPoints -= PointReceiver_ChangedMaxPoints;
+            var pointReceiver = _pointReceiver ?? PointReceiver.Instance; // Fallback to Instance if injection failed
+            if (pointReceiver != null)
+            {
+                pointReceiver.ChangedCurrentPoints -= PointReceiver_ChangedCurrentPoints;
+                pointReceiver.ChangedMaxPoints -= PointReceiver_ChangedMaxPoints;
+            }
         }
     }
 }

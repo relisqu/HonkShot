@@ -6,12 +6,14 @@ using Scripts.Items.StatSystems;
 using Scripts.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Zenject;
 
 namespace Scripts.PointSystem
 {
     public class PointReceiver : MonoBehaviour
     {
-        public static PointReceiver Instance;
+        // Keep Instance for backward compatibility, but prefer injection
+        public static PointReceiver Instance { get; private set; }
 
         [SerializeField] private float _perTypeCoefficient = 1f;
         [SerializeField] private float _baseDamage;
@@ -32,10 +34,15 @@ namespace Scripts.PointSystem
         public NumericStatModifierSystem PointReceiveModifierSystem => _pointReceiveModifierSystem;
         public float AveragePointsPerBounce => _maxPointsCount * 1f / _bouncesCount;
 
+        [Inject]
+        private void Construct()
+        {
+            // Zenject injection point
+        }
 
         private void Awake()
         {
-            Instance = this;
+            Instance = this; // Keep for backward compatibility
         }
 
 

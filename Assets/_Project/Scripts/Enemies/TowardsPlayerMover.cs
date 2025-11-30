@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using Scripts.PointSystem;
 using UnityEngine.UI;
+using Zenject;
 
 namespace Scripts.Enemies
 {
@@ -18,6 +19,8 @@ namespace Scripts.Enemies
         [SerializeField] private LayerMask _obstacleMask;
         [SerializeField] private EnemyHealth _enemyHealth;
 
+        [Inject] private PointReceiver _pointReceiver;
+
         private Rigidbody2D _rb;
 
         private void Awake()
@@ -30,10 +33,11 @@ namespace Scripts.Enemies
             if (_enemyHealth && !_enemyHealth.IsAlive())
                 return;
 
-            if (!PointReceiver.Instance)
+            var pointReceiver = _pointReceiver ?? PointReceiver.Instance; // Fallback to Instance if injection failed
+            if (pointReceiver == null)
                 return;
 
-            Vector2 playerPos = PointReceiver.Instance.transform.position;
+            Vector2 playerPos = pointReceiver.transform.position;
             Vector2 myPos = _rb ? _rb.position : (Vector2)transform.position;
             float dist = Vector2.Distance(myPos, playerPos);
             if (dist > _chaseRange)

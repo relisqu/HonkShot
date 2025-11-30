@@ -2,6 +2,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Zenject;
 
 namespace Scripts.PointSystem
 {
@@ -16,6 +17,8 @@ namespace Scripts.PointSystem
         [Tooltip("How much points player gets for 1 second of stay inside of object")] [SerializeField]
         private int PointsPerStayCount;
 
+        [Inject] private PointReceiver _pointReceiver;
+
         private float _stayPoints;
 
         public void IncreaseStayPoints()
@@ -28,9 +31,13 @@ namespace Scripts.PointSystem
         {
             if (_stayPoints != 0)
             {
-                Debug.Log($"AddPoints stay: +{_stayPoints}");
-                PointReceiver.Instance.AddPoints(attackPointsObjectType, _stayPoints);
-                _stayPoints = 0;
+                var pointReceiver = _pointReceiver ?? PointReceiver.Instance; // Fallback to Instance if injection failed
+                if (pointReceiver != null)
+                {
+                    Debug.Log($"AddPoints stay: +{_stayPoints}");
+                    pointReceiver.AddPoints(attackPointsObjectType, _stayPoints);
+                    _stayPoints = 0;
+                }
             }
         }
 
@@ -38,8 +45,12 @@ namespace Scripts.PointSystem
         {
             if (_pointsPerTouchCount != 0)
             {
-                Debug.Log($"AddPoints touch: +{_pointsPerTouchCount}");
-                PointReceiver.Instance.AddPoints(attackPointsObjectType, _pointsPerTouchCount);
+                var pointReceiver = _pointReceiver ?? PointReceiver.Instance; // Fallback to Instance if injection failed
+                if (pointReceiver != null)
+                {
+                    Debug.Log($"AddPoints touch: +{_pointsPerTouchCount}");
+                    pointReceiver.AddPoints(attackPointsObjectType, _pointsPerTouchCount);
+                }
             }
         }
 

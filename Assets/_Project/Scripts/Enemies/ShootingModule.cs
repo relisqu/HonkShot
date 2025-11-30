@@ -2,6 +2,7 @@
 using Scripts.Enemies.Bullets;
 using Scripts.PointSystem;
 using UnityEngine;
+using Zenject;
 
 namespace Scripts.Enemies
 {
@@ -11,11 +12,17 @@ namespace Scripts.Enemies
         [SerializeField] private bool _hasMaxDistance;
         [SerializeField] protected float _shootDistance = 5f;
 
+        [Inject] private PointReceiver _pointReceiver;
+        
         protected Transform _player;
 
         protected virtual void Start()
         {
-            _player = PointReceiver.Instance.transform;
+            var pointReceiver = _pointReceiver ?? PointReceiver.Instance; // Fallback to Instance if injection failed
+            if (pointReceiver != null)
+            {
+                _player = pointReceiver.transform;
+            }
         }
 
         public void TryShoot(Action onShootFinish)

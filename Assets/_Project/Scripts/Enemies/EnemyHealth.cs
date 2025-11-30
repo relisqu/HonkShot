@@ -13,7 +13,17 @@ namespace Scripts.Enemies
     public class EnemyHealth : MonoBehaviour
     {
         [SerializeField] private HealthController _healthController;
+        [SerializeField] private BaseEnemy _baseEnemy;
+        
         public HealthController HealthController => _healthController;
+        
+        private void Awake()
+        {
+            if (_baseEnemy == null)
+            {
+                _baseEnemy = GetComponent<BaseEnemy>();
+            }
+        }
 
         private void HealthController_Died()
         {

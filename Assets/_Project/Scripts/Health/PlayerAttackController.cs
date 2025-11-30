@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Scripts.Items;
 using Scripts.Items.StatSystems;
+using Zenject;
 
 namespace Scripts.Health
 {
@@ -27,6 +28,8 @@ namespace Scripts.Health
         private float _maxSpeedCoeff = 2f;
 
         private NumericStatModifierSystem _numericStatModifierSystem = new();
+        
+        [Inject] private PointReceiver _pointReceiver;
 
         public NumericStatModifierSystem NumericStatModifierSystem => _numericStatModifierSystem;
         public Action<GameObject> OnHit;
@@ -49,8 +52,9 @@ namespace Scripts.Health
         {
             Debug.Log("Touch speed: " + _playerBallMovement.CurrentSpeed);
 
-            var damage = PointReceiver.Instance.GetBaseDamage();
-            var attackDamage = PointReceiver.Instance.GetAttackPoints();
+            var pointReceiver = _pointReceiver ?? PointReceiver.Instance; // Fallback to Instance if injection failed
+            var damage = pointReceiver.GetBaseDamage();
+            var attackDamage = pointReceiver.GetAttackPoints();
             if (_dependsOnSpeed)
             {
                 var currentSpeed = _playerBallMovement.CurrentSpeed;
