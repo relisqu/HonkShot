@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81daac17e4424004e86fa506a8054b2d, type: 3}
+  m_Name: FirstEnemyConfig
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Config.EnemyConfig
+  defaultSettings:
+    enemyPrefab: {fileID: 925966557304150825, guid: d5e5c0f35cba76c4487f5d624169fc2f, type: 3}
+    enemyId: 3
+    enemyName: 
+    maxHealth: 100
+    defaultHealth: 100
+    walkMoveSpeed: 60.34
+    attackRange: 1.5
+    attackInterval: 1
+    attackWarningTime: 0.5
+    damage: 1
+    shootInterval: 2
+    bulletSpeed: 5
+    bulletDamage: 5
+    chaseSpeed: 3
+    detectionRange: 5
+  enemySettings:
+  - enemyPrefab: {fileID: 1442526534013627462, guid: 33d66acea5bb92f458302bc1b4dc213d, type: 3}
+    enemyId: 2
+    enemyName: 
+    maxHealth: 100
+    defaultHealth: 100
+    walkMoveSpeed: 2
+    attackRange: 1.5
+    attackInterval: 1
+    attackWarningTime: 0.5
+    damage: 1
+    shootInterval: 2
+    bulletSpeed: 5
+    bulletDamage: 5
+    chaseSpeed: 3
+    detectionRange: 5
+  - enemyPrefab: {fileID: 6068339422518038376, guid: ee3979122ac047a4790dfd065f512057, type: 3}
+    enemyId: 7
+    enemyName: 
+    maxHealth: 100
+    defaultHealth: 100
+    walkMoveSpeed: 2
+    attackRange: 1.5
+    attackInterval: 1
+    attackWarningTime: 0.5
+    damage: 1
+    shootInterval: 0.1
+    bulletSpeed: 5
+    bulletDamage: 5
+    chaseSpeed: 3
+    detectionRange: 5
