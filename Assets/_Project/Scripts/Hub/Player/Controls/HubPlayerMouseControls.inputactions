@@ -1,0 +1,55 @@
+{
+    "version": 1,
+    "name": "HubPlayerMouseControls",
+    "maps": [
+        {
+            "name": "Mouse",
+            "id": "bafade0d-4d17-4714-a705-dcd2d1a0ff6d",
+            "actions": [
+                {
+                    "name": "Click",
+                    "type": "Button",
+                    "id": "0e80fd15-25e5-4e19-8a83-b0d2b45b0207",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Position",
+                    "type": "PassThrough",
+                    "id": "3536c326-7a70-4c18-a77d-74b00608826c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "e32d1cc9-0236-4e75-8c9c-1e106ef2ff6f",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9d6cc0a7-0a11-47a7-8229-589a91437407",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Position",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
