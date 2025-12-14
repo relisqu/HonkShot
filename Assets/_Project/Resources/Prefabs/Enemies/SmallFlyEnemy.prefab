@@ -352,8 +352,12 @@ PrefabInstance:
       value: SmallFlyEnemy
       objectReference: {fileID: 0}
     - target: {fileID: 7693177714894649285, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
+      propertyPath: _maxHealth
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7693177714894649285, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
       propertyPath: _defaultHealth
-      value: 100
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5324517961717222888, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
@@ -431,10 +435,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d886bf8670f5a8b4486f88c0ccf4b84d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _chaseRange: 5
+  _chaseRange: 1
   _usesFasterSpeedCloseToPlayer: 1
   _minSpeedCoeff: 0.1
-  _moveSpeed: 3
+  _moveSpeed: 2
   _obstacleMask:
     serializedVersion: 2
     m_Bits: 128
