@@ -114,7 +114,7 @@ namespace Scripts.Enemies
                         yield return null;
                     }
 
-                    _rigidbody2D.AddForce((targetPoint.position - transform.position) * _moveSpeed,
+                    _rigidbody2D.AddForce((targetPoint.position - transform.position).normalized * _moveSpeed,
                         ForceMode2D.Force);
                     //  _rigidbody2D.linearVelocity = (targetPoint.position - transform.position)  * _moveSpeed;
                     // transform.position = Vector2.MoveTowards(transform.position, targetPoint.position,
