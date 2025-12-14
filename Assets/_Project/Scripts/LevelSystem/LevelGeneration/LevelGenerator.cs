@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Scripts.Other;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -30,6 +31,13 @@ namespace Scripts.LevelSystem.LevelGeneration
         }
 
 
+        public Floor GenerateFloor(Room[] rooms)
+        {
+            return new Floor()
+            {
+                Rooms = rooms.ToList()
+            };
+        }
         public Floor GenerateFloor(int roomCount)
         {
             var rooms = new List<Room>();
@@ -72,5 +80,6 @@ namespace Scripts.LevelSystem.LevelGeneration
                 (_shuffledRoomModels[k], _shuffledRoomModels[n]) = (_shuffledRoomModels[n], _shuffledRoomModels[k]);
             }
         }
+
     }
 }

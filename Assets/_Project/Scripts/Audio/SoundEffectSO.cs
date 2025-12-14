@@ -57,7 +57,8 @@ namespace Scripts.Audio
 
         private void OnDisable()
         {
-            DestroyImmediate(previewer.gameObject);
+            if (previewer)
+                DestroyImmediate(previewer.gameObject);
         }
 
 
@@ -114,6 +115,7 @@ namespace Scripts.Audio
 
             return clip;
         }
+
         public void SetupAudioSource(AudioSource audioSource)
         {
             if (clips.Length == 0)
@@ -132,7 +134,6 @@ namespace Scripts.Audio
             audioSource.pitch = useSemitones
                 ? Mathf.Pow(SEMITONES_TO_PITCH_CONVERSION_UNIT, Random.Range(semitones.x, semitones.y))
                 : Random.Range(pitch.x, pitch.y);
-
         }
 
         public AudioSource Play(AudioSource audioSourceParam = null)
@@ -175,6 +176,5 @@ namespace Scripts.Audio
             InOrder,
             InReverseOrder
         }
-
     }
 }

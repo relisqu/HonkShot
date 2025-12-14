@@ -231,6 +231,7 @@ namespace Scripts.Config
             int enemyId = baseEnemy.EnemyId;
             var settings = _enemyConfig.GetSettingsForEnemy(enemyId);
 
+            if(settings==null) return;
             Debug.Log($"Applying enemy config to {source}: {targetObject.name} (ID: {enemyId})");
 
             // Apply health settings (all enemies have health)

@@ -62,8 +62,17 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         public void EnterFloor()
         {
-            _currentFloor = _levelGenerator.GenerateFloor();
-            EnterRoom(_currentFloor.Rooms[0]);
+            if (DebugMode.Instance.GeneratingLevels)
+            {
+                _currentFloor = _levelGenerator.GenerateFloor();
+                EnterRoom(_currentFloor.Rooms[0]);
+            }
+            else
+            {
+                var rooms = FindObjectsOfType<Room>();
+                _currentFloor = _levelGenerator.GenerateFloor(rooms);
+                EnterRoom(_currentFloor.Rooms[0]);
+            }
         }
 
         public void EnterRoom(Room room)

@@ -7,7 +7,7 @@ namespace Scripts.Config
     public class EnemyConfig : ScriptableObject
     {
         [Header("Default Settings (used if no ID match)")]
-        public EnemyConfigData defaultSettings = new EnemyConfigData();
+       // public EnemyConfigData defaultSettings = new EnemyConfigData();
         
         [Header("Per-Enemy Settings (by ID)")]
         [Tooltip("Configure individual enemies by their ID")]
@@ -17,7 +17,7 @@ namespace Scripts.Config
         {
             if (enemyId == 0)
             {
-                return defaultSettings;
+              //  return defaultSettings;
             }
             
             foreach (var settings in enemySettings)
@@ -28,7 +28,7 @@ namespace Scripts.Config
                 }
             }
             
-            return defaultSettings;
+            return null;
         }
         
         public void AddOrUpdateEnemySettings(int enemyId, EnemyConfigData data)
