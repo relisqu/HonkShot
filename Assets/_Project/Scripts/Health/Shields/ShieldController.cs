@@ -14,6 +14,7 @@ namespace Scripts.Health
 
         [Header("Visual Settings")] 
         [SerializeField] private Shield _shieldPrefab;
+        [SerializeField] private int _defaultShields = 0;
         [SerializeField] private int _maxShields = 3;
         [SerializeField] private Transform _shieldVisualParent;
 
