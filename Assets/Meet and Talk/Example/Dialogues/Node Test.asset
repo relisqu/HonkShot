@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1946feaec865d344dabf0419b1c94973, type: 3}
+  m_Name: Node Test
+  m_EditorClassIdentifier: 
+  AllowDialogueSave: 0
+  BlockingReopeningDialogue: 0
+  ResetSavedNodeOnChoice: 0
+  LimitChoiceOptionPerNode: 0
+  MaxChoiceOptionPerNode: 0
+  NodeLinkDatas: []
+  DialogueChoiceNodeDatas:
+  - NodeGuid: 748d5634-fa69-4f77-b218-f9de0a055078
+    Position: {x: 412, y: 582}
+    Character: {fileID: 11400000, guid: 2e32fce93d6416647a0d4fd3c2ad917c, type: 2}
+    PortraitPosition: 0
+    Emotion: 
+    SecoundCharacter: {fileID: 0}
+    SecoundPortraitPosition: 0
+    SecoundEmotion: 
+    AudioClips:
+    - languageEnum: 0
+      LanguageGenericType: {fileID: 0}
+    - languageEnum: 1
+      LanguageGenericType: {fileID: 0}
+    TextType:
+    - languageEnum: 0
+      LanguageGenericType: 
+    - languageEnum: 1
+      LanguageGenericType: 
+    Duration: 5
+    DialogueNodePorts: []
+  DialogueNodeDatas:
+  - NodeGuid: 80be150f-8cb2-40a9-ae63-122d87a8d42d
+    Position: {x: 146, y: 472}
+    Character: {fileID: 11400000, guid: 6c7c2303cba66254eb2469508683ee61, type: 2}
+    PortraitPosition: 0
+    Emotion: 
+    SecoundCharacter: {fileID: 0}
+    SecoundPortraitPosition: 0
+    SecoundEmotion: 
+    AudioClips:
+    - languageEnum: 0
+      LanguageGenericType: {fileID: 0}
+    - languageEnum: 1
+      LanguageGenericType: {fileID: 0}
+    TextType:
+    - languageEnum: 0
+      LanguageGenericType: 
+    - languageEnum: 1
+      LanguageGenericType: 
+    Duration: 10
+  TimerChoiceNodeDatas: []
+  EndNodeDatas:
+  - NodeGuid: 70f5a7d6-f0bc-41b2-9936-ba0c5606b22c
+    Position: {x: 412, y: 276}
+    EndNodeType: 4
+    Dialogue: {fileID: 0}
+    startID: 
+  EventNodeDatas: []
+  StartNodeDatas:
+  - NodeGuid: c50e5c4d-5d83-4daa-9e0e-539fc37eeb46
+    Position: {x: 173, y: 276}
+    startID: 
+  RandomNodeDatas: []
+  CommandNodeDatas: []
+  IfNodeDatas: []
+  AdvancedIFNodeDatas: []
+  AdvancedChoiceNodeDatas: []
+  AdvancedTimeChoiceNodeDatas: []
+  ResetSavedNodeDatas: []
+  MusicNodeDatas: []

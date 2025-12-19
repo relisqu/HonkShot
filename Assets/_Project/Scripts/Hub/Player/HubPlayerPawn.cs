@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -19,8 +20,6 @@ public class HubPlayerPawn : MonoBehaviour
         agent.updateUpAxis = false;
 
     }
-    //[SerializeField]
-    //private Animator animator; //nuh uh not yet
     [SerializeField]
     private IInteractable pendingInteraction = null;
 
@@ -38,12 +37,50 @@ public class HubPlayerPawn : MonoBehaviour
     [SerializeField] bool isDebugging = true;
     private Coroutine movementCoroutine;
     Vector2 lastMoveDir;
-     public event Action OnArrived;
-    void AdjustAnimStates()
+    public event Action OnArrived;
+
+    [Header("AnimationSettings")]
+    [SerializeField] private float angle = 5f;
+    [SerializeField] private float duration = 0.3f; 
+    [SerializeField] private float bounceHeight = 0.1f;
+
+    private Tween wobbleTween;
+    private Tween bounceTween;
+    Vector3 originalLocalPos;
+    private bool isWobbling;
+    
+    void HandleTweens(bool shouldWobble)
+    {
+        if (shouldWobble == isWobbling)
+            return;
+
+        isWobbling = shouldWobble;
+        wobbleTween?.Kill(); wobbleTween = null;
+
+        if (shouldWobble)
+        {
+            transform.localRotation = Quaternion.Euler(0, 0, -angle);
+            var startRot = transform.localEulerAngles;
+
+            wobbleTween = transform
+                .DOLocalRotate(startRot + new Vector3(0, 0, angle * 2f), duration)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(-1, LoopType.Yoyo);
+        }
+        else
+        {
+            transform.localRotation = Quaternion.identity;
+        }
+
+
+    }
+
+    void AdjustAnimation()
     {
         float speed = agent.velocity.magnitude;
         Vector2 velNorm = agent.velocity.normalized;
-        
+
+        HandleTweens(speed > 0.1f);
         if (speed > 0.1f)
         {
             //handling flip
@@ -53,24 +90,16 @@ public class HubPlayerPawn : MonoBehaviour
             }
 
             lastMoveDir = velNorm;
-            // side check
-            // - prioritizing side sprites
-            // - side sprite condition = low speed angle
             float angleToX = Vector2.Angle(Vector2.right, new Vector2(velNorm.x, 0));
             if (Mathf.Abs(velNorm.y) < Mathf.Tan(angleToX * Mathf.Deg2Rad * 0.3f))
                 velNorm = new Vector2(Mathf.Sign(velNorm.x), 0);
             
         }
 
-        //animator.SetFloat("Speed", speed);
-        //animator.SetFloat("MoveX", velNorm.x);
-        //animator.SetFloat("MoveY", velNorm.y);
-
 
         if (isDebugging) 
             Debug.Log($"Agent Speed: X: {agent.velocity.x}; Y: {agent.velocity.y}; Normalized Velo: {velNorm}");
-    } 
-    
+    }
 
     
     public void MoveToPosition(Vector3 position)
@@ -121,7 +150,17 @@ public class HubPlayerPawn : MonoBehaviour
     
     void Update()
     {
-        AdjustAnimStates();
+        AdjustAnimation();
+    }
+    void Start()
+    {
+        
+    }
+
+
+    void OnDestroy()
+    {
+        wobbleTween?.Kill();
     }
 }
 

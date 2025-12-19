@@ -1,0 +1,1187 @@
+/* START GRID SETTINGS */
+
+GridBackground {
+	--grid-background-color: #282828;
+	--line-color: #383838;
+	--thick-line-color: #505050;
+	--spacing: 10;
+}
+
+.edge{
+	--edge-width: 10px !important;
+}
+
+/* END GRID SETTINGS */
+
+
+
+
+
+/* Toolbar Start */
+
+ .unity-toolbar.normal {
+    height: 40px;
+}
+
+ .unity-toolbar.compact {
+    height: 60px;
+}
+.normal .section{
+	height: 40px;
+}
+.compact .section{
+	height: 30px;
+}
+
+#save_btn, #load_btn, #import_btn, #export_btn, #translate_btn {
+    -unity-text-align: lower-center;
+    font-size: 10px;
+    cursor: link;
+    padding-bottom: 2px;
+	width: 40px;
+	align-items: center;
+	align-self: stretch;
+	padding-top: 0px;
+	-unity-font-style: bold;
+}
+
+.compact #save_btn, .compact #load_btn, .compact #import_btn, .compact #export_btn, .compact #translate_btn{
+	font-size: 0px;
+	width: 30px;
+}
+
+.normal #translate_btn{
+	width: 80px;
+}
+
+#setting_btn{
+
+}
+.normal #setting_btn .ToolbarIcon{
+	width: 34px;
+	height: 34px;
+}
+.compact #setting_btn .ToolbarIcon{
+	width: 24px;
+	height: 24px;
+}
+
+#localization_enum, #theme_enum {
+    width: 100px;
+    font-size: 10px;
+    cursor: link;
+}
+
+.IconInToolbar{
+	width: 26px;
+	height: 26px;
+	margin-top: 6px;
+	margin-bottom: 6px;
+	margin-left: 2px;
+	margin-right: 2px;
+}
+.compact .IconInToolbar{
+	width: 20px;
+	height: 20px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	margin-left: 2px;
+	margin-right: 2px;
+}
+.normal .MatLogo{
+	width: 40px;
+	height: 40px;
+}
+.compact .MatLogo{
+	width: 30px;
+	height: 30px;
+}
+
+#localization_enum .unity-text-element, 
+#theme_enum .unity-text-element {
+    -unity-text-align: middle-center;
+    padding-bottom: 0px;
+}
+
+.nameOfDialogueContainer {
+    -unity-font-style: bold;
+    min-width: 125px;
+    -unity-text-align: middle-center;
+    font-size: 10px;
+}
+
+#autosave_toogle {
+    flex-direction: row-reverse;
+    -unity-text-align: middle-left;
+}
+
+#autosave_toogle .unity-text-element {
+    width: 75px;
+    min-width: 75px;
+    font-size: 10px;
+}
+
+#version_text {
+    position: absolute;
+    bottom: -8px;
+    left: -8px;	
+    font-size: 10px;
+	background-color: #383838;
+	padding: 16px;
+	border-top-right-radius: 16px;
+	border-width: 2px;
+	border-color: #2d2d2d;
+}
+.ToolbarIcon{
+	width: 24px;
+	height: 24px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+	background-color: transparent;
+	-unity-background-image-tint-color:  #d2d2d2;
+}
+.ToolbarBtnIcon{
+}
+.unity-toolbar-button,
+.unity-toolbar-menu{
+	border-width: 0;
+}
+.Indicator{
+	border-width: 0;
+	width: 40px;
+	-unity-font-style: bold;
+	padding: 0px;
+	
+}
+.ErrorIndicator{
+	color: #ff534a;
+}
+.WarningIndicator{
+	color: #ffc107;
+}
+.Indicator .unity-help-box__icon{
+	min-width: 16px;
+	min-height: 16px;
+	max-width: 16px;
+	max-height: 16px;
+}
+/* Toolbar End */
+
+
+
+
+
+/* VALIDATION */
+  #ValidationContainer{
+	  position:absolute !important;
+	bottom: 38px;
+	width: 200px;
+	margin: 0px;
+ }
+  #ErrorContainer,
+ #WarningContainer{
+	background-color: #383838;
+	padding: 8px;
+	border-radius: 8px;
+	-unity-font-style: bold;
+	-font-size: 8px;
+
+	border-color: red;
+	border-width: 2px;
+
+	width: auto;
+	padding: 4px;
+	margin: 0px;
+	margin-top:5px;
+ }
+   #ErrorContainer .unity-help-box__icon,
+ #WarningContainer .unity-help-box__icon{
+	 min-height: 20px;
+	 max-height: 20px;
+	 min-width: 22px;
+	 max-width:22px;
+	 margin-right: 4px;
+ }
+ #ErrorContainer{
+	 background-color: #533a39;
+	 border-color: #ff534a;
+ }
+ #WarningContainer{
+	 background-color: #534837;
+	 border-color: #ffc107;
+ }
+   #ErrorContainer .unity-label,
+ #WarningContainer .unity-label{
+	 font-size: 10px;
+ }
+/* VALIDATION */
+
+
+
+
+
+/* NODE BASE SETTINGS */
+.Label{
+	margin-top: 5px;
+	margin-left: 4px;
+    font-size: 10px !important;
+}
+.TextBox{
+	white-space: Normal;
+}
+#title > #title-label {
+	color: #fff !important;
+    -unity-font-style: bold;
+}
+.Colorfield
+{
+	width: 200px; 
+}
+.settingBox{
+	background-color: #383838;
+	border-radius: 4px;
+	border-width: 1px;
+	border-color: #303030;
+	padding-bottom: 2px;
+}
+.settingBox .title{
+	margin: 8px;
+}
+.settingBox .unity-toggle__label{
+	width: 195px;
+}
+.settingBox .unity-base-field__label{
+	font-size: 10px;
+}
+.node #title
+{
+	background-color: #515151;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	min-height: 36px;
+}
+#node-border { /* BACKGROUND */
+	background-color: #383838;
+    overflow: visible !important;
+	flex-shrink: 0;
+	margin: 0px;
+}
+.node .ChoiceLabel{
+	width: 75px;
+	max-width: 75px;
+}
+.node .ChoiceLabel .unity-text-field__input{
+	-unity-text-align: middle-right;
+}
+.node:hover #selection-border,
+.node:hover > #selection-border{
+	border-bottom-width: 4px;
+	border-top-width: 4px;
+	border-left-width: 4px;
+	border-right-width: 4px;
+}
+.node:checked #selection-border,
+.node:checked > #selection-border{
+	border-bottom-width: 4px;
+	border-top-width: 4px;
+	border-left-width: 4px;
+	border-right-width: 4px;
+}
+.node:checked:hover #selection-border,
+.node:checked:hover > #selection-border{
+	border-bottom-width: 4px;
+	border-top-width: 4px;
+	border-left-width: 4px;
+	border-right-width: 4px;
+}
+.node #selection-border{
+	border-bottom-width: 2px;
+	border-top-width: 2px;
+	border-left-width: 2px;
+	border-right-width: 2px;
+	border-color: #515151;
+}
+.node #node-border{
+	border-width: 0;
+	margin: 0px;
+	
+}
+.node #contents > #top > #output,
+.node #contents > #top > #input,
+.node #contents > #top > #divider{
+	background-color: transparent !important;
+	border-color: transparent;
+}
+.node .port>#connector>#cap{
+	width: 6px;
+	height: 6px;
+}
+.node .typeBoolean #connector{
+	border-radius: 2px;
+}
+.node .typeBoolean #connector #cap{
+	border-radius: 1px;
+}
+.node .unity-button{
+	border-width: 0px;
+	background-color: #505050;
+	border-radius: 2px;
+}.node .unity-base-field .unity-text-element{
+	width: 75px;
+	min-width: 75px;
+}
+.conditionPort{
+	--port-color: white !important;
+}
+.conditionPort #type{
+	display: none;
+}
+.condition-field.port {
+	height: 20px;
+}
+.condition-field .unity-button {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+.condition-field .unity-text-element,
+.condition-field .unity-base-field .unity-text-element,
+.condition-field .unity-base-field__input{
+		width: auto;
+	min-width: auto;
+	text-align: center;
+	-unity-text-align: middle-center;
+	font-size: 10px;
+}
+.condition-field .first
+{
+	margin-right: 1px;
+}.condition-field .middle
+{
+	margin-right: 1px;
+	margin-left: 1px;
+}
+.condition-field .middle .unity-base-popup-field__arrow{
+	display: none;
+}
+.condition-field .last
+{
+	margin-left: 1px;
+}
+
+#minimap{
+	background-color: transparent;
+	border-width: 0px;
+}
+.Emotions.unity-disabled{
+	display: none
+}
+
+/*** NEW TITLE ***/
+#title{
+	display: none;
+}
+.MAT_Title{
+	flex-direction: row;
+	align-items: center;
+	min-height: 32px;
+	border-width: 0px;
+	padding: 2px;
+	border-radius: 8px 8px 0px 0px;
+	justify-content: space-between;
+}
+.MAT_Title .NodeIcon{
+	width: 20px;
+	height: 20px;
+	min-width: 20px;
+	min-height: 20px;
+	background-color: transparent;
+	margin: 2px;
+	margin-right:4px;
+}
+.MAT_Title .TextContainer{
+	background-color: transparent;
+}
+.MAT_Title .TextContainer .TitleText{
+	font-size: 11px;
+    -unity-font-style: bold;
+	color: #ffffff;
+}
+.MAT_Title .TextContainer .DescText{
+	font-size: 8px ;
+	white-space: normal;
+    -unity-font-style: bold;
+}
+.MAT_Title .unity-button{
+	margin: 0px;
+	align-self: stretch;
+}
+#divider{
+	display: none;
+}
+.label-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+}
+
+.icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 2px;
+	margin-left: 4px;
+    font-size: 10px !important;
+}
+/*** NEW TITLE ***/
+
+/* NODE BASE SETTINGS */
+
+
+
+
+
+/* START NODE */
+#Start{
+	width: 150px;
+}
+#Start .MAT_Title {
+	background-color: #33984b;
+}
+#Start #node-border #contents #top #input .port,
+#Start #node-border #contents #top #output .port{
+	--port-color: #33984b;
+}
+#Start .unity-base-field .unity-text-element{
+	width: 45px;
+	min-width: 45px;
+}
+#Start #selection-border{
+	border-color: #33984b;
+}
+  #Start #ValidationContainer
+  {
+	  width: 200px;
+	  left: -25px;
+ }
+#Start .unity-base-field:focus .unity-text-element,
+#Start .unity-text-element:focus{
+	color: #33984b;
+}
+#Start .unity-base-field:focus .unity-base-field__input{
+	border-color: #33984b;
+}
+/* START NODE */
+
+
+
+/* END NODE */
+#End{
+	width: 150px;
+}
+#End .MAT_Title {
+	background-color: #c42430;
+}
+#End #node-border #contents #top #input .port,
+#End #node-border #contents #top #output .port{
+	--port-color: #c42430;
+}
+#End .unity-base-field .unity-text-element{
+	width: 45px;
+	min-width: 45px;
+}
+#End #selection-border{
+	border-color: #c42430;
+}
+#End #divider{
+	border-bottom-width: 0;
+}
+  #End #ValidationContainer
+  {
+	  width: 200px;
+	  left: -25px;
+ }
+#End .unity-base-field:focus .unity-text-element,
+#End .unity-text-element:focus{
+	color: #c42430;
+}
+#End .unity-base-field:focus .unity-base-field__input{
+	border-color: #c42430;
+}
+/* END NODE */
+
+
+
+/* DIALOGUE NODE */
+#Dialog {
+	max-width: 200px; 
+	width: 200px; 
+}
+#Dialog .MAT_Title {
+	background-color: #ffa214;
+}
+#Dialog #node-border #contents #top #input .port,
+#Dialog #node-border #contents #top #output .port{
+	--port-color: #ffa214;
+}
+#Dialog #selection-border{
+	border-color: #ffa214;
+}
+   #Dialog #ValidationContainer{
+	  width: 200px;
+ }
+#Dialog .unity-base-field:focus .unity-text-element,
+#Dialog .unity-text-element:focus{
+	color: #ffa214;
+}
+#Dialog .unity-base-field:focus .unity-base-field__input{
+	border-color: #ffa214;
+}
+/* DIALOGUE NODE */
+
+
+
+/* CHOICE DIALOGUE NODE */
+#Choice {
+	max-width: 300px; 
+	width: 300px; 
+}
+#Choice #output{
+	width: 200px;
+}
+#Choice #output .port{
+	max-width: 215px; 
+	width: 215px;
+}
+#Choice #output .port .ChoiceLabel{
+	max-width: 145px; 
+	width: 145px;
+}
+#Choice .MAT_Title {
+	background-color: #0098dc;
+}
+#Choice #node-border #contents #top #input .port,
+#Choice #node-border #contents #top #output .port{
+	--port-color: #0098dc;
+}
+#Choice #selection-border{
+	border-color: #0098dc;
+}
+#Choice .MAT_Title .unity-button {
+	background-color: #008bcc;
+	color: #fff;
+	font-size: 10px;
+    -unity-font-style: bold;
+	border-width: 0px;
+}
+#Choice .unity-enum-field .unity-text-element{
+	width: 85px;
+	min-width: 85px;
+}
+#Choice #output #type{
+	margin-left: 0;
+	margin-right: 0;
+}
+  #Choice #ValidationContainer{
+	  width: 300px;
+ }
+#Choice .port.output > .unity-button{
+	background-color: #0098dc !important;
+	margin: 0px;
+	height: 18px;
+	width: 18px;
+	margin-right: 2px;
+	margin-top: 1px;
+	font-size: 10px;
+	-unity-font-style: bold;
+}
+#Choice .port.output > .unity-button:hover{
+	background-color: #008bcc !important;
+}
+#Choice .unity-base-field:focus .unity-text-element,
+#Choice .unity-text-element:focus{
+	color: #0098dc;
+}
+#Choice .unity-base-field:focus .unity-base-field__input{
+	border-color: #0098dc;
+}
+/* CHOICE DIALOGUE NODE */
+
+
+
+/* ADVANCED CHOICE NODE */
+#AdvancedChoice {
+	max-width: 400px; 
+	width:400px; 
+}
+#AdvancedChoice #output{
+	width: 300px;
+}
+#AdvancedChoice #output .port{
+	max-width: 315px; 
+	width: 315px;
+}
+#AdvancedChoice #output .port .ChoiceLabel{
+	max-width: 177px; 
+	width: 195px;
+	margin-left: 0px;
+}
+#AdvancedChoice #output .port .TypeClass{
+	max-width: 70px; 
+	width: 70px;
+	margin-right: 0px;
+}
+
+#AdvancedChoice .MAT_Title {
+	background-color: #119e95;
+}
+#AdvancedChoice #node-border #contents #top #input .port,
+#AdvancedChoice #node-border #contents #top #output .port{
+	--port-color: #119e95;
+}
+#AdvancedChoice #selection-border{
+	border-color: #119e95;
+}
+#AdvancedChoice .MAT_Title .unity-button {
+	background-color: #139390;
+	color: #fff;
+	font-size: 10px;
+    -unity-font-style: bold;
+	border-width: 0px;
+}
+#AdvancedChoice .unity-enum-field .unity-text-element{
+	width: 85px;
+	min-width: 85px;
+}
+#AdvancedChoice #output #type{
+	margin-left: 0;
+	margin-right: 0;
+}
+  #AdvancedChoice #ValidationContainer{
+	  width: 350px;
+	  left: 25px;
+ }
+#AdvancedChoice .port.output > .unity-button{
+	background-color: #119e95 !important;
+	margin: 0px;
+	height: 38px;
+	width: 18px;
+	margin-right: 2px;
+	margin-top: 1px;
+	font-size: 10px;
+	-unity-font-style: bold;
+}
+#AdvancedChoice .port.output > .unity-button:hover{
+	background-color: #139390 !important;
+}
+#AdvancedChoice .unity-base-field:focus .unity-text-element,
+#AdvancedChoice .unity-text-element:focus{
+	color: #119e95;
+}
+#AdvancedChoice .unity-base-field:focus .unity-base-field__input{
+	border-color: #119e95;
+}
+/* ADVANCED CHOICE NODE */
+
+
+
+/* TIMER CHOICE DIALOGUE NODE */
+#TimerChoice {
+	max-width: 300px; 
+	width: 300px; 
+}
+#TimerChoice #output{
+	width: 200px;
+}
+#TimerChoice #output .port{
+	max-width: 215px; 
+	width: 215px;
+}
+#TimerChoice #output .port .ChoiceLabel{
+	max-width: 145px; 
+	width: 145px;
+}
+#TimerChoice .MAT_Title {
+	background-color: #e56f15;
+}
+#TimerChoice #node-border #contents #top #input .port,
+#TimerChoice #node-border #contents #top #output .port{
+	--port-color: #e56f15;
+}
+#TimerChoice #selection-border{
+	border-color: #e56f15;
+}
+#TimerChoice .MAT_Title .unity-button {
+	background-color: #e06415;
+	color: #fff;
+	font-size: 10px;
+    -unity-font-style: bold;
+	border-width: 0px;
+}
+#TimerChoice .unity-enum-field .unity-text-element{
+	width: 85px;
+	min-width: 85px;
+}
+#TimerChoice #output #type{
+	margin-left: 0;
+	margin-right: 0;
+}
+  #TimerChoice #ValidationContainer{
+	  width: 300px;
+ }
+ 
+#TimerChoice .port.output > .unity-button{
+	background-color: #e56f15 !important;
+	margin: 0px;
+	height: 18px;
+	width: 18px;
+	margin-right: 2px;
+	margin-top: 1px;
+	font-size: 10px;
+	-unity-font-style: bold;
+}
+#TimerChoice .port.output > .unity-button:hover{
+	background-color: #e06415 !important;
+}
+#TimerChoice .unity-base-field:focus .unity-text-element,
+#TimerChoice .unity-text-element:focus{
+	color: #e56f15;
+}
+#TimerChoice .unity-base-field:focus .unity-base-field__input{
+	border-color: #e56f15;
+}
+ #TimerChoice #ValidationContainer{
+	bottom: 48px;
+ }
+ 
+#TimerChoice .TextTime{
+	width: 190px;
+}
+/* CHOICE DIALOGUE NODE */
+
+
+
+/* ADVANCED TIMER CHOICE NODE */
+#AdvancedTimeChoice {
+	max-width: 400px; 
+	width:400px;  
+}
+#AdvancedTimeChoice #output{
+	width: 300px;
+}
+#AdvancedTimeChoice #output .port{
+	max-width: 315px; 
+	width: 315px;
+}
+
+#AdvancedTimeChoice #output .port .ChoiceLabel{
+	max-width: 177px; 
+	width: 215px;
+	margin-left: 0px;
+}
+#AdvancedTimeChoice #output .port .TypeClass{
+	max-width: 70px; 
+	width: 70px;
+	margin-right: 2px;
+}
+#AdvancedTimeChoice .MAT_Title {
+	background-color: #c74614;
+}
+#AdvancedTimeChoice #node-border #contents #top #input .port,
+#AdvancedTimeChoice #node-border #contents #top #output .port{
+	--port-color: #c74614;
+}
+#AdvancedTimeChoice #selection-border{
+	border-color: #c74614;
+}
+#AdvancedTimeChoice .MAT_Title .unity-button {
+	background-color: #b83b16;
+	color: #fff;
+	font-size: 10px;
+    -unity-font-style: bold;
+	border-width: 0px;
+}
+#AdvancedTimeChoice .unity-enum-field .unity-text-element{
+	width: 85px;
+	min-width: 85px;
+}
+#AdvancedTimeChoice #output #type{
+	margin-left: 0;
+	margin-right: 0;
+}
+  #AdvancedTimeChoice #ValidationContainer{
+	  width: 350px;
+	  left: 25px;
+ }
+ 
+#AdvancedTimeChoice .port.output > .unity-button{
+	background-color: #c74614 !important;
+	margin: 0px;
+	height: 38px;
+	width: 18px;
+	margin-right: 2px;
+	margin-top: 1px;
+	font-size: 10px;
+	-unity-font-style: bold;
+}
+#AdvancedTimeChoice .port.output > .unity-button:hover{
+	background-color: #b83b16 !important;
+}
+#AdvancedTimeChoice .unity-base-field:focus .unity-text-element,
+#AdvancedTimeChoice .unity-text-element:focus{
+	color: #c74614;
+}
+#AdvancedTimeChoice .unity-base-field:focus .unity-base-field__input{
+	border-color: #c74614;
+}
+#AdvancedTimeChoice .TextTime{
+	width: 290px;
+}
+/* ADVANCED TIME CHOICE NODE */
+
+
+
+	/* EVENT NODE */
+#Event {
+	max-width: 300px; 
+	width: 300px; 
+}
+#Event .MAT_Title {
+	background-color: #5b33bc;
+}
+#Event #node-border #contents #top #input .port,
+#Event #node-border #contents #top #output .port{
+	--port-color: #5b33bc;
+}
+#Event #selection-border{
+	border-color: #5b33bc;
+}
+   #Event #ValidationContainer{
+	  width: 300px;
+ }
+ #Event .unity-toolbar-menu{
+	background-color: #522fae !important;
+	border-width: 0px !important;
+	padding: 6px;
+	color: #fff;
+	font-size: 10px;
+    -unity-font-style: bold;
+	margin: 0px;
+	align-self: stretch;
+}
+
+#Event .EventBox .unity-label{
+	min-width: 75px !important;
+}
+#Event #unity-x-input .unity-label,
+#Event #unity-y-input .unity-label,
+#Event #unity-z-input .unity-label,
+#Event #unity-w-input .unity-label{
+	display: none;
+}
+
+.EventBox {
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.EventBox .unity-text-element{
+	
+	font-size: 10px;
+}
+
+.EventSO {
+	width: 268px;
+	max-width: 268px;
+	margin-left: 2px;
+	margin-right: 0px;
+	height: 20px;
+}
+
+.EventBox > .EventBtn{
+	background-color: #5b33bc !important;
+	margin: 0px;
+	height: 18px;
+	width: 18px;
+	margin-right: 2px;
+	margin-top: 1px;
+	font-size: 10px;
+	-unity-font-style: bold;
+}.EventBox > .EventBtn:hover{
+	background-color: #522fae !important;
+}
+#Event .unity-base-field:focus .unity-text-element,
+#Event .unity-text-element:focus{
+	color: #997FDC;
+}
+#Event .unity-base-field:focus .unity-base-field__input{
+	border-color: #997FDC;
+}
+/* EVENT NODE */
+
+
+
+/* IF NODE */
+#IF {
+	max-width: 200px; 
+	width: 200px; 
+}
+#IF .MAT_Title {
+	background-color: #2932a6;
+}
+#IF .port{
+	--port-color: #2932a6;
+}
+#IF .True{
+	--port-color: #3D9537;
+}
+#IF .False{
+	--port-color: #931F1D;
+}
+#IF #selection-border{
+	border-color: #2932a6;
+}
+   #IF #ValidationContainer{
+	  width: 200px;
+ }
+ #IF .unity-base-text-field__label,
+#IF .unity-enum-field__label,
+#IF .unity-popup-field__label
+{
+	width: 75px !important;
+	min-width: 75px !important;
+}#IF .unity-base-field .unity-text-element{
+	
+	font-size: 10px;
+}
+#IF .unity-base-field:focus .unity-text-element,
+#IF .unity-text-element:focus{
+	color: #7C83DE;
+}
+#IF .unity-base-field:focus .unity-base-field__input{
+	border-color: #7C83DE;
+}
+#IF .MAT_Title .unity-button {
+	background-color: #242c99;
+	color: #fff;
+	font-size: 10px;
+    -unity-font-style: bold;
+	border-width: 0px;
+}
+/* IF NODE */
+
+/* ADVANCED IF NODE */
+#AdvancedIF {
+	max-width: 300px; 
+	width: 300px; 
+}
+#AdvancedIF .MAT_Title {
+	background-color: #0d6773;
+}
+#AdvancedIF .port{
+	--port-color: #147f87;
+}
+#AdvancedIF .True{
+	--port-color: #147f87;
+}
+#AdvancedIF .False{
+	--port-color: #147f87;
+}
+#AdvancedIF #selection-border{
+	border-color: #0d6773;
+}
+   #AdvancedIF #ValidationContainer{
+	  width: 300px;
+ }
+ #AdvancedIF .unity-base-text-field__label,
+#AdvancedIF .unity-enum-field__label,
+#AdvancedIF .unity-popup-field__label
+{
+	width: 75px !important;
+	min-width: 75px !important;
+}#AdvancedIF .unity-base-field .unity-text-element{
+	
+	font-size: 10px;
+}
+#AdvancedIF .unity-base-field:focus .unity-text-element,
+#AdvancedIF .unity-text-element:focus{
+	color: #7C83DE;
+}
+#AdvancedIF .unity-base-field:focus .unity-base-field__input{
+	border-color: #7C83DE;
+}
+#AdvancedIF .MAT_Title .unity-button {
+	background-color: #0a5c6a;
+	color: #fff;
+	font-size: 10px;
+    -unity-font-style: bold;
+	border-width: 0px;
+}
+/* ADVANCED IF NODE */
+
+
+
+/* RANDOM NODE */
+#Random {
+	max-width: 150px; 
+	width: 150px; 
+}
+#Random .MAT_Title {
+	background-color: #80234a;
+}
+#Random #node-border #contents #top #input .port,
+#Random #node-border #contents #top #output .port{
+	--port-color: #80234a;
+}
+#Random #selection-border{
+	border-color: #80234a;
+}
+   #Random #ValidationContainer{
+	  width: 200px;
+	  left: -25px;
+ }
+#Random .MAT_Title .unity-button {
+	background-color: #752043;
+	color: #fff;
+	font-size: 10px;
+    -unity-font-style: bold;
+	border-width: 0px;
+}
+#Random .port.output > .unity-button{
+	background-color: #80234a !important;
+	margin: 0px;
+	height: 18px;
+	width: 18px;
+	margin-right: 2px;
+	margin-top: 1px;
+	font-size: 10px;
+	-unity-font-style: bold;
+}
+#Random .port.output > .unity-button:hover{
+	background-color: #752043 !important;
+}
+/* RANDOM NODE */
+
+
+
+/* NOTES NODE */
+#Command {
+	max-width: 300px; 
+	width: 300px; 
+}
+#Command .MAT_Title {
+	background-color: #1e6f50;
+}
+#Command #selection-border{
+	border-color: #1e6f50;
+}
+#Command #contents{
+	display: none;
+}
+#Command .TextBox{
+	margin: 0px;
+}
+#Command .TextBox #unity-text-input{
+	border-width: 0px;
+	background-color: #1a644e;
+	font-size: 10px;
+}
+/* NOTES NODE */
+
+
+
+/* MUSIC NODE */
+#Music{
+	width: 150px;
+}
+#Music .MAT_Title {
+	background-color: #ff2c8e;
+}
+#Music #node-border #contents #top #input .port,
+#Music #node-border #contents #top #output .port{
+	--port-color: #ff2c8e;
+}
+#Music .unity-base-field .unity-text-element{
+	width: 70px;
+	min-width: 70px;
+}
+#Music #selection-border{
+	border-color: #ff2c8e;
+}
+  #Music #ValidationContainer
+  {
+	  width: 200px;
+	  left: -25px;
+ }
+#Music .unity-base-field:focus .unity-text-element,
+#Music .unity-text-element:focus{
+	color: #ff2c8e;
+}
+#Music .unity-base-field:focus .unity-base-field__input{
+	border-color: #ff2c8e;
+}
+/* MUSIC NODE */
+
+
+
+
+
+
+/* RESET SAVED NODE */
+#ResetSaved{
+	width: 150px;
+}
+#ResetSaved .MAT_Title {
+	background-color: #8a4e34;
+}
+#ResetSaved #node-border #contents #top #input .port,
+#ResetSaved #node-border #contents #top #output .port{
+	--port-color: #8a4e34;
+}
+#ResetSaved .unity-base-field .unity-text-element{
+	width: 70px;
+	min-width: 70px;
+}
+#ResetSaved #selection-border{
+	border-color: #8a4e34;
+}
+  #ResetSaved #ValidationContainer
+  {
+	  width: 200px;
+	  left: -25px;
+ }
+#ResetSaved .unity-base-field:focus .unity-text-element,
+#ResetSaved .unity-text-element:focus{
+	color: #8a4e34;
+}
+#ResetSaved .unity-base-field:focus .unity-base-field__input{
+	border-color: #8a4e34;
+}
+/* RESET SAVED NODE */
+
+
+
+	/**/
+	#output .advanceChoicePort{
+		height: 38px;
+		margin-top: 4px;
+	}	
+	#output .advanceChoicePort .condition-field .first,
+	#output .advanceChoicePort .condition-field .last  {
+		width: 118px;
+		max-width: 118px;
+		min-width: 118px;
+		margin-left: 0px;
+		margin-right: 0px;
+	}	
+	#output .advanceChoicePort .condition-field  {
+		margin-left: 3px;
+		margin-right: 3px;
+	}	
+	#output .advanceChoicePort .TypeClass{
+		padding-bottom: 0px;
+		margin-right: 0px;
+	}
+	#output .advanceChoicePort .TypeClass .unity-enum-field__text{
+		-unity-text-align: middle-center;
+		min-width: 60px;
+	}
