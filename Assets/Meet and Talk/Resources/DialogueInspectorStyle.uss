@@ -1,0 +1,271 @@
+/* DRAW SCRIPT */
+.DrawScript {
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+    padding: 10px; /* Wewnêtrzny odstêp */
+    box-sizing: border-box; /* Zapobiega wystawaniu poza kontener */
+    padding: 0px;
+}
+
+.DrawScript .icon-label-container {
+    display: flex;
+    align-items: center;
+    width: 150px; /* Minimalna szerokoœæ dla ikony i etykiety */
+    flex-direction: row;
+    margin-left: -1px;
+}
+
+.DrawScript .DrawScript-Label {
+    margin-left: 2px; /* Odstêp miêdzy ikon¹ a etykiet¹ */
+    -unity-font-style: bold;
+}
+
+.DrawScript .script-field {
+    flex-grow: 1; /* Rozci¹ga siê, aby wype³niæ dostêpn¹ przestrzeñ */
+    width: 0px;
+    margin-right: 2px;
+    height: 28px;
+}
+.DrawScript .EditButton{
+    height: 26px;
+    width: 26px;
+}
+.DrawScript .EditButton .unity-image{
+    margin: auto;
+}
+/* DRAW SCRIPT */
+
+
+
+/* Info Box */
+.InfoBox{
+    flex-direction: row;
+    display: flex;
+}
+.IconBox{
+    flex-direction: row;
+    margin-right: 0px;
+    padding: 0px;
+}
+.Icon{
+    flex-direction: row;
+    height: 32px;
+    width: 32px;
+    margin: 2px;
+    margin-left: 1px;
+}
+.ContentBox{
+    flex-direction: row;
+    flex-grow: 1;
+    -unity-text-align: middle-center;
+    display: flex;
+}
+.ContentBox .unity-text-element{
+    flex-grow: 1;
+    -unity-font-style: bold;
+    font-size: 11px;
+}
+.InfoBox .WarningHint{
+	 background-color: #534837;
+	 border-color: #ffc107;
+}
+.InfoBox .ErrorHint{
+	 background-color: #533a39;
+	 border-color: #ff534a;
+}
+.InfoBox .SuccessHint{
+	 background-color: #3e4e40;
+	 border-color: #33984b;
+}
+/* Info Box */
+
+
+
+/* GROUP */
+.Group .Header{
+    min-height: 32px;
+    padding: 0px;
+    display: flex;
+    margin-bottom: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    background-color: #464646;
+}
+.Group .IconBox{
+    margin: 0px;
+    margin-left: -2px;
+}
+.Group .IconBox .Icon{
+    height: 32px;
+    width: 32px;
+    margin: 0px;
+    margin-left: -1px;
+    margin-bottom: -1px;
+    margin-top: -1px;
+}
+.Group .textContainer{
+    margin-left: 5px;
+    flex-grow: 1;
+}
+.Group .textContainer .Title{
+    -unity-font-style: bold;
+}
+.Group .textContainer .Desc{
+    font-size: 9px;
+}
+.Group .Counter{
+    margin-right: 8px;
+    width:50px;
+    -unity-text-align: middle-center;
+}
+.Group .container{
+    margin-top: -1px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0px;
+    padding-left: 0px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.Group .container > .unity-help-box__label{
+    display:none;
+}
+.Group .container .unity-base-field{
+    margin-right: 3px;
+}
+.Group .FoldoutButton{
+    height: 32px;
+    width: 32px;
+    margin-right:0px;
+    padding: auto;
+}
+.Group .FoldoutButton .unity-image{
+    margin:auto;
+}
+/* GROUP */
+
+
+/* PROGRESS BAR */
+.ProgressBar {
+    height: 30px;
+    background-color: #333;
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    justify-content: flex-start;
+}
+
+.ProgressBar .unity-help-box__label {
+    display: none;
+}
+
+.ProgressBar .ProgressLabel {
+    color: white;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+}
+
+.ProgressBar .Fill {
+    height: 30px;
+    align-self: flex-start;
+    margin: 0px;
+    margin-top: -1px;
+}
+/* PROGRESS BAR */
+
+
+
+
+
+.SuffixElement{
+    width: 0px;
+    padding: 0px;
+    -unity-text-align: middle-right;
+    -unity-font-style: normal;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin-left: -10px;
+    font-size: 10px;
+}
+.ReorderableList{
+    margin-top: -1px;
+    margin-left: 3px;
+    margin-right: 3px;
+    background-color: #3b3b3b;
+}
+.ReorderableList .unity-scroll-view{
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    padding-bottom: 3px;
+}
+.ReorderableList .unity-list-view__footer{
+    margin-right: 0px;
+    padding-left: 4px;
+    margin-bottom: 4px;
+}
+
+    .ColorRed{
+	 background-color: #533a39;
+	 border-color: #ff534a;
+    }
+    .ColorOrange{
+	 background-color: #583527;
+	 border-color: #e56f15;
+    }
+    .ColorYellow{
+	 background-color: #534837;
+	 border-color: #ffc107;
+    }
+    .ColorGreen{
+	 background-color: #3e4e40;
+	 border-color: #33984b;
+    }
+    .ColorLightBlue{
+	 background-color: #264055;
+	 border-color: #0098dc;
+    }
+    .ColorBlue{
+	 background-color: #282e44;
+	 border-color: #2932a6;
+    }
+    .ColorViolet{
+	 background-color: #30294a;
+	 border-color: #5b33bc;
+    }
+    .ColorPink{
+	 background-color: #61283d;
+	 border-color: #ff2c8e;
+    }
+
+    .ColorDefualt{
+	 background-color: #585858 !important;
+    }
+
+
+
+    
+.unity-base-field .unity-toggle__input{
+         max-width: 16px;
+     }
+.unity-base-field .unity-toggle__label{
+         width: auto;
+         max-width: auto;
+         padding-left: 2px;
+         flex-grow: 1;
+     }
+
+.unity-base-field__label{
+    font-size: 11px;
+    -unity-text-align: Middle-Left;
+    -unity-font-style: bold;
+}
