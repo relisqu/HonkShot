@@ -51,6 +51,8 @@ namespace Scripts.Player
         // Pooled projectile
         private PlayerGhostProjectile _pooledGhostProjectile;
 
+        private Room _currentRoom;
+
         // ─────────────────────────── Unity lifecycle ─────────────────────
         private void OnEnable()
         {
@@ -59,7 +61,7 @@ namespace Scripts.Player
             _playerMovement.DragFinished += OnDragFinished;
 
             if (LevelManager.Instance)
-                LevelManager.Instance.EnteredRoom += OnRoomEntered;
+                LevelManager.Instance.EnteredRoom += LevelManager_EnteredRoom;
         }
 
         private void OnDisable()
@@ -68,7 +70,7 @@ namespace Scripts.Player
             _playerMovement.DragFinished -= OnDragFinished;
 
             if (LevelManager.Instance)
-                LevelManager.Instance.EnteredRoom -= OnRoomEntered;
+                LevelManager.Instance.EnteredRoom -= LevelManager_EnteredRoom;
         }
 
         public static Projection Instance { get; private set; }
@@ -90,11 +92,23 @@ namespace Scripts.Player
                 SceneManager.UnloadSceneAsync(_simulationScene);
 
             if (LevelManager.Instance)
-                LevelManager.Instance.EnteredRoom -= OnRoomEntered;
+                LevelManager.Instance.EnteredRoom -= LevelManager_EnteredRoom;
+        }
+
+        public void EnterRoom(Room room)
+        {
+            if (_simulationScene.IsValid() && _simulationScene.isLoaded)
+                SceneManager.UnloadSceneAsync(_simulationScene);
+
+            _spawnedObjects.Clear();
+            _needsRecalculation = true;
+            _simulationScene = new Scene();
+
+            _currentRoom = room; // invalidate → rebuilt lazily
         }
 
         // ─────────────────────────── Room change ─────────────────────────
-        private void OnRoomEntered()
+        private void LevelManager_EnteredRoom()
         {
             if (_simulationScene.IsValid() && _simulationScene.isLoaded)
                 SceneManager.UnloadSceneAsync(_simulationScene);
@@ -102,6 +116,7 @@ namespace Scripts.Player
             _spawnedObjects.Clear();
             _needsRecalculation = true;
             _simulationScene = new Scene(); // invalidate → rebuilt lazily
+            EnterRoom(LevelManager.Instance.CurrentRoom);
         }
 
         // ─────────────────────────── Drag handlers ───────────────────────
@@ -168,7 +183,7 @@ namespace Scripts.Player
         private void Update()
         {
             TryCreateSimulationSceneIfNeeded();
-            if (!LevelManager.Instance.CurrentRoom || !_simulationScene.isLoaded) return;
+            if (!_currentRoom || !_simulationScene.isLoaded) return;
 
             // Sync ghosts → originals
             foreach (var pair in _spawnedObjects)
@@ -204,13 +219,13 @@ namespace Scripts.Player
         private void TryCreateSimulationSceneIfNeeded()
         {
             if (_simulationScene.IsValid()) return;
-            if (!LevelManager.Instance.CurrentRoom) return;
+            if (!_currentRoom) return;
 
             _simulationScene =
                 SceneManager.CreateScene("Simulation", new CreateSceneParameters(LocalPhysicsMode.Physics2D));
             _physicsScene = _simulationScene.GetPhysicsScene2D();
 
-            foreach (Transform obj in LevelManager.Instance.CurrentRoom.ObstaclesTransform)
+            foreach (Transform obj in _currentRoom.ObstaclesTransform)
                 if (ShouldBeCloned(obj))
                     CloneHierarchy(obj, _simulationScene);
         }

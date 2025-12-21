@@ -8,6 +8,8 @@ namespace Scripts.Player
         [SerializeField] private List<BallLayer> _layers = new();
         [SerializeField] private Transform _transform;
 
+        [SerializeField] private Transform _visualTransform;
+        [SerializeField] private float _rotationSpeed;
         private Vector2 _lastPosition;
 
         void Start()
@@ -27,10 +29,9 @@ namespace Scripts.Player
         {
             Vector2 movementDelta = GetMovementDelta();
 
-            foreach (var layer in _layers)
-            {
-                layer.UpdateOffset(movementDelta, _transform);
-            }
+            _visualTransform.Rotate(Vector3.forward *
+                                    (Mathf.Sign(movementDelta.x) * movementDelta.magnitude * _rotationSpeed),
+                Space.Self);
 
             _lastPosition = _transform.position;
         }

@@ -4,6 +4,7 @@ using Scripts.Health;
 using Scripts.Player.Dash;
 using Scripts.Enemies;
 using Scripts.Enemies.Bullets;
+using Scripts.LevelSystem;
 using Scripts.LevelSystem.LevelGeneration;
 using Sirenix.OdinInspector;
 using Zenject;
@@ -33,6 +34,7 @@ namespace Scripts.Config
         [SerializeField] private Scripts.PointSystem.PointReceiver _pointReceiver;
         [SerializeField] private LevelManager _levelManager;
         [SerializeField] private LevelGenerator _levelGenerator;
+        [SerializeField] private LevelTransitionManager _levelTransitionManager;
 
         [Header("Settings")] [SerializeField] private bool _applyToPrefabs = true;
         [SerializeField] private bool _applyToSceneObjects = true;
@@ -165,29 +167,38 @@ namespace Scripts.Config
             {
                 SetSerializedProperty(playerBallMovement, "_forceModifier", _playerConfig.forceModifier);
                 SetSerializedProperty(playerBallMovement, "_maxForceMagnitude", _playerConfig.overallMaxForceMagnitude);
-                SetSerializedProperty(playerBallMovement, "_maxDragForceMagnitude", _playerConfig.maxForceMagnitudePerDrag);
+                SetSerializedProperty(playerBallMovement, "_maxDragForceMagnitude",
+                    _playerConfig.maxForceMagnitudePerDrag);
                 SetSerializedProperty(playerBallMovement, "_minBallForce", _playerConfig.minBallForce);
-                SetSerializedProperty(playerBallMovement, "_additionalDragStartTime", _playerConfig.additionalDragStartTime);
+                SetSerializedProperty(playerBallMovement, "_additionalDragStartTime",
+                    _playerConfig.additionalDragStartTime);
                 SetSerializedProperty(playerBallMovement, "_additionalDragForce", _playerConfig.additionalDragForce);
-                Debug.Log($"  - Ball Movement: forceModifier={_playerConfig.forceModifier}, maxForce={_playerConfig.overallMaxForceMagnitude}, maxDrag={_playerConfig.maxForceMagnitudePerDrag}");
+                Debug.Log(
+                    $"  - Ball Movement: forceModifier={_playerConfig.forceModifier}, maxForce={_playerConfig.overallMaxForceMagnitude}, maxDrag={_playerConfig.maxForceMagnitudePerDrag}");
             }
-            
+
             // Apply fire system settings
             var gooseFireSystem = targetObject.GetComponent<Scripts.Player.GooseFireSystem>();
             if (gooseFireSystem != null)
             {
-                SetSerializedProperty(gooseFireSystem, "_ultimateMultiplyCoefficient", _playerConfig.ultimateMultiplyCoefficient);
-                SetSerializedProperty(gooseFireSystem, "_ultimateDragCoefficient", _playerConfig.ultimateDragCoefficient);
+                SetSerializedProperty(gooseFireSystem, "_ultimateMultiplyCoefficient",
+                    _playerConfig.ultimateMultiplyCoefficient);
+                SetSerializedProperty(gooseFireSystem, "_ultimateDragCoefficient",
+                    _playerConfig.ultimateDragCoefficient);
                 SetSerializedProperty(gooseFireSystem, "_maxFire", _playerConfig.maxFire);
                 SetSerializedProperty(gooseFireSystem, "_fireGainPerLaunch", _playerConfig.fireGainPerLaunch);
-                SetSerializedProperty(gooseFireSystem, "_fireGainPerAcceleration", _playerConfig.fireGainPerAcceleration);
-                SetSerializedProperty(gooseFireSystem, "_fireLossPerDeceleration", _playerConfig.fireLossPerDeceleration);
+                SetSerializedProperty(gooseFireSystem, "_fireGainPerAcceleration",
+                    _playerConfig.fireGainPerAcceleration);
+                SetSerializedProperty(gooseFireSystem, "_fireLossPerDeceleration",
+                    _playerConfig.fireLossPerDeceleration);
                 SetSerializedProperty(gooseFireSystem, "_fireLossPerSecond", _playerConfig.fireLossPerSecond);
-                SetSerializedProperty(gooseFireSystem, "_ultimateFireDrainPerSecond", _playerConfig.ultimateFireDrainPerSecond);
+                SetSerializedProperty(gooseFireSystem, "_ultimateFireDrainPerSecond",
+                    _playerConfig.ultimateFireDrainPerSecond);
                 SetSerializedProperty(gooseFireSystem, "_honkFireDrainPerSecond", _playerConfig.honkFireDrainPerSecond);
-                Debug.Log($"  - Fire System: maxFire={_playerConfig.maxFire}, gainPerLaunch={_playerConfig.fireGainPerLaunch}");
+                Debug.Log(
+                    $"  - Fire System: maxFire={_playerConfig.maxFire}, gainPerLaunch={_playerConfig.fireGainPerLaunch}");
             }
-            
+
             // Note: jumpForce and moveSpeed might not be used in this game
             // They're kept in config for potential future use
         }
@@ -231,7 +242,7 @@ namespace Scripts.Config
             int enemyId = baseEnemy.EnemyId;
             var settings = _enemyConfig.GetSettingsForEnemy(enemyId);
 
-            if(settings==null) return;
+            if (settings == null) return;
             Debug.Log($"Applying enemy config to {source}: {targetObject.name} (ID: {enemyId})");
 
             // Apply health settings (all enemies have health)
@@ -274,7 +285,7 @@ namespace Scripts.Config
             {
                 SetSerializedProperty(shooterEnemy, "_shootInterval", settings.shootInterval);
                 Debug.Log($"  - Shooter Enemy: shootInterval={settings.shootInterval}");
-                
+
                 // Apply bullet settings to bullet prefab if ShootingModule exists
                 var shootingModule = targetObject.GetComponentInChildren<ShootingModule>();
                 if (shootingModule != null)
@@ -312,23 +323,23 @@ namespace Scripts.Config
         private void ApplyEnvironmentConfig()
         {
             // Apply to level manager
-            if (_levelManager != null)
+            if (_levelTransitionManager != null)
             {
-                SetSerializedProperty(_levelManager, "_itemScreenSpawnChance",
+                SetSerializedProperty(_levelTransitionManager, "_itemScreenSpawnChance",
                     _environmentConfig.itemScreenSpawnChance);
-                SetSerializedProperty(_levelManager, "_itemScreenPerRoomRate",
+                SetSerializedProperty(_levelTransitionManager, "_itemScreenPerRoomRate",
                     _environmentConfig.itemScreenPerRoomRate);
                 Debug.Log(
                     $"  - LevelManager: spawnChance={_environmentConfig.itemScreenSpawnChance}, rate={_environmentConfig.itemScreenPerRoomRate}");
             }
             else if (_applyToSceneObjects)
             {
-                var levelManager = FindObjectOfType<LevelManager>();
-                if (levelManager != null)
+                var _levelTransitionManager = FindObjectOfType<LevelTransitionManager>();
+                if (_levelTransitionManager != null)
                 {
-                    SetSerializedProperty(levelManager, "_itemScreenSpawnChance",
+                    SetSerializedProperty(_levelTransitionManager, "_itemScreenSpawnChance",
                         _environmentConfig.itemScreenSpawnChance);
-                    SetSerializedProperty(levelManager, "_itemScreenPerRoomRate",
+                    SetSerializedProperty(_levelTransitionManager, "_itemScreenPerRoomRate",
                         _environmentConfig.itemScreenPerRoomRate);
                     Debug.Log(
                         $"  - LevelManager (found): spawnChance={_environmentConfig.itemScreenSpawnChance}, rate={_environmentConfig.itemScreenPerRoomRate}");
@@ -462,7 +473,7 @@ namespace Scripts.Config
             Debug.LogWarning("Save function is only available in Editor mode!");
 #endif
         }
-        
+
         [Button("Load Configs from Prefabs")]
         public void LoadConfigsFromPrefabs()
         {
@@ -492,7 +503,7 @@ namespace Scripts.Config
             Debug.LogWarning("Load function is only available in Editor mode!");
 #endif
         }
-        
+
         private void LoadPlayerConfigFromObject(GameObject sourceObject)
         {
             Debug.Log($"Loading player config from: {sourceObject.name}");
@@ -511,10 +522,13 @@ namespace Scripts.Config
             if (attackController != null)
             {
                 _playerConfig.dependsOnSpeed = GetSerializedProperty<bool>(attackController, "_dependsOnSpeed");
-                _playerConfig.minBonusCoeffSpeed = GetSerializedProperty<float>(attackController, "_minBonusCoeffSpeed");
-                _playerConfig.maxBonusCoeffSpeed = GetSerializedProperty<float>(attackController, "_maxBonusCoeffSpeed");
+                _playerConfig.minBonusCoeffSpeed =
+                    GetSerializedProperty<float>(attackController, "_minBonusCoeffSpeed");
+                _playerConfig.maxBonusCoeffSpeed =
+                    GetSerializedProperty<float>(attackController, "_maxBonusCoeffSpeed");
                 _playerConfig.maxSpeedCoeff = GetSerializedProperty<float>(attackController, "_maxSpeedCoeff");
-                Debug.Log($"  - Attack: dependsOnSpeed={_playerConfig.dependsOnSpeed}, minSpeed={_playerConfig.minBonusCoeffSpeed}, maxSpeed={_playerConfig.maxBonusCoeffSpeed}, speedCoeff={_playerConfig.maxSpeedCoeff}");
+                Debug.Log(
+                    $"  - Attack: dependsOnSpeed={_playerConfig.dependsOnSpeed}, minSpeed={_playerConfig.minBonusCoeffSpeed}, maxSpeed={_playerConfig.maxBonusCoeffSpeed}, speedCoeff={_playerConfig.maxSpeedCoeff}");
             }
 
             // Load base damage from PointReceiver
@@ -531,8 +545,10 @@ namespace Scripts.Config
             {
                 _playerConfig.maxDashCount = GetSerializedProperty<int>(dashController, "_maxDashCount");
                 _playerConfig.canRegenDashes = GetSerializedProperty<bool>(dashController, "_canRegenDashes");
-                _playerConfig.dashRegenerationRate = GetSerializedProperty<float>(dashController, "_dashRegenerationRate");
-                Debug.Log($"  - Dash: maxCount={_playerConfig.maxDashCount}, canRegen={_playerConfig.canRegenDashes}, regenRate={_playerConfig.dashRegenerationRate}");
+                _playerConfig.dashRegenerationRate =
+                    GetSerializedProperty<float>(dashController, "_dashRegenerationRate");
+                Debug.Log(
+                    $"  - Dash: maxCount={_playerConfig.maxDashCount}, canRegen={_playerConfig.canRegenDashes}, regenRate={_playerConfig.dashRegenerationRate}");
             }
 
             // Load shield settings
@@ -548,31 +564,43 @@ namespace Scripts.Config
             if (playerBallMovement != null)
             {
                 _playerConfig.forceModifier = GetSerializedProperty<float>(playerBallMovement, "_forceModifier");
-                _playerConfig.overallMaxForceMagnitude = GetSerializedProperty<float>(playerBallMovement, "_maxForceMagnitude");
-                _playerConfig.maxForceMagnitudePerDrag = GetSerializedProperty<float>(playerBallMovement, "_maxDragForceMagnitude");
+                _playerConfig.overallMaxForceMagnitude =
+                    GetSerializedProperty<float>(playerBallMovement, "_maxForceMagnitude");
+                _playerConfig.maxForceMagnitudePerDrag =
+                    GetSerializedProperty<float>(playerBallMovement, "_maxDragForceMagnitude");
                 _playerConfig.minBallForce = GetSerializedProperty<float>(playerBallMovement, "_minBallForce");
-                _playerConfig.additionalDragStartTime = GetSerializedProperty<float>(playerBallMovement, "_additionalDragStartTime");
-                _playerConfig.additionalDragForce = GetSerializedProperty<float>(playerBallMovement, "_additionalDragForce");
-                Debug.Log($"  - Ball Movement: forceModifier={_playerConfig.forceModifier}, maxForce={_playerConfig.overallMaxForceMagnitude}, maxDrag={_playerConfig.maxForceMagnitudePerDrag}");
+                _playerConfig.additionalDragStartTime =
+                    GetSerializedProperty<float>(playerBallMovement, "_additionalDragStartTime");
+                _playerConfig.additionalDragForce =
+                    GetSerializedProperty<float>(playerBallMovement, "_additionalDragForce");
+                Debug.Log(
+                    $"  - Ball Movement: forceModifier={_playerConfig.forceModifier}, maxForce={_playerConfig.overallMaxForceMagnitude}, maxDrag={_playerConfig.maxForceMagnitudePerDrag}");
             }
 
             // Load fire system settings
             var gooseFireSystem = sourceObject.GetComponent<Scripts.Player.GooseFireSystem>();
             if (gooseFireSystem != null)
             {
-                _playerConfig.ultimateMultiplyCoefficient = GetSerializedProperty<float>(gooseFireSystem, "_ultimateMultiplyCoefficient");
-                _playerConfig.ultimateDragCoefficient = GetSerializedProperty<float>(gooseFireSystem, "_ultimateDragCoefficient");
+                _playerConfig.ultimateMultiplyCoefficient =
+                    GetSerializedProperty<float>(gooseFireSystem, "_ultimateMultiplyCoefficient");
+                _playerConfig.ultimateDragCoefficient =
+                    GetSerializedProperty<float>(gooseFireSystem, "_ultimateDragCoefficient");
                 _playerConfig.maxFire = GetSerializedProperty<float>(gooseFireSystem, "_maxFire");
                 _playerConfig.fireGainPerLaunch = GetSerializedProperty<float>(gooseFireSystem, "_fireGainPerLaunch");
-                _playerConfig.fireGainPerAcceleration = GetSerializedProperty<float>(gooseFireSystem, "_fireGainPerAcceleration");
-                _playerConfig.fireLossPerDeceleration = GetSerializedProperty<float>(gooseFireSystem, "_fireLossPerDeceleration");
+                _playerConfig.fireGainPerAcceleration =
+                    GetSerializedProperty<float>(gooseFireSystem, "_fireGainPerAcceleration");
+                _playerConfig.fireLossPerDeceleration =
+                    GetSerializedProperty<float>(gooseFireSystem, "_fireLossPerDeceleration");
                 _playerConfig.fireLossPerSecond = GetSerializedProperty<float>(gooseFireSystem, "_fireLossPerSecond");
-                _playerConfig.ultimateFireDrainPerSecond = GetSerializedProperty<float>(gooseFireSystem, "_ultimateFireDrainPerSecond");
-                _playerConfig.honkFireDrainPerSecond = GetSerializedProperty<float>(gooseFireSystem, "_honkFireDrainPerSecond");
-                Debug.Log($"  - Fire System: maxFire={_playerConfig.maxFire}, gainPerLaunch={_playerConfig.fireGainPerLaunch}");
+                _playerConfig.ultimateFireDrainPerSecond =
+                    GetSerializedProperty<float>(gooseFireSystem, "_ultimateFireDrainPerSecond");
+                _playerConfig.honkFireDrainPerSecond =
+                    GetSerializedProperty<float>(gooseFireSystem, "_honkFireDrainPerSecond");
+                Debug.Log(
+                    $"  - Fire System: maxFire={_playerConfig.maxFire}, gainPerLaunch={_playerConfig.fireGainPerLaunch}");
             }
         }
-        
+
         private T GetSerializedProperty<T>(UnityEngine.Object target, string propertyName)
         {
             if (target == null)
@@ -624,7 +652,8 @@ namespace Scripts.Config
                     }
                     else
                     {
-                        Debug.LogWarning($"Field '{propertyName}' type mismatch. Expected {typeof(T)}, got {value?.GetType()}");
+                        Debug.LogWarning(
+                            $"Field '{propertyName}' type mismatch. Expected {typeof(T)}, got {value?.GetType()}");
                         return default(T);
                     }
                 }

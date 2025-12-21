@@ -3,11 +3,13 @@ using DG.Tweening;
 using Scripts.Player;
 using Scripts.Player.InputHandling;
 using UnityEngine;
+using Zenject;
 
 namespace Scripts.LevelSystem.LevelGeneration
 {
     public class LevelExitPortal : MonoBehaviour
     {
+        [Inject] private InputHandler _inputHandler;
         public event Action OnPortalTrigger;
         public event Action OnPlayerEnter;
         public event Action OnPortalClosed;
@@ -49,7 +51,7 @@ namespace Scripts.LevelSystem.LevelGeneration
             if (other.TryGetComponent(out PlayerBallMovement player))
             {
                 if (_isSucking) return;
-                if (InputHandler.Instance) InputHandler.Instance.SetInputEnabled(false);
+                if (_inputHandler) _inputHandler.SetInputEnabled(InputLayer.LevelChange, false);
                 _isSucking = true;
                 player.StopMovement();
                 Sequence swirlSequence = DOTween.Sequence();

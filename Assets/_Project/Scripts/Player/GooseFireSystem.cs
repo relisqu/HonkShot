@@ -2,13 +2,17 @@ using System;
 using Scripts.Health;
 using Scripts.Items;
 using Scripts.Items.StatSystems;
+using Scripts.Player.InputHandling;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Zenject;
 
 namespace Scripts.Player
 {
     public class GooseFireSystem : MonoBehaviour
     {
+        [Inject] private InputHandler _inputHandler;
+
         [FormerlySerializedAs("_ultimateMultiplySystem")] [Header("Fire Settings")] [SerializeField]
         private float _ultimateMultiplyCoefficient = 5f;
 
@@ -59,13 +63,12 @@ namespace Scripts.Player
 
         private void Update()
         {
-            // Handle Honk input
-            if (Input.GetKeyDown(_honkKey) && !_isHonk && _fire > 0)
+            if (_inputHandler.IsInputEnabled && Input.GetKeyDown(_honkKey) && !_isHonk && _fire > 0)
             {
                 StartHonk();
             }
 
-            if ((Input.GetKeyUp(_honkKey) && _isHonk) || (_isHonk && _fire <= 0))
+            if (_inputHandler.IsInputEnabled && (Input.GetKeyUp(_honkKey) && _isHonk) || (_isHonk && _fire <= 0))
             {
                 StopHonk();
             }

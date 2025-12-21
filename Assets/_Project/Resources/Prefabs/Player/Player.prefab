@@ -141,8 +141,8 @@ MonoBehaviour:
   _playerDashController: {fileID: 2937765415697391777}
   _gooseFireSystem: {fileID: 1399843973862884099}
   _forceModifier: 5
-  _maxForceMagnitude: 3
-  _maxDragForceMagnitude: 200
+  _maxForceMagnitude: 4
+  _maxDragForceMagnitude: 30
   _minBallForce: 3
   _additionalDragStartTime: 5
   _additionalDragForce: 0.1
@@ -163,6 +163,8 @@ MonoBehaviour:
   - {fileID: 2464914118050727845}
   - {fileID: 1368168924473855343}
   _transform: {fileID: 2444467111608435475}
+  _visualTransform: {fileID: 0}
+  _rotationSpeed: 0
 --- !u!95 &5865247646953967656
 Animator:
   serializedVersion: 7
@@ -463,7 +465,7 @@ MonoBehaviour:
   _playerBallMovement: {fileID: 2855041829269072723}
   _dependsOnSpeed: 1
   _minBonusCoeffSpeed: 8
-  _maxBonusCoeffSpeed: 15
+  _maxBonusCoeffSpeed: 20
   _maxSpeedCoeff: 2
 --- !u!114 &8510904863215499170
 MonoBehaviour:
@@ -554,6 +556,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _shieldPrefab: {fileID: 6096183082381102688, guid: 577ccbc1fed154f449f75f67eeb6da40, type: 3}
+  _defaultShields: 0
   _maxShields: 3
   _shieldVisualParent: {fileID: 3112019895012964704}
 --- !u!1 &334979677366588079

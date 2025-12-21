@@ -3,17 +3,20 @@ using DG.Tweening;
 using Scripts.Player;
 using Scripts.Player.InputHandling;
 using UnityEngine;
+using Zenject;
 
 namespace Scripts.LevelSystem.LevelGeneration
 {
     public class LevelEnterPortal : MonoBehaviour
     {
+        [Inject] private InputHandler _inputHandler;
+
         [SerializeField] private Animator _animator;
         [SerializeField] private Collider2D _collider;
 
         [SerializeField] private float swirlDuration = 1f;
         [SerializeField] private float swirlScale = 0.1f;
-        
+
         private bool _finishedAnimation;
 
         private void Awake()
@@ -22,6 +25,7 @@ namespace Scripts.LevelSystem.LevelGeneration
             transform.localScale = Vector3.zero;
             PlayPopUp();
         }
+
 
         public void PlayPopUp()
         {
@@ -54,7 +58,7 @@ namespace Scripts.LevelSystem.LevelGeneration
             {
                 _finishedAnimation = true;
                 // Resume input globally
-                if (InputHandler.Instance) InputHandler.Instance.SetInputEnabled(true);
+                if (_inputHandler) _inputHandler.SetInputEnabled(InputLayer.LevelChange,true);
                 PlayHide();
             });
         }

@@ -59,6 +59,11 @@ namespace Scripts.Items.StatSystems
             return order;
         }
 
+        public bool HasModifier(int id)
+        {
+            return _modifiers.Any(statModifier => statModifier.Id == id);
+        }
+
         public IStatModifier<T> GetModifier(int id)
         {
             foreach (var statModifier in _modifiers)

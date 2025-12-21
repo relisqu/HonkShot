@@ -4,11 +4,13 @@ using Scripts.LevelSystem.LevelObjects.Interaction;
 using UnityEngine;
 using DG.Tweening;
 using Scripts.Player.InputHandling;
+using Zenject;
 
 namespace Scripts.LevelSystem.LevelObjects
 {
     public class Cannon : MonoBehaviour
     {
+        [Inject] private InputHandler _inputHandler;
         [Header("Rotation")] [SerializeField] private Transform rotatingPart;
         [SerializeField] private float rotateAngle = 60f;
         [SerializeField] private float rotateSpeed = 2f;
@@ -67,10 +69,12 @@ namespace Scripts.LevelSystem.LevelObjects
         private IEnumerator HandleCannon(CannonInteractable interactable)
         {
             // Pause input globally
-            if (InputHandler.Instance) InputHandler.Instance.SetInputEnabled(false);
+            if (_inputHandler) _inputHandler.SetInputEnabled(InputLayer.Cannon, false);
             // Squash: shrink Y, widen X
             if (rotatingPart)
-                rotatingPart.DOScale(new Vector3(_originalScale.x * 1.2f, _originalScale.y * 0.7f, _originalScale.z), 0.15f).SetEase(Ease.OutQuad);
+                rotatingPart
+                    .DOScale(new Vector3(_originalScale.x * 1.2f, _originalScale.y * 0.7f, _originalScale.z), 0.15f)
+                    .SetEase(Ease.OutQuad);
 
             interactable.OnEnterCannon();
 
@@ -85,7 +89,7 @@ namespace Scripts.LevelSystem.LevelObjects
                 rotatingPart.DOScale(_originalScale, 0.25f).SetEase(Ease.OutBack);
 
             // Resume input globally
-            if (InputHandler.Instance) InputHandler.Instance.SetInputEnabled(true);
+            if (_inputHandler) _inputHandler.SetInputEnabled(InputLayer.Cannon, true);
             _containedObject = null;
         }
 

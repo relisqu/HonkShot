@@ -19,15 +19,12 @@ namespace Scripts.LevelSystem.LevelGeneration
         public static LevelManager Instance;
 
         private PlayerMovement _playerMovement;
+        private LevelTransitionManager _levelTransitionManager;
         private LevelObjectsFactory _levelObjectsFactory;
         private LevelGenerator _levelGenerator;
 
-        [SerializeField] private BackgroundPropSpawner _backgroundPropSpawner;
-        [SerializeField] private float _timeTransitionDuration = 1.2f;
-
         [SerializeField] private Projection _projection;
 
-        [SerializeField] private ItemSelectionUI _itemSelectionUI;
 
         private int _currentRoomIndex = 0;
         private int _levelsCompleted = 0;
@@ -38,21 +35,15 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         public Room CurrentRoom => _currentFloor?.VisitedRooms[^1];
 
-        [Space] [Header(("Item generation"))] [Range(0f, 1f)] [SerializeField]
-        private float _itemScreenSpawnChance;
-
-        [Min(1)]
-        [Tooltip("Once per how many rooms item room will try spawn - if select 1, item will try to spawn every room")]
-        [SerializeField]
-        private int _itemScreenPerRoomRate = 2;
 
         [Inject]
         private void Construct(PlayerMovement playerMovement, LevelObjectsFactory levelObjectsFactory,
-            LevelGenerator levelGenerator)
+            LevelGenerator levelGenerator, LevelTransitionManager levelTransitionManager)
         {
             _playerMovement = playerMovement;
             _levelGenerator = levelGenerator;
             _levelObjectsFactory = levelObjectsFactory;
+            _levelTransitionManager = levelTransitionManager;
         }
 
         private void Awake()
@@ -79,7 +70,7 @@ namespace Scripts.LevelSystem.LevelGeneration
         {
             Debug.Log($"Trying to enter room {room}");
             if (!room) return;
-            _backgroundPropSpawner.SetLevel(room.SpriteShapeController);
+            _levelTransitionManager.PrepareRoom(room);
             _currentFloor.EnterRoom(room);
             CurrentRoom.SetActive();
 
@@ -97,54 +88,22 @@ namespace Scripts.LevelSystem.LevelGeneration
                 CurrentRoom.ExitPortalSpawnPoint = CurrentRoom.SpawnPointTransform;
             }
 
-            var portal = _levelObjectsFactory.SpawnLevelEnterPortal(null);
-            portal.transform.position = CurrentRoom.SpawnPointTransform.position;
-            portal.PlayJumpOut(_playerMovement.GetTransform());
-
-            yield return new WaitUntil(portal.FinishedAnimation);
-            float t = 0f;
-            while (t < _timeTransitionDuration)
-            {
-                TimeManager.Instance.SlowGame(Mathf.Lerp(0f, 1f, t / _timeTransitionDuration));
-                t += Time.unscaledDeltaTime;
-                yield return null;
-            }
+            yield return _levelTransitionManager.SpawnEnterPortal(CurrentRoom);
 
             TimeManager.Instance.ResumeGame();
             yield return null;
         }
 
-        private bool ShouldGiveItems()
-        {
-            var shouldTryGenerateRoom = _levelsCompleted % _itemScreenPerRoomRate == 0;
-            if (shouldTryGenerateRoom)
-            {
-                return Random.value <= _itemScreenSpawnChance;
-            }
-
-            return false;
-        }
-
-        public void ShowItemSelectionUI()
-        {
-            if (ShouldGiveItems())
-            {
-                bool itemSelected = false;
-                int selectedItem = -1;
-                _itemSelectionUI.ShowItems(null);
-            }
-        }
 
         private IEnumerator EndLevelCoroutine()
         {
             _levelsCompleted++;
 
-            var portal = _levelObjectsFactory.SpawnLevelExitPortal(null);
-            portal.transform.position = CurrentRoom.ExitPortalSpawnPoint.position;
+            var exitPortal = _levelTransitionManager.SpawnExitPortal(CurrentRoom);
 
             bool portalClosed = false;
-            portal.OnPortalTrigger += () => { _projection.DestroySimulation(); };
-            portal.OnPortalClosed += () => portalClosed = true;
+            exitPortal.OnPortalTrigger += () => { _projection.DestroySimulation(); };
+            exitPortal.OnPortalClosed += () => portalClosed = true;
             while (!portalClosed)
                 yield return null;
 
@@ -155,12 +114,9 @@ namespace Scripts.LevelSystem.LevelGeneration
             // Destroy previous room if needed
             CurrentRoom.ExitRoom();
 
-            ShowItemSelectionUI();
 
-            while (_itemSelectionUI.IsActive)
-            {
-                yield return null;
-            }
+            yield return _levelTransitionManager.ShowEndLevelTransition(_levelsCompleted);
+
 
             if (nextRoom)
             {

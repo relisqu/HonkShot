@@ -1,4 +1,5 @@
 ﻿using System;
+using Scripts.Items.StatSystems;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,8 +7,6 @@ namespace Scripts.Player.InputHandling
 {
     public class InputHandler : MonoBehaviour
     {
-        public static InputHandler Instance { get; private set; }
-
         [SerializeField] private InputActionReference _pressActionReference;
         [SerializeField] private InputActionReference _movementActionReference;
         [SerializeField] private Transform _playerTransform;
@@ -15,30 +14,38 @@ namespace Scripts.Player.InputHandling
         [SerializeField] private PlayerInput _playerInput;
 
         private IInputHandler _currentInputHandler;
-        private bool _inputEnabled = true;
+        private bool _inputEnabled => _inputModifierSystem?.Calculate(true) ?? false;
 
+        private BoolStatModifierSystem _inputModifierSystem = new BoolStatModifierSystem();
         public event Action OnDragStarted;
         public event Action<Vector2> OnDragFinished;
         public bool IsDragging => _currentInputHandler.IsDragging;
 
-        public void SetInputEnabled(bool enabled)
+        public void SetInputEnabled(InputLayer inputLayer, bool value)
         {
-            Debug.Log(enabled);
-            _inputEnabled = enabled;
+            Debug.Log($"InputHandler:: Set layer {inputLayer} to {value}");
+            if (_inputModifierSystem.HasModifier((int)inputLayer))
+            {
+                _inputModifierSystem.UpdateModifier((int)inputLayer, value);
+            }
+            else
+            {
+                _inputModifierSystem.AddModifier(new BoolStatModifier((int)inputLayer, BoolModType.And, value, 1));
+            }
         }
 
         public bool IsInputEnabled => _inputEnabled;
 
         private void Awake()
         {
-            Instance = this;
             _pressActionReference.action.Enable();
         }
 
         private void Start()
         {
+            _inputModifierSystem = new BoolStatModifierSystem();
             ChangeControlScheme(_playerInput.currentControlScheme.ToLower());
-            SetInputEnabled(false);
+            SetInputEnabled(InputLayer.InputSystem, true);
         }
 
         private void Update()
