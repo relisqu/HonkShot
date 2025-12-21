@@ -25,6 +25,8 @@ namespace Scripts.LevelSystem.LevelGeneration
         public SpriteShapeController SpriteShapeController => _spriteShapeController;
         public Transform SpawnPointTransform => _spawnPointTransform;
 
+        public Action<Room> CompletedRoom;
+
         public Transform ExitPortalSpawnPoint
         {
             get => exitPortalSpawnPoint;
@@ -65,8 +67,7 @@ namespace Scripts.LevelSystem.LevelGeneration
         {
             Debug.Log($"Room {gameObject.name} unlocked!");
             _door.Open();
-            if (LevelManager.Instance)
-                LevelManager.Instance.CompletedRoom?.Invoke();
+            CompletedRoom?.Invoke(this);
         }
 
         public bool IsCleared()

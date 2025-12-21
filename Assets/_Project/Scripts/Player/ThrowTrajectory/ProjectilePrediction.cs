@@ -60,8 +60,6 @@ namespace Scripts.Player
             _playerMovement.DragStarted += OnDragStarted;
             _playerMovement.DragFinished += OnDragFinished;
 
-            if (LevelManager.Instance)
-                LevelManager.Instance.EnteredRoom += LevelManager_EnteredRoom;
         }
 
         private void OnDisable()
@@ -69,8 +67,6 @@ namespace Scripts.Player
             _playerMovement.DragStarted -= OnDragStarted;
             _playerMovement.DragFinished -= OnDragFinished;
 
-            if (LevelManager.Instance)
-                LevelManager.Instance.EnteredRoom -= LevelManager_EnteredRoom;
         }
 
         public static Projection Instance { get; private set; }
@@ -79,6 +75,11 @@ namespace Scripts.Player
         {
             Instance = this;
             TryCreateSimulationSceneIfNeeded();
+            if (LevelManager.Instance)
+            {
+                Debug.Log("Projection:: LevelManager.Instance.EnteredRoom += LevelManager_EnteredRoom;");
+                LevelManager.Instance.EnteredRoom += LevelManager_EnteredRoom;
+            }
         }
 
         public void EnableLine(bool value)
@@ -97,6 +98,8 @@ namespace Scripts.Player
 
         public void EnterRoom(Room room)
         {
+            Debug.Log("Projection::EnterRoom");
+            _currentRoom = room; // invalidate → rebuilt lazily
             if (_simulationScene.IsValid() && _simulationScene.isLoaded)
                 SceneManager.UnloadSceneAsync(_simulationScene);
 
@@ -104,19 +107,13 @@ namespace Scripts.Player
             _needsRecalculation = true;
             _simulationScene = new Scene();
 
-            _currentRoom = room; // invalidate → rebuilt lazily
         }
 
         // ─────────────────────────── Room change ─────────────────────────
         private void LevelManager_EnteredRoom()
         {
-            if (_simulationScene.IsValid() && _simulationScene.isLoaded)
-                SceneManager.UnloadSceneAsync(_simulationScene);
-
-            _spawnedObjects.Clear();
-            _needsRecalculation = true;
-            _simulationScene = new Scene(); // invalidate → rebuilt lazily
-            EnterRoom(LevelManager.Instance.CurrentRoom);
+            Debug.Log("Projection::LevelManager_EnteredRoom");
+          //  EnterRoom(LevelManager.Instance.CurrentRoom);
         }
 
         // ─────────────────────────── Drag handlers ───────────────────────
@@ -221,6 +218,7 @@ namespace Scripts.Player
             if (_simulationScene.IsValid()) return;
             if (!_currentRoom) return;
 
+            Debug.Log("Projection::Trying to create simulation scene");
             _simulationScene =
                 SceneManager.CreateScene("Simulation", new CreateSceneParameters(LocalPhysicsMode.Physics2D));
             _physicsScene = _simulationScene.GetPhysicsScene2D();

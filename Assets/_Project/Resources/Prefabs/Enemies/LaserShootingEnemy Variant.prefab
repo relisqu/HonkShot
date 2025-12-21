@@ -213,11 +213,15 @@ PrefabInstance:
     - target: {fileID: 7285576464758646721, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
       propertyPath: _shootingModule
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 4081470473917213766}
     - target: {fileID: 7285576464758646721, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
       propertyPath: _shooterAnimator
       value: 
       objectReference: {fileID: 6945404699160994010}
+    - target: {fileID: 7493701893975845517, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
+      propertyPath: _baseEnemy
+      value: 
+      objectReference: {fileID: 3090461680572553850}
     - target: {fileID: 8448305441327721667, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.5450001
@@ -269,6 +273,17 @@ MonoBehaviour:
   _bulletPrefab: {fileID: 1438345542058862545, guid: 458ad185b2f05934db6c3284c0454233, type: 3}
   _hasMaxDistance: 0
   _shootDistance: 5
+--- !u!114 &3090461680572553850 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7285576464758646721, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
+  m_PrefabInstance: {fileID: 5762381801919708603}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3756805598485683926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fe1f2c5c4e040b79a0ee8f288345843, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3756805598485683926 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8924671554657805165, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}

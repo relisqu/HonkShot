@@ -66,10 +66,18 @@ namespace Scripts.LevelSystem.LevelGeneration
             }
         }
 
+        public void Room_CompletedRoom(Room room)
+        {
+            CompletedRoom?.Invoke();
+            room.CompletedRoom -= Room_CompletedRoom;
+        }
+
         public void EnterRoom(Room room)
         {
             Debug.Log($"Trying to enter room {room}");
             if (!room) return;
+            room.CompletedRoom += Room_CompletedRoom;
+            _projection.EnterRoom(room);
             _levelTransitionManager.PrepareRoom(room);
             _currentFloor.EnterRoom(room);
             CurrentRoom.SetActive();
