@@ -8,23 +8,22 @@ using UnityEngine.InputSystem;
 
 public class HubPlayerPawn : MonoBehaviour
 {
-    [SerializeField]
-    private SpriteRenderer spriteRenderer;
-    [SerializeField]
-    private NavMeshAgent agent;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private NavMeshAgent agent;
+
     void Awake()
     {
         if (agent == null)
             agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
-
     }
-    [SerializeField]
-    private IInteractable pendingInteraction = null;
+
+    [SerializeField] private IInteractable pendingInteraction = null;
 
     public Vector2 CurrentSpeed => agent.velocity;
     bool isFacingRight = true;
+
     public bool IsFacingRight
     {
         get => isFacingRight;
@@ -34,28 +33,31 @@ public class HubPlayerPawn : MonoBehaviour
             spriteRenderer.flipX = !value;
         }
     }
+
     [SerializeField] bool isDebugging = true;
     private Coroutine movementCoroutine;
     Vector2 lastMoveDir;
     public event Action OnArrived;
 
-    [Header("AnimationSettings")]
-    [SerializeField] private float angle = 5f;
-    [SerializeField] private float duration = 0.3f; 
+    [Header("AnimationSettings")] [SerializeField]
+    private float angle = 5f;
+
+    [SerializeField] private float duration = 0.3f;
     [SerializeField] private float bounceHeight = 0.1f;
 
     private Tween wobbleTween;
     private Tween bounceTween;
     Vector3 originalLocalPos;
     private bool isWobbling;
-    
+
     void HandleTweens(bool shouldWobble)
     {
         if (shouldWobble == isWobbling)
             return;
 
         isWobbling = shouldWobble;
-        wobbleTween?.Kill(); wobbleTween = null;
+        wobbleTween?.Kill();
+        wobbleTween = null;
 
         if (shouldWobble)
         {
@@ -71,8 +73,6 @@ public class HubPlayerPawn : MonoBehaviour
         {
             transform.localRotation = Quaternion.identity;
         }
-
-
     }
 
     void AdjustAnimation()
@@ -83,47 +83,43 @@ public class HubPlayerPawn : MonoBehaviour
         HandleTweens(speed > 0.1f);
         if (speed > 0.1f)
         {
-            //handling flip
-            if (Mathf.Sign(velNorm.x) != Mathf.Sign(lastMoveDir.x) && lastMoveDir.magnitude > 0)
-            {
-                IsFacingRight = !IsFacingRight;
-            }
-
+            IsFacingRight = Mathf.Sign(velNorm.x)>0;
             lastMoveDir = velNorm;
             float angleToX = Vector2.Angle(Vector2.right, new Vector2(velNorm.x, 0));
             if (Mathf.Abs(velNorm.y) < Mathf.Tan(angleToX * Mathf.Deg2Rad * 0.3f))
                 velNorm = new Vector2(Mathf.Sign(velNorm.x), 0);
-            
         }
 
 
-        if (isDebugging) 
+        if (isDebugging)
             Debug.Log($"Agent Speed: X: {agent.velocity.x}; Y: {agent.velocity.y}; Normalized Velo: {velNorm}");
     }
 
-    
+
     public void MoveToPosition(Vector3 position)
     {
         if (movementCoroutine != null)
         {
             StopCoroutine(movementCoroutine);
         }
-        
+
         pendingInteraction = null;
         agent.SetDestination(position);
         movementCoroutine = StartCoroutine(WaitForArrival());
     }
+
     public void MoveToInteractable(Vector3 position, IInteractable interactable)
     {
         if (movementCoroutine != null)
         {
             StopCoroutine(movementCoroutine);
         }
-        
+
         pendingInteraction = interactable;
         agent.SetDestination(position);
         movementCoroutine = StartCoroutine(WaitForArrival());
     }
+
     private IEnumerator WaitForArrival()
     {
         // Wait until agent has reached destination
@@ -131,30 +127,27 @@ public class HubPlayerPawn : MonoBehaviour
         {
             yield return null;
         }
-        
+
         Debug.Log("detective arrived on the scene");
-        
+
         if (pendingInteraction != null)
         {
             Debug.Log("kuno trash talk pls");
             pendingInteraction.OnInteracted();
             pendingInteraction = null;
         }
-        
+
         movementCoroutine = null;
     }
-    
-    
-    
-    
-    
+
+
     void Update()
     {
         AdjustAnimation();
     }
+
     void Start()
     {
-        
     }
 
 
@@ -163,544 +156,6 @@ public class HubPlayerPawn : MonoBehaviour
         wobbleTween?.Kill();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //  ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▒░░░░▒▒▒▒░▒▒░░░░░░░░░░░░░░▒░▒▒░▒░ ░░▒░░░░░░░░ ░░░░▒▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▒▒▒▒▒▒▒▒▒▒▒▒ 
