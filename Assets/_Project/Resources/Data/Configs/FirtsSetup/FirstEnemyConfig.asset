@@ -12,22 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81daac17e4424004e86fa506a8054b2d, type: 3}
   m_Name: FirstEnemyConfig
   m_EditorClassIdentifier: Assembly-CSharp::Scripts.Config.EnemyConfig
-  defaultSettings:
-    enemyPrefab: {fileID: 925966557304150825, guid: d5e5c0f35cba76c4487f5d624169fc2f, type: 3}
-    enemyId: 3
-    enemyName: 
-    maxHealth: 100
-    defaultHealth: 100
-    walkMoveSpeed: 60.34
-    attackRange: 1.5
-    attackInterval: 1
-    attackWarningTime: 0.5
-    damage: 1
-    shootInterval: 2
-    bulletSpeed: 5
-    bulletDamage: 5
-    chaseSpeed: 3
-    detectionRange: 5
   enemySettings:
   - enemyPrefab: {fileID: 397435779891146254, guid: f10037decbce57c439f6c0386e1deeeb, type: 3}
     enemyId: 1
@@ -43,7 +27,7 @@ MonoBehaviour:
     bulletSpeed: 5
     bulletDamage: 5
     chaseSpeed: 2
-    detectionRange: 1
+    detectionRange: 2
   - enemyPrefab: {fileID: 1442526534013627462, guid: 33d66acea5bb92f458302bc1b4dc213d, type: 3}
     enemyId: 2
     enemyName: 
@@ -58,7 +42,7 @@ MonoBehaviour:
     bulletSpeed: 5
     bulletDamage: 5
     chaseSpeed: 2
-    detectionRange: 1
+    detectionRange: 2
   - enemyPrefab: {fileID: 925966557304150825, guid: d5e5c0f35cba76c4487f5d624169fc2f, type: 3}
     enemyId: 3
     enemyName: 
@@ -79,7 +63,7 @@ MonoBehaviour:
     enemyName: 
     maxHealth: 100
     defaultHealth: 100
-    walkMoveSpeed: 3
+    walkMoveSpeed: 1
     attackRange: 1.5
     attackInterval: 1
     attackWarningTime: 0.5
@@ -100,7 +84,7 @@ MonoBehaviour:
     attackWarningTime: 0.5
     damage: 1
     shootInterval: 2
-    bulletSpeed: 10
+    bulletSpeed: 12
     bulletDamage: 5
     chaseSpeed: 3
     detectionRange: 5
