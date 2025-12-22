@@ -85,6 +85,7 @@ public class HubPlayerPawn : MonoBehaviour
         {
             IsFacingRight = Mathf.Sign(velNorm.x)>0;
             lastMoveDir = velNorm;
+            
             float angleToX = Vector2.Angle(Vector2.right, new Vector2(velNorm.x, 0));
             if (Mathf.Abs(velNorm.y) < Mathf.Tan(angleToX * Mathf.Deg2Rad * 0.3f))
                 velNorm = new Vector2(Mathf.Sign(velNorm.x), 0);
