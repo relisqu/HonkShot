@@ -18,7 +18,8 @@ namespace Scripts.Player.InputHandling
         public event Action OnDragStarted;
         public event Action OnVisualDragStarted;
         public event Action<Vector2> OnDragFinished;
-        
+        public event Action OnCancelInput;
+
         public InputActionReference MovementValueActionInterface => _movementValueActionInterface;
         public InputActionReference PressActionInterface => _pressActionInterface;
 
@@ -54,6 +55,12 @@ namespace Scripts.Player.InputHandling
             _dragCurPos = _movementValueActionInterface.action.ReadValue<Vector2>();
         }
 
+        public void CancelInput()
+        {
+            OnCancelInput?.Invoke();
+            _isDragging = false;
+        }
+
         private void OnVisualDragStart(InputAction.CallbackContext context)
         {
             Debug.Log("Started visual drag");
@@ -62,7 +69,7 @@ namespace Scripts.Player.InputHandling
 
         private void OnDragStart(InputAction.CallbackContext context)
         {
-            Debug.Log("Started drag: "+_isDragging);
+            Debug.Log("Started drag: " + _isDragging);
             _isDragging = true;
             OnDragStarted?.Invoke();
             _dragStartPos = new Vector2();
@@ -71,7 +78,7 @@ namespace Scripts.Player.InputHandling
 
         private void OnDragRelease(InputAction.CallbackContext context)
         {
-            Debug.Log("Released drag: "+ _isDragging);
+            Debug.Log("Released drag: " + _isDragging);
             _isDragging = false;
             OnDragFinished?.Invoke(GetCurrentDrag());
         }

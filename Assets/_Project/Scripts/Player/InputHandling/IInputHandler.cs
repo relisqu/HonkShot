@@ -9,6 +9,7 @@ namespace Scripts.Player.InputHandling
         event Action OnDragStarted;
         event Action OnVisualDragStarted;
         event Action<Vector2> OnDragFinished;
+        event Action OnCancelInput;
 
 
         InputActionReference MovementValueActionInterface { get; }
@@ -18,5 +19,6 @@ namespace Scripts.Player.InputHandling
         void Disable();
         Vector2 GetCurrentDrag();
         public void UpdateCurrentMovementDelta();
+        public void CancelInput();
     }
 }

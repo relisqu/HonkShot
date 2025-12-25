@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using Scripts.Player;
 using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 using Scripts.Player.InputHandling;
 using Zenject;
 
@@ -11,6 +12,7 @@ namespace Scripts.LevelSystem.LevelObjects.Interaction
         private PlayerStatus _playerStatus;
 
         [Inject] private InputHandler _inputHandler;
+        [Inject] private PlayerBallMovement _playerBallMovement;
 
         protected override void Awake()
         {
@@ -21,7 +23,7 @@ namespace Scripts.LevelSystem.LevelObjects.Interaction
         public override void OnEnterCannon()
         {
             // Pause input for player
-            if (_inputHandler)  _inputHandler.SetInputEnabled(InputLayer.Cannon, false);
+            if (_inputHandler) _inputHandler.SetInputEnabled(InputLayer.Cannon, false);
             //  _playerStatus.HidePlayer();
             if (_rb != null)
             {
@@ -33,7 +35,9 @@ namespace Scripts.LevelSystem.LevelObjects.Interaction
             if (_collider != null)
                 _collider.enabled = false;
 
-            gameObject.transform.localScale *= 0.01f;
+            _playerBallMovement.HideTrail();
+            gameObject.transform.localScale = Vector3.zero;
+            
         }
 
         public override void OnExitCannon(Vector2 shootDirection, float shootForce)
@@ -48,7 +52,9 @@ namespace Scripts.LevelSystem.LevelObjects.Interaction
 
             if (_collider != null)
                 _collider.enabled = true;
-            gameObject.transform.localScale *= 100f;
+
+            _playerBallMovement.ResetTrail();
+            gameObject.transform.localScale = Vector3.one;
         }
     }
 }

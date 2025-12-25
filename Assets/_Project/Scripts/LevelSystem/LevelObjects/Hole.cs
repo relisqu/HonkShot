@@ -1,8 +1,10 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using Scripts.Health;
 using Scripts.LevelSystem.LevelGeneration;
 using UnityEngine;
 using System.Collections.Generic;
+using Random = UnityEngine.Random;
 
 namespace Scripts.LevelSystem.LevelObjects
 {
@@ -11,6 +13,21 @@ namespace Scripts.LevelSystem.LevelObjects
         [SerializeField] private float swirlDuration = 0.6f;
         [SerializeField] private float swirlScale = 0.2f;
         [SerializeField] private float teleportOffset = 0.2f;
+        [SerializeField] private Transform _teleportTransformPoint;
+
+
+        private void Awake()
+        {
+            if (_teleportTransformPoint) return;
+            try
+            {
+                _teleportTransformPoint = transform.parent.parent.GetComponent<Room>().SpawnPointTransform;
+            }
+            catch (Exception e)
+            {
+                _teleportTransformPoint = LevelManager.Instance.CurrentRoom.SpawnPointTransform;
+            }
+        }
 
         private Dictionary<Transform, Sequence> _activeTweens = new Dictionary<Transform, Sequence>();
 
@@ -25,7 +42,7 @@ namespace Scripts.LevelSystem.LevelObjects
             if (!collision.TryGetComponent(out HoleDamageable holeDamageable)) return;
 
             if (holeDamageable.HealthController.IsInvincible()) return;
-            
+
             var targetTransform = holeDamageable.transform;
 
             // Cancel any existing tween for this transform
@@ -68,11 +85,10 @@ namespace Scripts.LevelSystem.LevelObjects
 
             ForceResetTransform(targetTransform);
             targetTransform.GetComponent<Animator>().speed = 1;
-            Transform spawn = LevelManager.Instance.CurrentRoom.SpawnPointTransform;
-            if (spawn != null)
+            if (_teleportTransformPoint != null)
             {
                 Vector2 offset = Random.insideUnitCircle * teleportOffset;
-                targetTransform.position = spawn.position + (Vector3)offset;
+                targetTransform.position = _teleportTransformPoint.position + (Vector3)offset;
             }
         }
 

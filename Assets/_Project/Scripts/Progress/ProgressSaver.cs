@@ -22,9 +22,14 @@
         }
 
 
+        public void StartTutorial()
+        {
+            _progressData.TutorialCompletedStatus = ProgressData.TutorialStatus.InProcess;
+        }
+
         public void CompleteTutorial()
         {
-            _progressData.IsTutorialCompleted = true;
+            _progressData.TutorialCompletedStatus = ProgressData.TutorialStatus.Completed;
             SaveProgress();
         }
     }

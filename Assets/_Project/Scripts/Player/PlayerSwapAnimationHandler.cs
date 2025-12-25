@@ -57,6 +57,7 @@ namespace Scripts.Player
             _playerStatus.OnSwapToBall += PlayerStatus_SwapToBall;
             _playerMovement.DragStarted += PlayerMovement_DragStarted;
             _playerMovement.DragFinished += PlayerMovement_DragFinished;
+            _playerMovement.InputCancelled += PlayerMovement_InputCancelled;
         }
 
         private void OnDisable()
@@ -64,6 +65,7 @@ namespace Scripts.Player
             _playerStatus.OnSwapToBall -= PlayerStatus_SwapToBall;
             _playerMovement.DragStarted -= PlayerMovement_DragStarted;
             _playerMovement.DragFinished -= PlayerMovement_DragFinished;
+            _playerMovement.InputCancelled -= PlayerMovement_InputCancelled;
         }
 
         private void Update()
@@ -144,6 +146,13 @@ namespace Scripts.Player
             StopSweatEmission();
         }
 
+        private void PlayerMovement_InputCancelled()
+        {
+            ResetCameraZoom();
+            ResetCharacterScale();
+            ResetTimeScale();
+            StopSweatEmission();
+        }
         #endregion
 
         #region Reset Functions

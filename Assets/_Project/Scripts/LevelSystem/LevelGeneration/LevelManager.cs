@@ -110,7 +110,10 @@ namespace Scripts.LevelSystem.LevelGeneration
             var exitPortal = _levelTransitionManager.SpawnExitPortal(CurrentRoom);
 
             bool portalClosed = false;
-            exitPortal.OnPortalTrigger += () => { _projection.DestroySimulation(); };
+            exitPortal.OnPortalTrigger += () =>
+            {
+                //_projection.DestroySimulation();
+            };
             exitPortal.OnPortalClosed += () => portalClosed = true;
             while (!portalClosed)
                 yield return null;

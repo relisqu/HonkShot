@@ -59,14 +59,14 @@ namespace Scripts.Player
             _simulationGhostLayer = LayerMask.NameToLayer("SimulationGhost");
             _playerMovement.DragStarted += OnDragStarted;
             _playerMovement.DragFinished += OnDragFinished;
-
+            _playerMovement.InputCancelled += PlayerMovement_InputCancelled;
         }
 
         private void OnDisable()
         {
             _playerMovement.DragStarted -= OnDragStarted;
+            _playerMovement.InputCancelled -= PlayerMovement_InputCancelled;
             _playerMovement.DragFinished -= OnDragFinished;
-
         }
 
         public static Projection Instance { get; private set; }
@@ -98,6 +98,7 @@ namespace Scripts.Player
 
         public void EnterRoom(Room room)
         {
+            DestroySimulation();
             Debug.Log("Projection::EnterRoom");
             _currentRoom = room; // invalidate → rebuilt lazily
             if (_simulationScene.IsValid() && _simulationScene.isLoaded)
@@ -106,14 +107,13 @@ namespace Scripts.Player
             _spawnedObjects.Clear();
             _needsRecalculation = true;
             _simulationScene = new Scene();
-
         }
 
         // ─────────────────────────── Room change ─────────────────────────
         private void LevelManager_EnteredRoom()
         {
             Debug.Log("Projection::LevelManager_EnteredRoom");
-          //  EnterRoom(LevelManager.Instance.CurrentRoom);
+            //  EnterRoom(LevelManager.Instance.CurrentRoom);
         }
 
         // ─────────────────────────── Drag handlers ───────────────────────
@@ -165,6 +165,19 @@ namespace Scripts.Player
         }
 
         private void OnDragFinished(Vector2 _)
+        {
+            _isDragging = false;
+            _needsRecalculation = true;
+
+            if (_pooledGhostProjectile)
+                _pooledGhostProjectile.gameObject.SetActive(false);
+
+            // hide line but keep simulation scene
+            _line.positionCount = 0;
+        }
+
+
+        private void PlayerMovement_InputCancelled()
         {
             _isDragging = false;
             _needsRecalculation = true;
@@ -313,7 +326,6 @@ namespace Scripts.Player
                 _line.SetPosition(idx++, proj.transform.position);
                 if (rb.linearVelocity.sqrMagnitude > 0.0001f && Vector2.Angle(prevVelocity, rb.linearVelocity) > 5f)
                 {
-                    Debug.Log(idx);
                     bounceCount++;
                 }
 

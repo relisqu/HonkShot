@@ -32,7 +32,7 @@ namespace Scripts.LevelSystem
         private void Start()
         {
             AudioManager.Instance.PlaySmooth(SoundChanelType.Music, "levelMusic", true);
-            if (!_progressSaver.ProgressData.IsTutorialCompleted)
+            if (_progressSaver.ProgressData.TutorialCompletedStatus != ProgressData.TutorialStatus.Completed)
             {
                 _tutorialController.CreateTutorial();
                 _tutorialController.StartTutorial();

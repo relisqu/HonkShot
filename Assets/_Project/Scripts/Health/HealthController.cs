@@ -58,11 +58,12 @@ namespace Scripts.Health
             {
                 return;
             }
+
             OnTakeDamageTriggered?.Invoke();
 
             // Process damage through shields first
             float finalDamage = CalculateDamageTaken(damageAmount);
-            
+
             if (_shieldController)
             {
                 finalDamage = _shieldController.ProcessDamageThroughShields(damageAmount);
@@ -125,6 +126,11 @@ namespace Scripts.Health
         public float GetMaxHealth()
         {
             return _maxHealth;
+        }
+
+        public void ResetHealthToDefault()
+        {
+            AddHealth(_maxHealth);
         }
     }
 }

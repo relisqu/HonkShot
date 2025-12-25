@@ -23,30 +23,30 @@ namespace Scripts.Enemies
             {
                 _shootingModule = GetComponentInChildren<ShootingModule>();
             }
-            
+
             // Apply config settings if available
             ApplyConfigSettings();
 
             _shootingRoutine = StartCoroutine(ShootingRoutine());
         }
-        
+
         private void ApplyConfigSettings()
         {
             if (_enemyConfig == null) return;
-            
+
             var settings = _enemyConfig.GetSettingsForEnemy(EnemyId);
             _shootInterval = settings.shootInterval;
-            
+
             // Apply health settings
             if (_enemyHealth != null && _enemyHealth.HealthController != null)
             {
                 var healthController = _enemyHealth.HealthController;
                 var healthType = typeof(HealthController);
-                var maxHealthField = healthType.GetField("_maxHealth", 
+                var maxHealthField = healthType.GetField("_maxHealth",
                     System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                var defaultHealthField = healthType.GetField("_defaultHealth", 
+                var defaultHealthField = healthType.GetField("_defaultHealth",
                     System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                
+
                 if (maxHealthField != null)
                     maxHealthField.SetValue(healthController, settings.maxHealth);
                 if (defaultHealthField != null)
@@ -62,7 +62,8 @@ namespace Scripts.Enemies
 
         public void PlayShootStartAnimation()
         {
-            _shooterAnimator.SetTrigger("startShooting");
+            if (_shooterAnimator)
+                _shooterAnimator.SetTrigger("startShooting");
         }
 
         public void FinishShootingAnimation()

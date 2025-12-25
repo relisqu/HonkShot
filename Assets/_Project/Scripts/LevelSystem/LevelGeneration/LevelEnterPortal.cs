@@ -4,12 +4,14 @@ using Scripts.Player;
 using Scripts.Player.InputHandling;
 using UnityEngine;
 using Zenject;
+using Object = System.Object;
 
 namespace Scripts.LevelSystem.LevelGeneration
 {
     public class LevelEnterPortal : MonoBehaviour
     {
         [Inject] private InputHandler _inputHandler;
+
 
         [SerializeField] private Animator _animator;
         [SerializeField] private Collider2D _collider;
@@ -34,8 +36,10 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         public void PlayHide()
         {
+            Debug.Log("PlayHide");
             transform.DOScale(Vector3.zero, swirlDuration).SetEase(Ease.InBack).SetUpdate(true).OnComplete(() =>
             {
+                FindFirstObjectByType<PlayerBallMovement>().ResetTrail();
                 Destroy(gameObject);
             });
         }
@@ -57,7 +61,7 @@ namespace Scripts.LevelSystem.LevelGeneration
             jumpOutSequence.OnComplete(() =>
             {
                 _finishedAnimation = true;
-                // Resume input globally
+                
                 if (_inputHandler) _inputHandler.SetInputEnabled(InputLayer.LevelChange,true);
                 PlayHide();
             });

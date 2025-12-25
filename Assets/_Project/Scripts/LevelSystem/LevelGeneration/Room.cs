@@ -11,6 +11,7 @@ namespace Scripts.LevelSystem.LevelGeneration
 {
     public class Room : MonoBehaviour
     {
+        
         [SerializeField] private Door _door;
         [SerializeField] private Transform _spawnPointTransform;
         [SerializeField] private SpriteShapeController _spriteShapeController;

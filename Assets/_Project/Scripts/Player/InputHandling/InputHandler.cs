@@ -19,6 +19,7 @@ namespace Scripts.Player.InputHandling
         private BoolStatModifierSystem _inputModifierSystem = new BoolStatModifierSystem();
         public event Action OnDragStarted;
         public event Action<Vector2> OnDragFinished;
+        public event Action OnInputCancelled;
         public bool IsDragging => _currentInputHandler.IsDragging;
 
         public void SetInputEnabled(InputLayer inputLayer, bool value)
@@ -31,6 +32,11 @@ namespace Scripts.Player.InputHandling
             else
             {
                 _inputModifierSystem.AddModifier(new BoolStatModifier((int)inputLayer, BoolModType.And, value, 1));
+            }
+
+            if (!value && _currentInputHandler is { IsDragging: true })
+            {
+                CancelInput();
             }
         }
 
@@ -54,6 +60,11 @@ namespace Scripts.Player.InputHandling
                 _currentInputHandler?.UpdateCurrentMovementDelta();
         }
 
+        public void CancelInput()
+        {
+            _currentInputHandler?.CancelInput();
+        }
+
         public void InputHandler_DragStarted()
         {
             if (IsInputEnabled)
@@ -66,11 +77,17 @@ namespace Scripts.Player.InputHandling
                 OnDragFinished?.Invoke(dragFinished);
         }
 
+        public void InputHandler_InputCancelled()
+        {
+            OnInputCancelled?.Invoke();
+        }
+
         private void ChangeControlScheme(string newControlScheme)
         {
             if (_currentInputHandler != null)
             {
                 _currentInputHandler.OnDragStarted -= InputHandler_DragStarted;
+                _currentInputHandler.OnCancelInput -= InputHandler_InputCancelled;
                 _currentInputHandler.OnDragFinished -= InputHandler_DragFinished;
                 _currentInputHandler.Disable();
             }
@@ -93,6 +110,7 @@ namespace Scripts.Player.InputHandling
             {
                 _currentInputHandler.OnDragStarted += InputHandler_DragStarted;
                 _currentInputHandler.OnDragFinished += InputHandler_DragFinished;
+                _currentInputHandler.OnCancelInput += InputHandler_InputCancelled;
                 _currentInputHandler?.Enable();
             }
         }
@@ -113,6 +131,7 @@ namespace Scripts.Player.InputHandling
             {
                 _currentInputHandler.OnDragStarted -= InputHandler_DragStarted;
                 _currentInputHandler.OnDragFinished -= InputHandler_DragFinished;
+                _currentInputHandler.OnCancelInput -= InputHandler_InputCancelled;
                 _currentInputHandler.Disable();
             }
 

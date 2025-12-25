@@ -35,35 +35,14 @@ namespace Scripts.UI
             }
         }
 
-        void PointReceiver_ChangedCurrentPoints()
-        {
-            Debug.Log("PointReceiver_ChangedCurrentPoints");
-            var pointReceiver = _pointReceiver ?? PointReceiver.Instance; // Fallback to Instance if injection failed
-            if (pointReceiver != null)
-            {
-                _currentScoreText.text = (int)(pointReceiver.GetAttackPoints()) + "";
-            }
-        }
 
         private void Start()
         {
-            var pointReceiver = _pointReceiver ?? PointReceiver.Instance; // Fallback to Instance if injection failed
-            if (pointReceiver != null)
-            {
-                pointReceiver.ChangedCurrentPoints += PointReceiver_ChangedCurrentPoints;
-                pointReceiver.ChangedMaxPoints += PointReceiver_ChangedMaxPoints;
-                _currentScoreText.text = (int)(pointReceiver.GetAttackPoints()) + "";
-            }
+            
         }
 
         private void OnDestroy()
         {
-            var pointReceiver = _pointReceiver ?? PointReceiver.Instance; // Fallback to Instance if injection failed
-            if (pointReceiver != null)
-            {
-                pointReceiver.ChangedCurrentPoints -= PointReceiver_ChangedCurrentPoints;
-                pointReceiver.ChangedMaxPoints -= PointReceiver_ChangedMaxPoints;
-            }
         }
     }
 }

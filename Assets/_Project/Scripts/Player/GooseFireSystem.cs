@@ -152,6 +152,7 @@ namespace Scripts.Player
 
         private void EndUltimate()
         {
+            if (!_isUltimate) return;
             _isUltimate = false;
             if (PointSystem.PointReceiver.Instance)
                 _playerPointReceiveModifierSystem.RemoveModifier((int)ModifierTypeEnum.HonkMode);
@@ -169,10 +170,18 @@ namespace Scripts.Player
 
         private void StopHonk()
         {
+            if (!_isHonk) return;
             _isHonk = false;
             if (_healthController)
                 _healthController.SetInvincible((int)InvincibilityEnum.HonkMode, false);
             HonkEnded?.Invoke();
+        }
+
+        public void ResetStats()
+        {
+            EndUltimate();
+            StopHonk();
+            _fire = 0;
         }
     }
 }

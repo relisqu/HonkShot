@@ -112,12 +112,17 @@ namespace Scripts.PointSystem
             return _baseDamage;
         }
 
-        public void ResetAttack()
+        public void ResetCurrentAttack()
         {
             _bouncesCount = 0;
             _currentPointsAttack = 0;
             ChangedCurrentPoints?.Invoke();
             _pointObjectTypes.Clear();
+        }
+
+        public void ResetPoints()
+        {
+            _maxPointsCount = 0;
         }
     }
 }

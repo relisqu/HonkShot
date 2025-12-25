@@ -17,7 +17,8 @@ namespace Scripts.Player.InputHandling
         public event Action OnDragStarted;
         public event Action OnVisualDragStarted;
         public event Action<Vector2> OnDragFinished;
-        
+        public event Action OnCancelInput;
+
         public InputActionReference MovementValueActionInterface => _mousePositionAction;
         public InputActionReference PressActionInterface => _pressAction;
 
@@ -52,6 +53,12 @@ namespace Scripts.Player.InputHandling
         {
             var currentPoint = (Vector2)_camera.ScreenToWorldPoint(_mousePositionAction.action.ReadValue<Vector2>());
             _dragCurPos = currentPoint - _dragStartPos;
+        }
+
+        public void CancelInput()
+        {
+            _isDragging = false;
+            OnCancelInput?.Invoke();
         }
 
         private void OnDragStart(InputAction.CallbackContext context)

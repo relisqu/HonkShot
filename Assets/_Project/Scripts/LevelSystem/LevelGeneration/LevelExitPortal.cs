@@ -10,6 +10,7 @@ namespace Scripts.LevelSystem.LevelGeneration
     public class LevelExitPortal : MonoBehaviour
     {
         [Inject] private InputHandler _inputHandler;
+        [Inject] private PlayerBallMovement _playerBallMovement;
         public event Action OnPortalTrigger;
         public event Action OnPlayerEnter;
         public event Action OnPortalClosed;
@@ -45,6 +46,7 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         private void OnTriggerEnter2D(Collider2D other)
         {
+            _playerBallMovement.HideTrail();
             // Pause input globally
             OnPortalTrigger?.Invoke();
             if (_isJumpingOut) return;

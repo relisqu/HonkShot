@@ -16,7 +16,7 @@ namespace Scripts.Player.Interactions
         private void ResetStats()
         {
             _playerDashController.ResetDashes();
-            _pointReceiver.ResetAttack();
+            _pointReceiver.ResetCurrentAttack();
             _playerMovement.GetRigidbody().linearVelocity = Vector3.zero;
         }
 
@@ -28,13 +28,13 @@ namespace Scripts.Player.Interactions
         private void PlayerMovement_DragStarted()
         {
             _pointReceiver.AddMaxPoints();
-            _pointReceiver.ResetAttack();
+            _pointReceiver.ResetCurrentAttack();
         }
 
         private void LevelManager_CompletedRoom()
         {
             _pointReceiver.AddMaxPoints();
-            _pointReceiver.ResetAttack();
+            _pointReceiver.ResetCurrentAttack();
             _playerDashController.ResetDashes();
         }
 

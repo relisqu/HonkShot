@@ -1,9 +1,16 @@
-﻿namespace Scripts.Progress
+﻿using System;
+
+namespace Scripts.Progress
 {
     public class ProgressData
     {
-        public bool IsTutorialCompleted;
+        public TutorialStatus TutorialCompletedStatus;
 
-
+        public enum TutorialStatus
+        {
+            NotStarted,
+            InProcess, 
+            Completed
+        }
     }
 }

@@ -32,6 +32,8 @@ namespace Scripts.Player
         [Header("Ball Movement Parameters")] [Space] [SerializeField]
         private float _additionalDragStartTime = 2000f;
 
+        public TrailRenderer TrailRenderer;
+
         [SerializeField] private float _additionalDragForce = 1.01f;
         public float MaxForceMagnitude => _maxForceMagnitude;
 
@@ -47,6 +49,11 @@ namespace Scripts.Player
         private NumericStatModifierSystem _dragForceModifierSystem = new();
         public NumericStatModifierSystem DragForceModifierSystem => _dragForceModifierSystem;
 
+        public void ResetTrail()
+        {
+            TrailRenderer.gameObject.SetActive(true);
+            TrailRenderer.Clear();
+        }
 
         private void Awake()
         {
@@ -73,17 +80,24 @@ namespace Scripts.Player
             }
             else
             {
-                _rigidbody2D.linearDamping = _defaultDragValue*_dragForceModifierSystem.Calculate(1f);
+                _rigidbody2D.linearDamping = _defaultDragValue * _dragForceModifierSystem.Calculate(1f);
             }
+        }
+
+        private void InputHandler_OnInputCancelled()
+        {
         }
 
         private void OnEnable()
         {
             _inputHandler.OnDragFinished += InputHandler_OnDragFinished;
+            _inputHandler.OnInputCancelled += InputHandler_OnInputCancelled;
         }
+
 
         private void OnDisable()
         {
+            _inputHandler.OnInputCancelled -= InputHandler_OnInputCancelled;
             _inputHandler.OnDragFinished -= InputHandler_OnDragFinished;
         }
 
@@ -139,7 +153,13 @@ namespace Scripts.Player
 
         public void StopMovement()
         {
+            HideTrail();
             _rigidbody2D.linearVelocity = Vector2.zero;
+        }
+
+        public void HideTrail()
+        {
+            TrailRenderer.gameObject.SetActive(false);
         }
     }
 }

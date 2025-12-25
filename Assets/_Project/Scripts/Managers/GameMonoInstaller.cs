@@ -22,7 +22,8 @@ namespace Scripts.Managers
         public InputHandler _inputHandler;
         public TutorialController _tutorialController;
         public LevelTransitionManager _levelTransitionManager;
-
+        public PlayerBallMovement _playerBallMovement;
+        
 
         public override void InstallBindings()
         {
@@ -35,6 +36,7 @@ namespace Scripts.Managers
             Container.BindInterfacesAndSelfTo<LevelObjectsFactory>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<ProgressSaver>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<TutorialController>().FromInstance(_tutorialController).AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<PlayerBallMovement>().FromInstance(_playerBallMovement).AsSingle().NonLazy();
         }
 
         public override void Start()

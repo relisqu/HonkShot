@@ -21,6 +21,7 @@ namespace Scripts.Player
 
         public Action DragStarted;
         public Action<Vector2> DragFinished;
+        public Action InputCancelled;
 
         private bool _isDragging;
         private float _prevSpeed;
@@ -35,6 +36,7 @@ namespace Scripts.Player
         {
             _inputHandler.OnDragStarted += InputHandler_OnDragStarted;
             _inputHandler.OnDragFinished += InputHandler_OnDragFinished;
+            _inputHandler.OnInputCancelled -= InputHandler_InputCancelled;
         }
 
         private void InputHandler_OnDragFinished(Vector2 obj)
@@ -49,7 +51,15 @@ namespace Scripts.Player
         private void OnDisable()
         {
             _inputHandler.OnDragStarted -= InputHandler_OnDragStarted;
+            _inputHandler.OnInputCancelled -= InputHandler_InputCancelled;
             _inputHandler.OnDragFinished -= InputHandler_OnDragFinished;
+        }
+
+        private void InputHandler_InputCancelled()
+        {
+            InputCancelled?.Invoke();
+            _isDragging = false;
+            _playerStatus.SetPlayerState(PlayerState.Idle);
         }
 
         private void InputHandler_OnDragStarted()
