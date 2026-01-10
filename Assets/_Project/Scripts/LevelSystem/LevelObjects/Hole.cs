@@ -4,6 +4,7 @@ using Scripts.Health;
 using Scripts.LevelSystem.LevelGeneration;
 using UnityEngine;
 using System.Collections.Generic;
+using Scripts.Player;
 using Random = UnityEngine.Random;
 
 namespace Scripts.LevelSystem.LevelObjects
@@ -68,16 +69,22 @@ namespace Scripts.LevelSystem.LevelObjects
             swirlSequence.Join(targetTransform.DOMove(transform.position, swirlDuration * 0.8f)
                 .SetEase(Ease.Linear));
 
+            if (collision.transform.TryGetComponent<FireParticleSystem>(out var fireParticleSystem))
+            {
+                fireParticleSystem.ClearParticleSystems();
+            }
+
             swirlSequence.OnComplete(() =>
             {
-                TeleportObject(targetTransform, holeDamageable);
+                TeleportObject(targetTransform, holeDamageable, fireParticleSystem);
                 CleanupTween(targetTransform);
             });
 
             swirlSequence.OnKill(() => CleanupTween(targetTransform));
         }
 
-        private void TeleportObject(Transform targetTransform, HoleDamageable holeDamageable)
+        private void TeleportObject(Transform targetTransform, HoleDamageable holeDamageable,
+            FireParticleSystem fireParticleSystem = null)
         {
             holeDamageable.TakeDamage();
             if (!holeDamageable || !holeDamageable.isActiveAndEnabled || !holeDamageable.HealthController.IsAlive)
@@ -89,6 +96,11 @@ namespace Scripts.LevelSystem.LevelObjects
             {
                 Vector2 offset = Random.insideUnitCircle * teleportOffset;
                 targetTransform.position = _teleportTransformPoint.position + (Vector3)offset;
+            }
+
+            if (fireParticleSystem != null)
+            {
+                fireParticleSystem.ResumeParticleSystems();
             }
         }
 

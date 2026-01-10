@@ -26,13 +26,19 @@ namespace Scripts.Enemies.Bullets
 
         private void Update()
         {
-            _baseTransform.position += _baseTransform.up * _speed * Time.deltaTime;
+            _baseTransform.position += _baseTransform.up * (_speed * Time.deltaTime);
         }
 
         public virtual void DamagePlayer(PlayerHealth health)
         {
             health.HealthController.TakeDamage(_damage);
             Destroy(gameObject);
+        }
+
+        public void SetParameters(float bulletSpeed, float bulletDamage)
+        {
+            _speed = bulletSpeed;
+            _damage = bulletDamage;
         }
     }
 }

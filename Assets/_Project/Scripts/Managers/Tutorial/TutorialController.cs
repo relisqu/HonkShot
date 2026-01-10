@@ -101,7 +101,7 @@ namespace Scripts.Managers.Tutorial
             bool portalClosed = false;
             exitPortal.OnPortalTrigger += () =>
             {
-                //_projection.DestroySimulation();
+                _levelTransitionManager.LevelTransitionStarted?.Invoke();
             };
             exitPortal.OnPortalClosed += () => portalClosed = true;
             while (!portalClosed)
@@ -139,6 +139,7 @@ namespace Scripts.Managers.Tutorial
 
             yield return _levelTransitionManager.SpawnEnterPortal(_currentRoom.Room);
 
+            _levelTransitionManager.LevelTransitionFinished?.Invoke();
             TimeManager.Instance.ResumeGame();
             _currentRoom.ShowLevelStart();
             yield return null;

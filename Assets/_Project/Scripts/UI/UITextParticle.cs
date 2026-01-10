@@ -30,7 +30,7 @@ namespace Scripts.UI
 
         public void SetScale(float scale)
         {
-            Debug.Log(scale);
+//            Debug.Log(scale);
             transform.localScale = Mathf.Clamp(scale, 0.8f, 1f) * Vector3.one;
         }
 

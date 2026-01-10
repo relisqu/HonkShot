@@ -3,32 +3,56 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Scripts.Health;
+using Scripts.Player;
 using Scripts.PointSystem;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Zenject;
+using Random = UnityEngine.Random;
 
 namespace Scripts.Enemies.Bosses
 {
     public class RavageBossEnemy : BaseEnemy
     {
-        [SerializeField] private EnemyHealth _minionPrefab;
-        [SerializeField] private ShootingModule _shootingModule;
-        [SerializeField] private int _minionCount;
-        [SerializeField] private float _minionSpeed;
-
-        [FormerlySerializedAs("_minionRangeRotation")] [SerializeField]
-        private float _minionRotationRadius;
-
-        [SerializeField] private Transform _minionsParentTransform;
-        [SerializeField] private List<Transform> _secondPhasePointsList = new();
+        [Header("References")]
+        [SerializeField] private DefaultShootingModule _shootingModule;
+        [SerializeField] private ShieldController _shieldController;
+        [SerializeField] private Rigidbody2D _rigidbody2D;
 
         [SerializeField] private HealthController _bossHealth;
+        [Space]
+        [Header("Minions in first phase")]
+        [SerializeField] private Transform _minionsParentTransform;
+        [SerializeField] private EnemyHealth _minionPrefab;
+        [SerializeField] private int _minionCount;
+        [FormerlySerializedAs("_minionRangeRotation")] [SerializeField]
+        private float _minionRotationRadius;
+        [SerializeField] private float _minionSpeed;
+        public float _rotationSpeed;
+        [FormerlySerializedAs("_rotationSpeedIncrease")] public float _rotationSpeedIncreaseAfterMinionDeath;
+        public float _minSpaceBetweenPlayerAndBoss;
+        [Space]
+        [Header("Shooting and movement during first phase ")]
+        public int _firstPhaseShieldCount;
+        public float _followSpeed;
+        public float _shootingCooldown;
+        public float _bulletSpeed;
+        public float _bulletDamage;
+        public float _bulletPrediction;
+        [Space]
+        [Header("Second phase with dashing and movement")]
+        [FormerlySerializedAs("_secondPhasePointsList")] [SerializeField] private List<Transform> _thirdPhasePointsList = new();
+        public float _thirdPhaseDashCooldown;
+        public float _thirdPhaseMoveSpeed;
+        public float _thirdPhaseDashSpeed;
+        public int _thirdPhaseShieldsCount;
+
+
+
 
         private List<EnemyHealth> _minions = new();
         [Inject] private PointReceiver _pointReceiver;
-
         private Transform _playerTransform;
 
         private void Start()
@@ -45,7 +69,27 @@ namespace Scripts.Enemies.Bosses
 
             _bossHealth.OnDamaged += BossHealth_Damaged;
             _bossHealth.OnDied += BossHealth_Died;
+
+
             StartCoroutine(RotateMinions());
+            StartCoroutine(FollowPlayerCoroutine());
+            StartCoroutine(ShootingCoroutine());
+        }
+
+        private void OnCollisionEnter2D(Collision2D other)
+        {
+            if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _))
+            {
+                Debug.Log("AAAAAAA");
+                return;
+            }
+
+            if (_bossHealth.IsInvincible()) return;
+            if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
+            {
+                _bossHealth.TakeDamage(playerAttackController.GetDamage());
+                playerAttackController.Damage(gameObject);
+            }
         }
 
         private void OnDestroy()
@@ -71,6 +115,7 @@ namespace Scripts.Enemies.Bosses
 
             if (_firstPhaseHealth > 0)
             {
+                _minionRotationSpeed += _rotationSpeedIncreaseAfterMinionDeath;
             }
             else
             {
@@ -80,13 +125,55 @@ namespace Scripts.Enemies.Bosses
 
         private int _currentPhase = 0;
         private float angle;
-        public float _rotationSpeed;
+        private float _minionRotationSpeed;
+
+        public float _thirdPhaseShootingSpeed;
+        public float _thirdPhaseBulletDamage;
+        public float _thirdPhaseShootingCooldown;
+        private IEnumerator FollowPlayerCoroutine()
+        {
+            while (_currentPhase < 2)
+            {
+                if (Vector2.Distance(transform.position, _playerTransform.position) > _minSpaceBetweenPlayerAndBoss)
+                {
+                    var follow = _playerTransform.position - transform.position;
+                    _rigidbody2D.linearVelocity = follow * (_followSpeed * Time.deltaTime);
+                }
+                else
+                {
+                    _rigidbody2D.linearVelocity = Vector2.zero;
+                }
+
+                yield return null;
+            }
+        }
+
+        private IEnumerator ShootingCoroutine()
+        {
+            _shootingModule.SetParameters(_bulletSpeed, _bulletDamage,_bulletPrediction);
+            while (_currentPhase < 2)
+            {
+                yield return new WaitForSeconds(_shootingCooldown);
+                _shootingModule.TryShoot(() => { });
+            }
+        }
+
+        private IEnumerator LastPhaseShootingCoroutine()
+        {
+            _shootingModule.SetParameters(_thirdPhaseShootingSpeed, _thirdPhaseBulletDamage);
+            while (_currentPhase < 2)
+            {
+                yield return new WaitForSeconds(_thirdPhaseShootingCooldown);
+                _shootingModule.TryShoot(() => { });
+            }
+        }
 
         private IEnumerator RotateMinions()
         {
+            _minionRotationSpeed = _rotationSpeed;
             while (_currentPhase == 0)
             {
-                angle += _rotationSpeed * Time.deltaTime;
+                angle += _minionRotationSpeed * Time.deltaTime;
                 for (var index = 0; index < _minions.Count; index++)
                 {
                     var minion = _minions[index];
@@ -97,7 +184,8 @@ namespace Scripts.Enemies.Bosses
                                                         angle + index * 1f / _minionCount * 360f,
                                                         _minionsParentTransform.transform.forward
                                                     )
-                                                    * new Vector3(_minionRotationRadius, _minionRotationRadius, _minionRotationRadius);
+                                                    * new Vector3(_minionRotationRadius, _minionRotationRadius,
+                                                        _minionRotationRadius);
                     }
                 }
 
@@ -107,34 +195,194 @@ namespace Scripts.Enemies.Bosses
             yield return null;
         }
 
-        private IEnumerator FirstPhaseMovement()
-        {
-            while (_currentPhase == 0)
-            {
-            }
-
-            yield return null;
-        }
-
-        private IEnumerator SecondPhaseMovement()
-        {
-            while (_currentPhase == 1)
-            {
-            }
-
-            yield return null;
-        }
-
 
         private void GoToSecondPhase()
         {
-            _currentPhase = 1;
             _bossHealth.SetInvincible(0, false);
+            Debug.Log("GoToSecondPhase");
+            _currentPhase = 1;
+            _shieldController.AddShield(_firstPhaseShieldCount);
+            _shieldController.OnShieldDestroyed += ShieldController_ShieldDestroyed;
         }
 
-        private void Finish()
+        private void ShieldController_ShieldDestroyed(Shield obj)
         {
+            Debug.Log("DamagedShield " + _shieldController.GetCurrentShieldsCount);
+            if (_shieldController.GetCurrentShieldsCount == 0)
+            {
+                GoToThirdPhase();
+            }
+        }
+
+
+        private void GoToThirdPhase()
+        {
+            Debug.Log("GoToThirdPhase");
             _currentPhase = 2;
+            _shieldController.AddShield(_thirdPhaseShieldsCount);
+            StartCoroutine(ThirdPhaseMovement());
+            StartCoroutine(LastPhaseShootingCoroutine());
+        }
+
+        private int currentPointIndex;
+
+        private int _bezierStartIndex;
+
+        private Vector2 _bezierA;
+        private Vector2 _bezierB;
+        private Vector2 _bezierC;
+        private Vector2 _bezierD;
+        private float _bezierT;
+        private float _bezierLength;
+        private bool _bezierActive;
+
+        private Vector2 EvaluateCubicBezier(Vector2 a, Vector2 b, Vector2 c, Vector2 d, float t)
+        {
+            var u = 1f - t;
+            return u * u * u * a + 3f * u * u * t * b + 3f * u * t * t * c + t * t * t * d;
+        }
+
+        private float EstimateCubicBezierLength(Vector2 a, Vector2 b, Vector2 c, Vector2 d)
+        {
+            var length = 0f;
+            var prev = a;
+            const int steps = 12;
+
+            for (int i = 1; i <= steps; i++)
+            {
+                var t = i / (float)steps;
+                var p = EvaluateCubicBezier(a, b, c, d, t);
+                length += Vector2.Distance(prev, p);
+                prev = p;
+            }
+
+            return Mathf.Max(length, 0.0001f);
+        }
+
+        private void GetCubicBezierSegment(int startIndex, out Vector2 a, out Vector2 b, out Vector2 c, out Vector2 d)
+        {
+            var n = _thirdPhasePointsList.Count;
+            var i0 = (startIndex - 1 + n) % n;
+            var i1 = startIndex;
+            var i2 = (startIndex + 1) % n;
+            var i3 = (startIndex + 2) % n;
+
+            var p0 = (Vector2)_thirdPhasePointsList[i0].position;
+            var p1 = (Vector2)_thirdPhasePointsList[i1].position;
+            var p2 = (Vector2)_thirdPhasePointsList[i2].position;
+            var p3 = (Vector2)_thirdPhasePointsList[i3].position;
+
+            a = p1;
+            b = p1 + (p2 - p0) / 6f;
+            c = p2 - (p3 - p1) / 6f;
+            d = p2;
+        }
+
+        private void SetupThirdPhaseBezier()
+        {
+            GetCubicBezierSegment(_bezierStartIndex, out _bezierA, out _bezierB, out _bezierC, out _bezierD);
+            _bezierLength = EstimateCubicBezierLength(_bezierA, _bezierB, _bezierC, _bezierD);
+            _bezierT = 0f;
+            _bezierActive = true;
+        }
+
+        private IEnumerator MoveToPoint(Transform target, float speed)
+        {
+            while (Vector2.Distance(_rigidbody2D.position, target.position) > 0.2f)
+            {
+                var direction = (Vector2)(target.position - transform.position);
+                _rigidbody2D.linearVelocity = direction.normalized * speed;
+                yield return null;
+            }
+
+            _rigidbody2D.linearVelocity = Vector2.zero;
+        }
+
+        public IEnumerator ThirdPhaseMovement()
+        {
+            _bossHealth.SetInvincible(0, true);
+
+            var minPointIndex = 0;
+            for (var index = 0; index < _thirdPhasePointsList.Count; index++)
+            {
+                var distance = _thirdPhasePointsList[index].position - transform.position;
+                var minPointDistance = _thirdPhasePointsList[minPointIndex].position - transform.position;
+                if (distance.magnitude < minPointDistance.magnitude)
+                    minPointIndex = index;
+            }
+
+            currentPointIndex = minPointIndex;
+
+            float dashTime = Time.time;
+            while (_currentPhase == 2)
+            {
+                var currentTime = Time.time;
+
+                if (currentTime - dashTime > _thirdPhaseDashCooldown)
+                {
+                    Debug.Log("Trying to dash " + (currentTime - dashTime));
+                    yield return MoveToPoint(_thirdPhasePointsList[currentPointIndex], _thirdPhaseMoveSpeed);
+                    yield return new WaitForSeconds(1f);
+
+                    var dashPoint = Random.Range(0, _thirdPhasePointsList.Count);
+                    while (Mathf.Abs(dashPoint - currentPointIndex) < 2)
+                        dashPoint = Random.Range(0, _thirdPhasePointsList.Count);
+
+                    yield return MoveToPoint(_thirdPhasePointsList[dashPoint], _thirdPhaseDashSpeed);
+
+                    _bezierStartIndex = dashPoint;
+                    currentPointIndex = (_bezierStartIndex + 1) % _thirdPhasePointsList.Count;
+                    SetupThirdPhaseBezier();
+
+                    yield return new WaitForSeconds(1.5f);
+                    dashTime = Time.time;
+                }
+                else
+                {
+                    if (!_bezierActive)
+                    {
+                        var point = _thirdPhasePointsList[currentPointIndex];
+                        if (Vector2.Distance(_rigidbody2D.position, point.position) > 0.2f)
+                        {
+                            var direction = (Vector2)(point.position - transform.position);
+                            _rigidbody2D.linearVelocity = direction.normalized * _thirdPhaseMoveSpeed;
+                        }
+                        else
+                        {
+                            _rigidbody2D.linearVelocity = Vector2.zero;
+                            _bossHealth.SetInvincible(0, false);
+
+                            _bezierStartIndex = currentPointIndex;
+                            currentPointIndex = (_bezierStartIndex + 1) % _thirdPhasePointsList.Count;
+                            SetupThirdPhaseBezier();
+                        }
+                    }
+                    else
+                    {
+                        _bezierT += (_thirdPhaseMoveSpeed * Time.deltaTime) / _bezierLength;
+
+                        if (_bezierT >= 1f)
+                        {
+                            _rigidbody2D.linearVelocity = Vector2.zero;
+                            _rigidbody2D.position = _bezierD;
+
+                            _bezierStartIndex = currentPointIndex;
+                            currentPointIndex = (_bezierStartIndex + 1) % _thirdPhasePointsList.Count;
+                            SetupThirdPhaseBezier();
+                        }
+                        else
+                        {
+                            _rigidbody2D.linearVelocity = Vector2.zero;
+                            _rigidbody2D.position =
+                                EvaluateCubicBezier(_bezierA, _bezierB, _bezierC, _bezierD, _bezierT);
+                        }
+                    }
+                }
+
+                yield return null;
+            }
+
+            yield return null;
         }
     }
 }

@@ -39,7 +39,6 @@ namespace Scripts.LevelSystem.LevelGeneration
             Debug.Log("PlayHide");
             transform.DOScale(Vector3.zero, swirlDuration).SetEase(Ease.InBack).SetUpdate(true).OnComplete(() =>
             {
-                FindFirstObjectByType<PlayerBallMovement>().ResetTrail();
                 Destroy(gameObject);
             });
         }

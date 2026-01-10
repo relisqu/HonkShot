@@ -46,7 +46,6 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            _playerBallMovement.HideTrail();
             // Pause input globally
             OnPortalTrigger?.Invoke();
             if (_isJumpingOut) return;

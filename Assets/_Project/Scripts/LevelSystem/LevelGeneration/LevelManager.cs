@@ -97,6 +97,7 @@ namespace Scripts.LevelSystem.LevelGeneration
             }
 
             yield return _levelTransitionManager.SpawnEnterPortal(CurrentRoom);
+            _levelTransitionManager.LevelTransitionFinished?.Invoke();
 
             TimeManager.Instance.ResumeGame();
             yield return null;
@@ -112,6 +113,8 @@ namespace Scripts.LevelSystem.LevelGeneration
             bool portalClosed = false;
             exitPortal.OnPortalTrigger += () =>
             {
+                
+               _levelTransitionManager.LevelTransitionStarted?.Invoke();
                 //_projection.DestroySimulation();
             };
             exitPortal.OnPortalClosed += () => portalClosed = true;

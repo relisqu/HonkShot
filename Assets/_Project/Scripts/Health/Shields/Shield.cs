@@ -16,25 +16,6 @@ namespace Scripts.Health
 
         private bool _isActive = true;
 
-        void Start()
-        {
-            // Get or create ShieldVisual component
-            if (_shieldVisual == null)
-            {
-                _shieldVisual = GetComponent<ShieldVisual>();
-                if (_shieldVisual == null)
-                {
-                    _shieldVisual = gameObject.AddComponent<ShieldVisual>();
-                }
-            }
-            
-            // Get SpriteRenderer if not assigned
-            if (_spriteRenderer == null)
-            {
-                _spriteRenderer = GetComponent<SpriteRenderer>();
-            }
-            
-        }
 
         public bool CanBlockDamage(float damage)
         {
@@ -58,12 +39,12 @@ namespace Scripts.Health
             Debug.Log("Shield destroyed");
             
             // Play destruction animation
-            if (_spriteRenderer != null)
+            if (_spriteRenderer)
             {
                 _spriteRenderer.DOFade(0f, 0.3f)
                     .SetEase(Ease.InQuad)
                     .OnComplete(() => {
-                        if (_shieldVisual != null)
+                        if (_shieldVisual)
                         {
                             _shieldVisual.SetActive(false);
                         }
@@ -83,12 +64,12 @@ namespace Scripts.Health
         {
             _isActive = true;
             
-            if (_spriteRenderer != null)
+            if (_spriteRenderer)
             {
                 _spriteRenderer.DOFade(1f, 0.2f);
             }
             
-            if (_shieldVisual != null)
+            if (_shieldVisual)
             {
                 _shieldVisual.SetActive(true);
             }

@@ -32,7 +32,6 @@ namespace Scripts.Player
         [Header("Ball Movement Parameters")] [Space] [SerializeField]
         private float _additionalDragStartTime = 2000f;
 
-        public TrailRenderer TrailRenderer;
 
         [SerializeField] private float _additionalDragForce = 1.01f;
         public float MaxForceMagnitude => _maxForceMagnitude;
@@ -42,18 +41,13 @@ namespace Scripts.Player
 
         private float _defaultDragValue;
         public float CurrentSpeed => _rigidbody2D.linearVelocity.magnitude;
+        public Vector2 CurrentMovement => _rigidbody2D.linearVelocity;
 
         private NumericStatModifierSystem _throwForceModifierSystem = new();
         public NumericStatModifierSystem ThrowForceModifierSystem => _throwForceModifierSystem;
 
         private NumericStatModifierSystem _dragForceModifierSystem = new();
         public NumericStatModifierSystem DragForceModifierSystem => _dragForceModifierSystem;
-
-        public void ResetTrail()
-        {
-            TrailRenderer.gameObject.SetActive(true);
-            TrailRenderer.Clear();
-        }
 
         private void Awake()
         {
@@ -153,13 +147,9 @@ namespace Scripts.Player
 
         public void StopMovement()
         {
-            HideTrail();
             _rigidbody2D.linearVelocity = Vector2.zero;
         }
 
-        public void HideTrail()
-        {
-            TrailRenderer.gameObject.SetActive(false);
-        }
+        
     }
 }

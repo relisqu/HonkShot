@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Scripts.LevelSystem.LevelGeneration;
 using Scripts.LevelSystem.LevelGeneration.Factories;
 using Scripts.LevelSystem.TechnicalScripts;
@@ -6,6 +7,7 @@ using Scripts.Player;
 using Scripts.UI;
 using UnityEngine;
 using Zenject;
+using Random = UnityEngine.Random;
 
 namespace Scripts.LevelSystem
 {
@@ -25,7 +27,9 @@ namespace Scripts.LevelSystem
         [SerializeField] private BackgroundPropSpawner _backgroundPropSpawner;
         [SerializeField] private float _timeTransitionDuration = 1.2f;
         [SerializeField] private ItemSelectionUI _itemSelectionUI;
-
+        
+        public Action LevelTransitionStarted;
+        public Action LevelTransitionFinished;
 
         [Inject]
         private void Construct(PlayerMovement playerMovement, LevelObjectsFactory levelObjectsFactory)

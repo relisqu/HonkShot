@@ -12,8 +12,9 @@ namespace Scripts.Health
     {
         private List<Shield> _shields = new List<Shield>();
 
-        [Header("Visual Settings")] 
-        [SerializeField] private Shield _shieldPrefab;
+        [Header("Visual Settings")] [SerializeField]
+        private Shield _shieldPrefab;
+
         [SerializeField] private int _defaultShields = 0;
         [SerializeField] private int _maxShields = 3;
         [SerializeField] private Transform _shieldVisualParent;
@@ -27,6 +28,7 @@ namespace Scripts.Health
 
         public List<Shield> Shields => _shields;
         public NumericStatModifierSystem MaxShieldsModifierSystem => _maxShieldsModifierSystem;
+        public int GetCurrentShieldsCount => _shields.Count;
 
         private void Awake()
         {
@@ -53,7 +55,7 @@ namespace Scripts.Health
 
 
         [Button]
-        public void AddShield()
+        public void AddShield(int count = 1)
         {
             if (_shields.Count >= GetMaxShields())
             {
@@ -61,14 +63,18 @@ namespace Scripts.Health
                 return;
             }
 
-            var newShield = Instantiate(_shieldPrefab, _shieldVisualParent);
-            
-            _shields.Add(newShield);
-            OnShieldAdded?.Invoke(newShield);
+            for (int i = 0; i < count; i++)
+            {
+                var newShield = Instantiate(_shieldPrefab, _shieldVisualParent);
+
+                _shields.Add(newShield);
+                OnShieldAdded?.Invoke(newShield);
+            }
         }
 
         public void RemoveShield(Shield shield)
         {
+            Debug.Log("Removing shield: " + shield.gameObject.name);
             if (_shields.Remove(shield))
             {
                 shield.DestroyShield();
@@ -87,10 +93,12 @@ namespace Scripts.Health
                 float absorbedDamage = shield.AbsorbDamage(remainingDamage);
                 remainingDamage -= absorbedDamage;
 
+                Debug.Log("Shield " + shield.gameObject.name + ": " + absorbedDamage);
                 if (absorbedDamage > 0)
                 {
                     OnShieldDamaged?.Invoke(shield);
                     RemoveShield(shield);
+                    return 0;
                 }
 
                 if (remainingDamage <= 0)
