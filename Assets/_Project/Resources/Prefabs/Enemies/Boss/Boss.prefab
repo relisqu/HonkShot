@@ -109,7 +109,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 9
+  m_SortingOrder: 12
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_FlipX: 0
@@ -135,6 +135,8 @@ GameObject:
   - component: {fileID: 2357702564277749848}
   - component: {fileID: 1714335325823573817}
   - component: {fileID: 6917758335651533037}
+  - component: {fileID: 7298714514701476617}
+  - component: {fileID: 8529924115717345979}
   m_Layer: 12
   m_Name: Boss
   m_TagString: Untagged
@@ -173,23 +175,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.Bosses.RavageBossEnemy
   _enemyId: 15
   _enemyName: 
-  _minionPrefab: {fileID: 6609783001741788759, guid: 80fbdc37f141eba4884a7656579a9680, type: 3}
-  _shootingModule: {fileID: 0}
+  _shootingModule: {fileID: 8529924115717345979}
+  _shieldController: {fileID: 2357702564277749848}
   _rigidbody2D: {fileID: 6917758335651533037}
-  _minionCount: 3
-  _minionSpeed: 0
-  _minionRotationRadius: 2
-  _minionsParentTransform: {fileID: 1925938593352480356}
-  _secondPhasePointsList:
-  - {fileID: 0}
   _bossHealth: {fileID: 6903777600374435259}
-  _rotationSpeed: 6.94
-  _minSpaceBetweenPlayerAndBoss: 2
-  _followSpeed: 200
-  _shootingCooldown: 0
-  _bulletSpeed: 0
-  _bulletDamage: 0
-  _accuracy: 0
+  _minionsParentTransform: {fileID: 1925938593352480356}
+  _minionPrefab: {fileID: 6609783001741788759, guid: 80fbdc37f141eba4884a7656579a9680, type: 3}
+  _minionCount: 3
+  _minionRotationRadius: 2
+  _minionSpeed: 0
+  _rotationSpeed: 15
+  _rotationSpeedIncreaseAfterMinionDeath: 10
+  _minSpaceBetweenPlayerAndBoss: 5
+  _firstPhaseShieldCount: 3
+  _followSpeed: 50
+  _shootingCooldown: 2
+  _bulletSpeed: 6
+  _bulletDamage: 15
+  _bulletPrediction: 2
+  _thirdPhasePointsList:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  _thirdPhaseDashCooldown: 15
+  _thirdPhaseMoveSpeed: 4
+  _thirdPhaseDashSpeed: 10
+  _thirdPhaseShieldsCount: 3
+  _thirdPhaseShootingSpeed: 8
+  _thirdPhaseBulletDamage: 30
+  _thirdPhaseShootingCooldown: 1
 --- !u!114 &6903777600374435259
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,7 +221,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Scripts.Health.HealthController
   _maxHealth: 1
   _defaultHealth: 1
-  _shieldController: {fileID: 0}
+  _shieldController: {fileID: 2357702564277749848}
 --- !u!114 &2357702564277749848
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -217,7 +234,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed2064ba8f1327b419acb6914fa9e1b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Scripts.Health.ShieldController
-  _shieldPrefab: {fileID: 0}
+  _shieldPrefab: {fileID: 7889615281003788892, guid: 0efedaa57d3f14245805a68d91e5bafc, type: 3}
   _defaultShields: 0
   _maxShields: 3
   _shieldVisualParent: {fileID: 0}
@@ -284,3 +301,33 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &7298714514701476617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6801337584361558935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07848764a75e458c81bd7fbce915c2bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.LevelSystem.LevelObjects.BounceObject
+  _bounciness: 0.7
+  _hasBounceAnimation: 0
+  _bounceAnimation: {fileID: 0}
+--- !u!114 &8529924115717345979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6801337584361558935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65b7e1ed701241058c269d57ad48376b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.Bosses.DefaultShootingModule
+  _bulletPrefab: {fileID: 7323370896169588259, guid: 10469d0653a94e248bd2b21cb65e1a88, type: 3}
+  _hasMaxDistance: 0
+  _shootDistance: 5
