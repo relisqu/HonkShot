@@ -43,7 +43,8 @@ namespace Scripts.Enemies.Bosses
         [Space]
         [Header("Second phase with dashing and movement")]
         [FormerlySerializedAs("_secondPhasePointsList")] [SerializeField] private List<Transform> _thirdPhasePointsList = new();
-        public float _thirdPhaseDashCooldown;
+        public float _thirdPhaseDashCooldownMin;
+        public float _thirdPhaseDashCooldownMax;
         public float _thirdPhaseMoveSpeed;
         public float _thirdPhaseDashSpeed;
         public int _thirdPhaseShieldsCount;
@@ -80,7 +81,6 @@ namespace Scripts.Enemies.Bosses
         {
             if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _))
             {
-                Debug.Log("AAAAAAA");
                 return;
             }
 
@@ -161,7 +161,7 @@ namespace Scripts.Enemies.Bosses
         private IEnumerator LastPhaseShootingCoroutine()
         {
             _shootingModule.SetParameters(_thirdPhaseShootingSpeed, _thirdPhaseBulletDamage);
-            while (_currentPhase < 2)
+            while (true)
             {
                 yield return new WaitForSeconds(_thirdPhaseShootingCooldown);
                 _shootingModule.TryShoot(() => { });
@@ -199,7 +199,6 @@ namespace Scripts.Enemies.Bosses
         private void GoToSecondPhase()
         {
             _bossHealth.SetInvincible(0, false);
-            Debug.Log("GoToSecondPhase");
             _currentPhase = 1;
             _shieldController.AddShield(_firstPhaseShieldCount);
             _shieldController.OnShieldDestroyed += ShieldController_ShieldDestroyed;
@@ -207,7 +206,6 @@ namespace Scripts.Enemies.Bosses
 
         private void ShieldController_ShieldDestroyed(Shield obj)
         {
-            Debug.Log("DamagedShield " + _shieldController.GetCurrentShieldsCount);
             if (_shieldController.GetCurrentShieldsCount == 0)
             {
                 GoToThirdPhase();
@@ -217,7 +215,6 @@ namespace Scripts.Enemies.Bosses
 
         private void GoToThirdPhase()
         {
-            Debug.Log("GoToThirdPhase");
             _currentPhase = 2;
             _shieldController.AddShield(_thirdPhaseShieldsCount);
             StartCoroutine(ThirdPhaseMovement());
@@ -314,14 +311,19 @@ namespace Scripts.Enemies.Bosses
             currentPointIndex = minPointIndex;
 
             float dashTime = Time.time;
+            float currentDashCooldown = Random.Range(_thirdPhaseDashCooldownMin, _thirdPhaseDashCooldownMax);
+
             while (_currentPhase == 2)
             {
                 var currentTime = Time.time;
 
-                if (currentTime - dashTime > _thirdPhaseDashCooldown)
+                if (currentTime - dashTime > currentDashCooldown)
                 {
-                    Debug.Log("Trying to dash " + (currentTime - dashTime));
+                    _bezierActive = false;
+
                     yield return MoveToPoint(_thirdPhasePointsList[currentPointIndex], _thirdPhaseMoveSpeed);
+                    _rigidbody2D.position = _thirdPhasePointsList[currentPointIndex].position;
+
                     yield return new WaitForSeconds(1f);
 
                     var dashPoint = Random.Range(0, _thirdPhasePointsList.Count);
@@ -329,6 +331,7 @@ namespace Scripts.Enemies.Bosses
                         dashPoint = Random.Range(0, _thirdPhasePointsList.Count);
 
                     yield return MoveToPoint(_thirdPhasePointsList[dashPoint], _thirdPhaseDashSpeed);
+                    _rigidbody2D.position = _thirdPhasePointsList[dashPoint].position;
 
                     _bezierStartIndex = dashPoint;
                     currentPointIndex = (_bezierStartIndex + 1) % _thirdPhasePointsList.Count;
@@ -336,6 +339,7 @@ namespace Scripts.Enemies.Bosses
 
                     yield return new WaitForSeconds(1.5f);
                     dashTime = Time.time;
+                    currentDashCooldown = Random.Range(_thirdPhaseDashCooldownMin, _thirdPhaseDashCooldownMax);
                 }
                 else
                 {
