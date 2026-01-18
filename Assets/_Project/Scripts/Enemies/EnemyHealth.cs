@@ -4,6 +4,7 @@ using Scripts.Audio;
 using Scripts.Camera;
 using Scripts.Health;
 using Scripts.Player;
+using Scripts.ScoreSystem;
 using Scripts.UI;
 using UnityEngine;
 
@@ -14,12 +15,14 @@ namespace Scripts.Enemies
     {
         [SerializeField] private HealthController _healthController;
         [SerializeField] private BaseEnemy _baseEnemy;
-        
+
+        private float _lastDamageReceived;
+
         public HealthController HealthController => _healthController;
         
         private void Awake()
         {
-            if (_baseEnemy == null)
+            if (!_baseEnemy)
             {
                 _baseEnemy = GetComponent<BaseEnemy>();
             }
@@ -27,6 +30,12 @@ namespace Scripts.Enemies
 
         private void HealthController_Died()
         {
+            // Award score for killing this enemy
+            if (ScoreManager.Instance && _baseEnemy)
+            {
+                ScoreManager.Instance.OnEnemyKilled(_baseEnemy, _lastDamageReceived);
+            }
+
             AudioManager.Instance.PlayOneShot(SoundChanelType.Enemy, "killEnemy");
             CameraShakeHandler.Instance.ShakeCamera(0.2f, 2f);
             new UIFactory().CreateExplosionParticle(transform.position);
@@ -58,7 +67,8 @@ namespace Scripts.Enemies
             if (_healthController.IsInvincible()) return;
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
-                _healthController.TakeDamage(playerAttackController.GetDamage());
+                _lastDamageReceived = playerAttackController.GetDamage();
+                _healthController.TakeDamage(_lastDamageReceived);
                 playerAttackController.Damage(gameObject);
             }
         }
@@ -72,7 +82,8 @@ namespace Scripts.Enemies
             if (_healthController.IsInvincible()) return;
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
-                _healthController.TakeDamage(playerAttackController.GetDamage());
+                _lastDamageReceived = playerAttackController.GetDamage();
+                _healthController.TakeDamage(_lastDamageReceived);
                 playerAttackController.Damage(gameObject);
             }
         }
@@ -86,7 +97,8 @@ namespace Scripts.Enemies
             if (_healthController.IsInvincible()) return;
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
-                _healthController.TakeDamage(playerAttackController.GetDamage());
+                _lastDamageReceived = playerAttackController.GetDamage();
+                _healthController.TakeDamage(_lastDamageReceived);
                 playerAttackController.Damage(gameObject);
             }
         }
@@ -95,13 +107,13 @@ namespace Scripts.Enemies
         {
             if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _))
             {
-                Debug.Log("AAAAAAA");
                 return;
             }
             if (_healthController.IsInvincible()) return;
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
-                _healthController.TakeDamage(playerAttackController.GetDamage());
+                _lastDamageReceived = playerAttackController.GetDamage();
+                _healthController.TakeDamage(_lastDamageReceived);
                 playerAttackController.Damage(gameObject);
             }
         }

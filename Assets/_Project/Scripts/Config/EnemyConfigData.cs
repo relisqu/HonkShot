@@ -45,6 +45,12 @@ namespace Scripts.Config
         [PropertyOrder(1)]
         public float maxHealth = 100f;
         public float defaultHealth = 100f;
+
+        [Header("Score Settings")]
+        [PropertyOrder(1)]
+        [Range(1, 10)]
+        [Tooltip("Difficulty rating for score calculation (1 = easy, 10 = boss)")]
+        public int difficultyRating = 1;
         
         [Header("Walking Enemy Settings")]
         [PropertyOrder(2)]
@@ -91,7 +97,7 @@ namespace Scripts.Config
         
         private void OnPrefabChanged()
         {
-            if (enemyPrefab == null)
+            if (!enemyPrefab)
             {
                 _detectedEnemyType = EnemyType.Unknown;
                 return;
