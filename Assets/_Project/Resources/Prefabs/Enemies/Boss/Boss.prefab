@@ -136,7 +136,8 @@ GameObject:
   - component: {fileID: 1714335325823573817}
   - component: {fileID: 6917758335651533037}
   - component: {fileID: 7298714514701476617}
-  - component: {fileID: 8529924115717345979}
+  - component: {fileID: 372067591849059236}
+  - component: {fileID: 2403281483393435881}
   m_Layer: 12
   m_Name: Boss
   m_TagString: Untagged
@@ -175,7 +176,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.Bosses.RavageBossEnemy
   _enemyId: 15
   _enemyName: 
-  _shootingModule: {fileID: 8529924115717345979}
+  _difficultyRating: 1
+  _shootingModule: {fileID: 2403281483393435881}
   _shieldController: {fileID: 2357702564277749848}
   _rigidbody2D: {fileID: 6917758335651533037}
   _bossHealth: {fileID: 6903777600374435259}
@@ -200,13 +202,16 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  _thirdPhaseDashCooldown: 15
+  _thirdPhaseDashCooldownMin: 6
+  _thirdPhaseDashCooldownMax: 10
   _thirdPhaseMoveSpeed: 4
   _thirdPhaseDashSpeed: 10
-  _thirdPhaseShieldsCount: 3
+  _thirdPhaseShieldsCount: 2
   _thirdPhaseShootingSpeed: 8
   _thirdPhaseBulletDamage: 30
-  _thirdPhaseShootingCooldown: 1
+  _thirdPhaseShootingCooldown: 0.5
+  _thirdPhaseAttackPattern: 00000000000000000000000001000000
+  _thirdPhasePatternCycleDelay: 1
 --- !u!114 &6903777600374435259
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -316,7 +321,7 @@ MonoBehaviour:
   _bounciness: 0.7
   _hasBounceAnimation: 0
   _bounceAnimation: {fileID: 0}
---- !u!114 &8529924115717345979
+--- !u!114 &372067591849059236
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -325,9 +330,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 6801337584361558935}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65b7e1ed701241058c269d57ad48376b, type: 3}
+  m_Script: {fileID: 11500000, guid: 07848764a75e458c81bd7fbce915c2bb, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.Bosses.DefaultShootingModule
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.LevelSystem.LevelObjects.BounceObject
+  _bounciness: 0.7
+  _hasBounceAnimation: 0
+  _bounceAnimation: {fileID: 0}
+--- !u!114 &2403281483393435881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6801337584361558935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4d8e1262041c0a45812677ea6c68c29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.Bosses.RavageBossShootingModule
   _bulletPrefab: {fileID: 7323370896169588259, guid: 10469d0653a94e248bd2b21cb65e1a88, type: 3}
   _hasMaxDistance: 0
   _shootDistance: 5
+  _spreadBulletCount: 3
+  _spreadAngle: 30

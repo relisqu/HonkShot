@@ -24,8 +24,8 @@ namespace Scripts.Items.PermanentItems.CustomItems
             {
                 foreach (var damageStatModifier in DamageStatModifiers)
                 {
-                    damageStatModifier.SetOrder(attackController.NumericStatModifierSystem.GetLastOrder() + 1);
-                    attackController.NumericStatModifierSystem.AddModifier(damageStatModifier);
+                    damageStatModifier.SetOrder(attackController.DamageBuffModifierSystem.GetLastOrder() + 1);
+                    attackController.DamageBuffModifierSystem.AddModifier(damageStatModifier);
                 }
             }
 

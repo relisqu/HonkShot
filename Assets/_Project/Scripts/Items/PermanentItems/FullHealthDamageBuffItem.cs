@@ -45,10 +45,10 @@ namespace Scripts.Items.PermanentItems
                 {
                     foreach (var statModifier in DamageStatModifiers)
                     {
-                        if (_attackController.NumericStatModifierSystem.GetModifier(statModifier.Id) == null)
+                        if (_attackController.DamageBuffModifierSystem.GetModifier(statModifier.Id) == null)
                         {
-                            statModifier.SetOrder(_attackController.NumericStatModifierSystem.GetLastOrder());
-                            _attackController.NumericStatModifierSystem.AddModifier(statModifier);
+                            statModifier.SetOrder(_attackController.DamageBuffModifierSystem.GetLastOrder());
+                            _attackController.DamageBuffModifierSystem.AddModifier(statModifier);
                         }
                     }
                 }
@@ -63,10 +63,10 @@ namespace Scripts.Items.PermanentItems
         {
             foreach (var statModifier in DamageStatModifiers)
             {
-                if (_attackController.NumericStatModifierSystem.GetModifier(statModifier.Id) == null)
+                if (_attackController.DamageBuffModifierSystem.GetModifier(statModifier.Id) == null)
                 {
-                    statModifier.SetOrder(_attackController.NumericStatModifierSystem.GetLastOrder());
-                    _attackController.NumericStatModifierSystem.AddModifier(statModifier);
+                    statModifier.SetOrder(_attackController.DamageBuffModifierSystem.GetLastOrder());
+                    _attackController.DamageBuffModifierSystem.AddModifier(statModifier);
                 }
             }
         }
@@ -75,7 +75,7 @@ namespace Scripts.Items.PermanentItems
         {
             foreach (var statModifier in DamageStatModifiers)
             {
-                _attackController.NumericStatModifierSystem.RemoveModifier(statModifier.Id);
+                _attackController.DamageBuffModifierSystem.RemoveModifier(statModifier.Id);
             }
         }
 

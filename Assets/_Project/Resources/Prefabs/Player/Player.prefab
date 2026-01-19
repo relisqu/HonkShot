@@ -463,10 +463,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerBallMovement: {fileID: 2855041829269072723}
-  _dependsOnSpeed: 1
-  _minBonusCoeffSpeed: 8
-  _maxBonusCoeffSpeed: 15
-  _maxSpeedCoeff: 2
+  _gooseFireSystem: {fileID: 0}
+  _maxSpeed: 15
+  _minFireMultiplier: 1
+  _maxFireMultiplier: 2
+  _minDamage: 5
+  _debugMode: 0
 --- !u!114 &8510904863215499170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -523,17 +525,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 767bc75a9870bd340bbbb8995d4f6a07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerAttackController: {fileID: 0}
   _ultimateMultiplyCoefficient: 5
   _ultimateDragCoefficient: 0.3
   _maxFire: 100
-  _fireGainPerLaunch: 40
-  _fireGainPerAcceleration: 3
-  _fireLossPerDeceleration: 0.05
   _fireLossPerSecond: 0.01
   _ultimateFireDrainPerSecond: 15
   _honkFireDrainPerSecond: 8
   _honkKey: 32
   _playerStatus: {fileID: 2410884018478326342}
+  _fireGainPerDash: 5
+  _fireGainPerKill: 20
+  _damageToFireDivisor: 5
+  _minEnvironmentFireGain: 1
+  _maxEnvironmentFireGain: 10
+  _maxEnvironmentDifficulty: 10
 --- !u!114 &3030431709123272130
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -710,6 +716,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerAttackController: {fileID: 344756555288879489}
   _playerMovement: {fileID: 4628585418959965787}
+  _playerBallMovement: {fileID: 0}
   _particleSystems:
   - {fileID: 8832356744712714151}
   - {fileID: 392083217252386928}
@@ -841,6 +848,8 @@ MonoBehaviour:
   _rotatedDetailsSpriteRenderer: {fileID: 3624129401013772843}
   _defaultSprite: {fileID: -199876445757598851, guid: 52e519408e5c4184fac0cd020a545c7a, type: 3}
   _ultimateColor: {r: 1, g: 0.90588236, b: 0.21568628, a: 1}
+  _maxSpeedCutout: 15
+  _maxSpeedParticlesClamp: 1.5
 --- !u!1 &1403779668136795704
 GameObject:
   m_ObjectHideFlags: 0

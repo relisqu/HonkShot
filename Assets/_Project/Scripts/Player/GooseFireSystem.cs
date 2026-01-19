@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
+using Scripts.Enemies;
 using Scripts.Health;
 using Scripts.Items;
 using Scripts.Items.StatSystems;
 using Scripts.Player.InputHandling;
+using Scripts.ScoreSystem;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Zenject;
@@ -11,22 +14,29 @@ namespace Scripts.Player
 {
     public class GooseFireSystem : MonoBehaviour
     {
+        public static GooseFireSystem Instance { get; private set; }
+
         [Inject] private InputHandler _inputHandler;
+        [SerializeField] private PlayerAttackController _playerAttackController;
 
-        [FormerlySerializedAs("_ultimateMultiplySystem")] [Header("Fire Settings")] [SerializeField]
-        private float _ultimateMultiplyCoefficient = 5f;
-
+        [FormerlySerializedAs("_ultimateMultiplySystem")]
+        [Header("Fire Settings")]
+        [SerializeField] private float _ultimateMultiplyCoefficient = 5f;
         [SerializeField] private float _ultimateDragCoefficient = 0f;
-
         [SerializeField] private float _maxFire = 100f;
-        [SerializeField] private float _fireGainPerLaunch = 20f;
-        [SerializeField] private float _fireGainPerAcceleration = 5f;
-        [SerializeField] private float _fireLossPerDeceleration = 10f;
         [SerializeField] private float _fireLossPerSecond = 5f;
         [SerializeField] private float _ultimateFireDrainPerSecond = 20f;
         [SerializeField] private float _honkFireDrainPerSecond = 30f;
         [SerializeField] private KeyCode _honkKey = KeyCode.Space;
         [SerializeField] private PlayerStatus _playerStatus;
+
+        [Header("Fire Gain Settings")]
+        [SerializeField] private float _fireGainPerDash = 5f;
+        [SerializeField] private float _fireGainPerKill = 20f;
+        [SerializeField] private float _damageToFireDivisor = 5f;
+        [SerializeField] private float _minEnvironmentFireGain = 1f;
+        [SerializeField] private float _maxEnvironmentFireGain = 10f;
+        [SerializeField] private int _maxEnvironmentDifficulty = 10;
 
         public event Action<float> FireChanged;
         public event Action UltimateStarted;
@@ -43,6 +53,9 @@ namespace Scripts.Player
         private NumericStatModifierSystem _playerPointReceiveModifierSystem =>
             PointSystem.PointReceiver.Instance.PointReceiveModifierSystem;
 
+        private NumericStatModifierSystem _fireGainModifierSystem = new();
+        public NumericStatModifierSystem FireGainModifierSystem => _fireGainModifierSystem;
+
         public float Fire => _fire;
         public bool IsUltimate => _isUltimate;
         public bool IsHonk => _isHonk;
@@ -52,13 +65,44 @@ namespace Scripts.Player
 
         private void Awake()
         {
-            if (_playerBallMovement == null)
+            Instance = this;
+
+            if (!_playerBallMovement)
                 _playerBallMovement = GetComponent<PlayerBallMovement>();
             _fire = 0f;
-            if (_playerStatus == null)
+            if (_playerStatus)
                 _playerStatus = GetComponent<PlayerStatus>();
-            if (_playerStatus != null)
+            if (_playerStatus)
                 _healthController = _playerStatus.GetHealthController();
+        }
+
+        private void Start()
+        {
+            if (ScoreManager.Instance)
+            {
+                ScoreManager.Instance.OnDamageScoreAwarded += ScoreManager_OnDamageScoreAwarded;
+                ScoreManager.Instance.OnKillScoreAwarded += ScoreManager_OnKillScoreAwarded;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (ScoreManager.Instance)
+            {
+                ScoreManager.Instance.OnDamageScoreAwarded -= ScoreManager_OnDamageScoreAwarded;
+                ScoreManager.Instance.OnKillScoreAwarded -= ScoreManager_OnKillScoreAwarded;
+            }
+        }
+
+        private void ScoreManager_OnDamageScoreAwarded(long score, DamageScoreBreakdown breakdown)
+        {
+            float damageDealt = breakdown.DamagePoints * 10f;
+            OnDamageDealt(damageDealt);
+        }
+
+        private void ScoreManager_OnKillScoreAwarded(long score, KillScoreBreakdown breakdown)
+        {
+            OnEnemyKilled();
         }
 
         private void Update()
@@ -73,11 +117,10 @@ namespace Scripts.Player
                 StopHonk();
             }
 
-            // Fire decay
             if (_isUltimate)
             {
                 StopHonk();
-                ChangeFire(-_ultimateFireDrainPerSecond * Time.deltaTime);
+                ChangeFire(-_ultimateFireDrainPerSecond * Time.deltaTime, false);
                 if (_fire <= 0)
                 {
                     EndUltimate();
@@ -85,7 +128,7 @@ namespace Scripts.Player
             }
             else if (_isHonk)
             {
-                ChangeFire(-_honkFireDrainPerSecond * Time.deltaTime);
+                ChangeFire(-_honkFireDrainPerSecond * Time.deltaTime, false);
                 if (_fire <= 0)
                 {
                     StopHonk();
@@ -93,32 +136,82 @@ namespace Scripts.Player
             }
             else
             {
-                ChangeFire(-_fireLossPerSecond * Time.deltaTime);
+                ChangeFire(-_fireLossPerSecond * Time.deltaTime, false);
             }
+
         }
 
+
+        public void OnDashUsed()
+        {
+            if (_isHonk || _isUltimate) return;
+            float fireGain = ApplyFireGainModifiers(_fireGainPerDash);
+            ChangeFire(fireGain);
+        }
+
+        public void OnDamageDealt(float damage)
+        {
+            if (_isHonk || _isUltimate) return;
+            float fireGain = damage / _damageToFireDivisor;
+            fireGain = ApplyFireGainModifiers(fireGain);
+            ChangeFire(fireGain);
+        }
+
+        public void OnEnemyKilled()
+        {
+            if (_isHonk || _isUltimate) return;
+            float fireGain = ApplyFireGainModifiers(_fireGainPerKill);
+            ChangeFire(fireGain);
+        }
+
+        public void OnEnvironmentInteraction(IFireInteractable interactable)
+        {
+            if (_isHonk || _isUltimate) return;
+
+            float fireGain = CalculateEnvironmentFireGain(interactable.DifficultyLevel);
+            fireGain = ApplyFireGainModifiers(fireGain);
+            ChangeFire(fireGain);
+        }
+        public void OnEnvironmentInteraction(IFireInteractable interactable, int difficultyLevel)
+        {
+            if (_isHonk || _isUltimate) return;
+
+            float fireGain = CalculateEnvironmentFireGain(difficultyLevel);
+            fireGain = ApplyFireGainModifiers(fireGain);
+            ChangeFire(fireGain);
+        }
+
+
+        private float CalculateEnvironmentFireGain(int difficultyLevel)
+        {
+            int clampedDifficulty = Mathf.Clamp(difficultyLevel, 1, _maxEnvironmentDifficulty);
+            float t = (float)(clampedDifficulty - 1) / (_maxEnvironmentDifficulty - 1);
+            return Mathf.Lerp(_minEnvironmentFireGain, _maxEnvironmentFireGain, t);
+        }
+
+        private float ApplyFireGainModifiers(float baseGain)
+        {
+            return _fireGainModifierSystem.Calculate(baseGain);
+        }
+
+        [Obsolete("Use OnDashUsed() instead")]
         public void OnLaunchOrAcceleration()
         {
-            if (_isHonk) return; // No fire gain during honk
-            if (_isUltimate) return; // No fire gain during ultimate
-            ChangeFire(_fireGainPerLaunch);
+            OnDashUsed();
         }
 
+        [Obsolete("Use OnDashUsed() instead")]
         public void OnAcceleration()
         {
-            if (_isHonk) return;
-            if (_isUltimate) return;
-            ChangeFire(_fireGainPerAcceleration);
+            OnDashUsed();
         }
 
+        [Obsolete("No longer used in new fire system")]
         public void OnDeceleration()
         {
-            if (_isHonk) return;
-            if (_isUltimate) return;
-            ChangeFire(-_fireLossPerDeceleration);
         }
 
-        private void ChangeFire(float amount)
+        private void ChangeFire(float amount, bool applyModifiers = true)
         {
             float prev = _fire;
             _fire = Mathf.Clamp(_fire + amount, 0, _maxFire);
@@ -130,13 +223,11 @@ namespace Scripts.Player
             FireChanged?.Invoke(_fire);
         }
 
-
         private void StartUltimate()
         {
             _isUltimate = true;
             if (PointSystem.PointReceiver.Instance)
             {
-                Debug.Log(_playerPointReceiveModifierSystem == null);
 
                 _playerBallMovement.DragForceModifierSystem.AddModifier(
                     new NumericStatModifier((int)ModifierTypeEnum.HonkMode, NumericModType.Mult,

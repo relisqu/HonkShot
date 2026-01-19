@@ -1,46 +1,38 @@
-﻿using System;
+using System;
 using Scripts.Player;
-using Scripts.PointSystem;
-using Sirenix.OdinInspector;
-using UnityEngine;
-using System.Collections.Generic;
-using System.Linq;
-using Scripts.Items;
 using Scripts.Items.StatSystems;
+using UnityEngine;
 using Zenject;
 
 namespace Scripts.Health
 {
     public class PlayerAttackController : AttackController
     {
-        [Header("References")] [SerializeField]
-        private PlayerBallMovement _playerBallMovement;
+        [Header("References")]
+        [SerializeField] private PlayerBallMovement _playerBallMovement;
+        [SerializeField] private GooseFireSystem _gooseFireSystem;
 
-        [Header("Speed")] [SerializeField] private bool _dependsOnSpeed;
+        [Header("Damage Formula Settings")]
+        [SerializeField] private float _maxSpeed = 15f;
+        [SerializeField] private float _minFireMultiplier = 1f;
+        [SerializeField] private float _maxFireMultiplier = 2f;
+        [SerializeField] private float _minDamage = 5f;
 
-        [ShowIf("_dependsOnSpeed")] [SerializeField]
-        private float _minBonusCoeffSpeed;
+        [Header("Debug")]
+        [SerializeField] private bool _debugMode = false;
 
-        [ShowIf("_dependsOnSpeed")] [SerializeField]
-        private float _maxBonusCoeffSpeed;
+        private NumericStatModifierSystem _damageBuffModifierSystem = new();
 
-        [ShowIf("_dependsOnSpeed")] [SerializeField]
-        private float _maxSpeedCoeff = 2f;
-
-        private NumericStatModifierSystem _numericStatModifierSystem = new();
-        
-        [Inject] private PointReceiver _pointReceiver;
-
-        public NumericStatModifierSystem NumericStatModifierSystem => _numericStatModifierSystem;
+        public NumericStatModifierSystem DamageBuffModifierSystem => _damageBuffModifierSystem;
         public Action<GameObject> OnHit;
+        public Action<float> OnDamaged;
 
-
-        public float CalculateDamage(float baseDamage)
+        private void Awake()
         {
-            float result = _numericStatModifierSystem.Calculate(baseDamage);
-
-            Debug.Log($"Damage:: {result}");
-            return result;
+            if (!_gooseFireSystem)
+                _gooseFireSystem = GetComponentInParent<GooseFireSystem>();
+            if (!_playerBallMovement)
+                _playerBallMovement = GetComponentInParent<PlayerBallMovement>();
         }
 
         public void Damage(GameObject target)
@@ -50,37 +42,64 @@ namespace Scripts.Health
 
         public override float GetDamage()
         {
-            Debug.Log("Touch speed: " + _playerBallMovement.CurrentSpeed);
+            float currentSpeed = _playerBallMovement ? _playerBallMovement.CurrentSpeed : 0f;
+            float speedMapped = Mathf.Clamp(currentSpeed, 0f, _maxSpeed);
 
-            var pointReceiver = _pointReceiver ?? PointReceiver.Instance; // Fallback to Instance if injection failed
-            var damage = pointReceiver.GetBaseDamage();
-            var attackDamage = pointReceiver.GetAttackPoints();
-            if (_dependsOnSpeed)
+            float currentFire = _gooseFireSystem ? _gooseFireSystem.Fire : 0f;
+            float maxFire = _gooseFireSystem ? _gooseFireSystem.MaxFire : 100f;
+            float fireNormalized = Mathf.Clamp01(currentFire / maxFire);
+            float fireMapped = Mathf.Lerp(_minFireMultiplier, _maxFireMultiplier, fireNormalized);
+
+            float baseDamage = speedMapped * fireMapped + _minDamage;
+
+            float buffsDamage = _damageBuffModifierSystem.Calculate(0f);
+            float finalDamage = baseDamage * (1f + buffsDamage);
+
+            if (_debugMode)
             {
-                var currentSpeed = _playerBallMovement.CurrentSpeed;
-                var currentSpeedValue = Mathf.InverseLerp(_minBonusCoeffSpeed, _maxBonusCoeffSpeed, currentSpeed);
-
-                Debug.Log("currentSpeedValue: " + currentSpeedValue);
-
-                var bonusSpeedCoeff = Mathf.Max(1, Mathf.Lerp(1, _maxSpeedCoeff, currentSpeedValue));
-                attackDamage *= bonusSpeedCoeff;
-
-                Debug.Log("AppliedCoeff: " + bonusSpeedCoeff);
+                Debug.Log($"[PlayerDamage] Speed: {currentSpeed:F1}/{_maxSpeed} (mapped: {speedMapped:F1}) | " +
+                          $"Fire: {currentFire:F0}/{maxFire:F0} (mult: {fireMapped:F2}) | " +
+                          $"Base: {baseDamage:F1} | Buffs: {buffsDamage:F2} | Final: {finalDamage:F1}");
             }
 
-            float baseTotal = damage + attackDamage;
-            return CalculateDamage(baseTotal);
+            return finalDamage;
         }
 
-        public float GetSpeedModifier()
+        public float GetFlatDamage(float amount)
         {
-            var currentSpeed = _playerBallMovement.CurrentSpeed;
-            if (currentSpeed < _minBonusCoeffSpeed)
-                return 0;
-            var currentSpeedValue = Mathf.InverseLerp(_minBonusCoeffSpeed, _maxBonusCoeffSpeed, currentSpeed);
+            float buffsDamage = _damageBuffModifierSystem.Calculate(0f);
+            float finalDamage = amount * (1f + buffsDamage);
 
-            var bonusSpeedCoeff = Mathf.Lerp(1, _maxSpeedCoeff, currentSpeedValue) - 1;
-            return bonusSpeedCoeff;
+            if (_debugMode)
+            {
+                Debug.Log($"[PlayerDamage] Flat: {amount:F1} | Buffs: {buffsDamage:F2} | Final: {finalDamage:F1}");
+            }
+
+            return finalDamage;
+        }
+
+        public float GetRawFlatDamage(float amount)
+        {
+            if (_debugMode)
+            {
+                Debug.Log($"[PlayerDamage] Raw Flat: {amount:F1}");
+            }
+
+            return amount;
+        }
+
+        public float GetSpeedComponent()
+        {
+            float currentSpeed = _playerBallMovement ? _playerBallMovement.CurrentSpeed : 0f;
+            return Mathf.Clamp(currentSpeed, 0f, _maxSpeed);
+        }
+
+        public float GetFireMultiplier()
+        {
+            if (!_gooseFireSystem) return _minFireMultiplier;
+
+            float fireNormalized = Mathf.Clamp01(_gooseFireSystem.Fire / _gooseFireSystem.MaxFire);
+            return Mathf.Lerp(_minFireMultiplier, _maxFireMultiplier, fireNormalized);
         }
     }
 }

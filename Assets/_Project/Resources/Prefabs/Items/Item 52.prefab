@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 2201435279585184232}
   - component: {fileID: 6268769384086388414}
-  - component: {fileID: -1075305694217041241}
-  - component: {fileID: -583728710319778403}
+  - component: {fileID: 6600555174722731249}
+  - component: {fileID: 9084004102755927233}
   m_Layer: 0
-  m_Name: Item 7
+  m_Name: Item 52
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,9 +47,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Items:
-  - {fileID: -1075305694217041241}
-  - {fileID: -583728710319778403}
---- !u!114 &-1075305694217041241
+  - {fileID: 6600555174722731249}
+  - {fileID: 9084004102755927233}
+--- !u!114 &6600555174722731249
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -58,14 +58,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 8883043866075910181}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51f21386ffbb4aceabc3221cf82642a7, type: 3}
+  m_Script: {fileID: 11500000, guid: a539ed1d10fff8e4191426ae5ef01982, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ThrowModifiers:
-  - _type: 1
-    _value: 0.9
+  baseCooldown: 20
+  CooldownModifier:
+    _type: 1
+    _value: 0.5
     _order: 0
---- !u!114 &-583728710319778403
+--- !u!114 &9084004102755927233
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -78,6 +79,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ThrowModifiers:
-  - _type: 1
-    _value: 0.9
+  - _type: 0
+    _value: -5
     _order: 0

@@ -4,6 +4,7 @@ using Scripts.LevelSystem.LevelObjects.Interaction;
 using UnityEngine;
 using DG.Tweening;
 using Scripts.Player.InputHandling;
+using Scripts.PointSystem;
 using Zenject;
 
 namespace Scripts.LevelSystem.LevelObjects
@@ -17,6 +18,7 @@ namespace Scripts.LevelSystem.LevelObjects
 
         [Header("Shooting")] [SerializeField] private float pauseTime = 0.5f;
         [SerializeField] private float shootForce = 10f;
+        [SerializeField] private AttackPointsObject _attackPointsObject;
 
         private float _startRotation;
         private float _targetRotation;
@@ -43,7 +45,7 @@ namespace Scripts.LevelSystem.LevelObjects
 
         private void RotateCannon()
         {
-            if (_containedObject != null) return;
+            if (_containedObject) return;
             _angle += _direction * rotateSpeed * Time.deltaTime;
             if (_angle > rotateAngle / 2f || _angle < -rotateAngle / 2f)
             {
@@ -68,9 +70,12 @@ namespace Scripts.LevelSystem.LevelObjects
 
         private IEnumerator HandleCannon(CannonInteractable interactable)
         {
-            // Pause input globally
-            if (_inputHandler) _inputHandler.SetInputEnabled(InputLayer.Cannon, false);
-            // Squash: shrink Y, widen X
+            if (interactable is PlayerCannonInteractable)
+            {
+                _attackPointsObject.EarnTouchPoints();
+                if (_inputHandler) _inputHandler.SetInputEnabled(InputLayer.Cannon, false);
+            }
+
             if (rotatingPart)
                 rotatingPart
                     .DOScale(new Vector3(_originalScale.x * 1.2f, _originalScale.y * 0.7f, _originalScale.z), 0.15f)
@@ -80,16 +85,19 @@ namespace Scripts.LevelSystem.LevelObjects
 
             yield return new WaitForSeconds(pauseTime);
 
-            Vector2 shootDirection = rotatingPart.up; // local right from rotating part's transform
+            Vector2 shootDirection = rotatingPart.up;
             Debug.Log(shootDirection);
             interactable.OnExitCannon(shootDirection, shootForce);
 
-            // Bounce back to normal with a springy effect
             if (rotatingPart)
                 rotatingPart.DOScale(_originalScale, 0.25f).SetEase(Ease.OutBack);
 
-            // Resume input globally
-            if (_inputHandler) _inputHandler.SetInputEnabled(InputLayer.Cannon, true);
+            if (interactable is PlayerCannonInteractable)
+            {
+                
+                if (_inputHandler) _inputHandler.SetInputEnabled(InputLayer.Cannon, true);
+            }
+
             _containedObject = null;
         }
 
@@ -100,7 +108,6 @@ namespace Scripts.LevelSystem.LevelObjects
             Gizmos.color = Color.yellow;
             Vector3 pos = rotatingPart.position;
 
-            // Get world directions for left/right swing
             Quaternion left = Quaternion.Euler(0, 0, -rotateAngle / 2f);
             Quaternion right = Quaternion.Euler(0, 0, rotateAngle / 2f);
 

@@ -15,6 +15,7 @@ namespace Scripts.Player
 
         [SerializeField] private PlayerAttackController _playerAttackController;
         [SerializeField] private PlayerMovement _playerMovement;
+        [SerializeField] private PlayerBallMovement _playerBallMovement;
         [SerializeField] private List<ParticleSystem> _particleSystems;
         [SerializeField] private GooseFireSystem _gooseFireSystem;
 
@@ -35,7 +36,9 @@ namespace Scripts.Player
         private float _defaultRateOverTime;
         private float _defaultTrailRendererTime;
 
+        [SerializeField] private float _maxSpeedCutout = 15f;
 
+        [SerializeField] private float _maxSpeedParticlesClamp = 1.5f;
         [Inject]
         public void Construct(LevelTransitionManager levelTransitionManager)
         {
@@ -173,9 +176,9 @@ namespace Scripts.Player
                 main.emitterVelocity = new Vector3(_playerMovement.GetVelocity().x, 0, 0);
                 main.startColor = particleGradient;
 
+                var coeff =  Mathf.Clamp(_playerBallMovement.CurrentSpeed/ _maxSpeedCutout,0f, _maxSpeedParticlesClamp);
                 emission.rateOverTime = _defaultRateOverTime *
-                                        _playerAttackController.GetSpeedModifier() *
-                                        _playerAttackController.GetSpeedModifier() *
+                                        coeff * coeff *
                                         rateMultiplier;
                 if (_gooseFireSystem && _gooseFireSystem.IsUltimate && particleSystem.isPlaying)
                 {

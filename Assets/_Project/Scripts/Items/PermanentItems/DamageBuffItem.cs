@@ -19,7 +19,7 @@ namespace Scripts.Items.PermanentItems
 
             foreach (var numericStatModifier in DamageStatModifiers)
             {
-                attack.NumericStatModifierSystem.AddModifier(numericStatModifier);
+                attack.DamageBuffModifierSystem.AddModifier(numericStatModifier);
             }
         }
 

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -13,11 +14,13 @@ public class ItemSelectionSlotUI : MonoBehaviour, IPointerClickHandler, IPointer
     private ILocalizationService _localizationService;
 
     public Image icon;
-    public TMP_Text nameText;
-    public TMP_Text descriptionText;
 
     private PlayerItemSO _item;
-    private System.Action<PlayerItemSO> _onSelected;
+    public Action<PlayerItemSO> SelectedItem;
+    public Action<ItemSelectionSlotUI> StartedHover;
+    public Action<ItemSelectionSlotUI> FinishedHover;
+    
+    public PlayerItemSO PlayerItemSO => _item;
 
     [Inject]
     private void Construct(ILocalizationService localizationService)
@@ -28,7 +31,7 @@ public class ItemSelectionSlotUI : MonoBehaviour, IPointerClickHandler, IPointer
     public void Setup(PlayerItemSO item, System.Action<PlayerItemSO> onSelected)
     {
         _item = item;
-        _onSelected = onSelected;
+        SelectedItem = onSelected;
         if (icon && item.icon)
         {
             icon.sprite = item.icon;
@@ -38,35 +41,24 @@ public class ItemSelectionSlotUI : MonoBehaviour, IPointerClickHandler, IPointer
             icon.sprite = null;
         }
 
-        if (nameText)
-        {
-            nameText.text = _localizationService.Get($"item_{item.Id}_title");
-        }
-
-        if (descriptionText)
-        {
-            descriptionText.text = _localizationService.Get($"item_{item.Id}_description");
-        }
-        else
-        {
-            descriptionText.text = null;
-        }
 
         transform.localScale = Vector3.one;
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        _onSelected?.Invoke(_item);
+        SelectedItem?.Invoke(_item);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        StartedHover?.Invoke(this);
         transform.DOScale(1.1f, 0.15f).SetEase(Ease.OutBack);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        FinishedHover?.Invoke(this);
         transform.DOScale(1f, 0.15f).SetEase(Ease.OutBack);
     }
 }

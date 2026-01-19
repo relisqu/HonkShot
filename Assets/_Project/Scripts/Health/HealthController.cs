@@ -47,16 +47,16 @@ namespace Scripts.Health
             return _defaultCurrentHealth;
         }
 
-        public void TakeDamage(float damageAmount)
+        public float TakeDamage(float damageAmount)
         {
             if (_defaultCurrentHealth == 0)
             {
-                return;
+                return 0;
             }
 
             if (IsInvincible())
             {
-                return;
+                return 0;
             }
 
             OnTakeDamageTriggered?.Invoke();
@@ -88,6 +88,7 @@ namespace Scripts.Health
                     OnDamaged?.Invoke();
                 }
             }
+            return finalDamage;
         }
 
         public void AddHealth(float amountToAdd)

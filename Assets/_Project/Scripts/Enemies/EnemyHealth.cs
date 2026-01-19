@@ -19,7 +19,7 @@ namespace Scripts.Enemies
         private float _lastDamageReceived;
 
         public HealthController HealthController => _healthController;
-        
+
         private void Awake()
         {
             if (!_baseEnemy)
@@ -71,10 +71,16 @@ namespace Scripts.Enemies
             if (_healthController.IsInvincible()) return;
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
-                _lastDamageReceived = playerAttackController.GetDamage();
-                _healthController.TakeDamage(_lastDamageReceived);
-                playerAttackController.Damage(gameObject);
+                ReceiveDamage(playerAttackController);
             }
+        }
+
+        private void ReceiveDamage(PlayerAttackController playerAttackController)
+        {
+            _lastDamageReceived = playerAttackController.GetDamage();
+            var resultDamage = _healthController.TakeDamage(_lastDamageReceived);
+            playerAttackController.Damage(gameObject);
+            playerAttackController.OnDamaged?.Invoke(resultDamage);
         }
 
         private void OnTriggerStay2D(Collider2D other)
@@ -83,12 +89,11 @@ namespace Scripts.Enemies
             {
                 return;
             }
+
             if (_healthController.IsInvincible()) return;
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
-                _lastDamageReceived = playerAttackController.GetDamage();
-                _healthController.TakeDamage(_lastDamageReceived);
-                playerAttackController.Damage(gameObject);
+                ReceiveDamage(playerAttackController);
             }
         }
 
@@ -98,12 +103,11 @@ namespace Scripts.Enemies
             {
                 return;
             }
+
             if (_healthController.IsInvincible()) return;
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
-                _lastDamageReceived = playerAttackController.GetDamage();
-                _healthController.TakeDamage(_lastDamageReceived);
-                playerAttackController.Damage(gameObject);
+                ReceiveDamage(playerAttackController);
             }
         }
 
@@ -113,12 +117,11 @@ namespace Scripts.Enemies
             {
                 return;
             }
+
             if (_healthController.IsInvincible()) return;
             if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
             {
-                _lastDamageReceived = playerAttackController.GetDamage();
-                _healthController.TakeDamage(_lastDamageReceived);
-                playerAttackController.Damage(gameObject);
+                ReceiveDamage(playerAttackController);
             }
         }
 

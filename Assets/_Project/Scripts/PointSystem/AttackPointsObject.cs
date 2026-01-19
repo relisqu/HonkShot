@@ -1,70 +1,67 @@
-﻿using System;
-using Unity.VisualScripting;
+﻿using Scripts.Player;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Zenject;
 
 namespace Scripts.PointSystem
 {
-    public class AttackPointsObject : MonoBehaviour
+    public class AttackPointsObject : MonoBehaviour, IFireInteractable
     {
         [FormerlySerializedAs("_pointObjectType")] [SerializeField]
         private AttackPointsObjectType attackPointsObjectType;
 
-        [FormerlySerializedAs("PointsPerTouchCount")] [SerializeField]
-        private int _pointsPerTouchCount;
-
-        [Tooltip("How much points player gets for 1 second of stay inside of object")] [SerializeField]
-        private int PointsPerStayCount;
-
-        [Inject] private PointReceiver _pointReceiver;
-
         private float _stayPoints;
+
+        [SerializeField] private FireInteractionType _interactionType;
+        [SerializeField] private int _difficultyLevel;
+        [SerializeField] private float _interactionCooldown;
+
+        public FireInteractionType InteractionType => _interactionType;
+        public int DifficultyLevel => _difficultyLevel;
+        [Tooltip("For interaction with ")] public float InteractionCooldown => _difficultyLevel;
 
         public void IncreaseStayPoints()
         {
-            Debug.Log($"StayPoints: +{PointsPerStayCount * Time.deltaTime}");
-            _stayPoints += PointsPerStayCount * Time.deltaTime;
+            _stayPoints += _difficultyLevel * Time.deltaTime;
         }
 
         public void EarnStayPoints()
         {
-            if (_stayPoints != 0)
+            if (_difficultyLevel != 0)
             {
-                var pointReceiver = _pointReceiver ?? PointReceiver.Instance; // Fallback to Instance if injection failed
-                if (pointReceiver != null)
-                {
-                    Debug.Log($"AddPoints stay: +{_stayPoints}");
-                    pointReceiver.AddPoints(attackPointsObjectType, _stayPoints);
-                    _stayPoints = 0;
-                }
+                GooseFireSystem.Instance.OnEnvironmentInteraction(this, (int)_stayPoints);
             }
+
+            Debug.Log($"Earned stay points {_stayPoints}");
         }
 
         public void EarnTouchPoints()
         {
-            if (_pointsPerTouchCount != 0)
+            if (_difficultyLevel != 0)
             {
-                var pointReceiver = _pointReceiver ?? PointReceiver.Instance; // Fallback to Instance if injection failed
-                if (pointReceiver != null)
-                {
-                    Debug.Log($"AddPoints touch: +{_pointsPerTouchCount}");
-                    pointReceiver.AddPoints(attackPointsObjectType, _pointsPerTouchCount);
-                }
+                GooseFireSystem.Instance.OnEnvironmentInteraction(this, (int)_difficultyLevel);
             }
+
+            Debug.Log($"Earned touch points {_difficultyLevel}");
         }
 
         public void OnCollisionEnter2D(Collision2D collision)
         {
-            if (collision.gameObject.TryGetComponent(out PointReceiver _))
+            if(InteractionType == FireInteractionType.Manual) return;
+            if (collision.gameObject.TryGetComponent(out GooseFireSystem _))
             {
                 EarnTouchPoints();
             }
         }
 
+        private float _startInteractTime;
+
         public void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.gameObject.TryGetComponent(out PointReceiver _))
+            if(InteractionType == FireInteractionType.Manual) return;
+            _stayPoints += _difficultyLevel;
+            _startInteractTime = Time.time;
+            if (other.gameObject.TryGetComponent(out GooseFireSystem _))
             {
                 EarnTouchPoints();
             }
@@ -72,17 +69,28 @@ namespace Scripts.PointSystem
 
         public void OnTriggerStay2D(Collider2D other)
         {
-            if (other.TryGetComponent(out PointReceiver _))
+            if(InteractionType == FireInteractionType.Manual) return;
+            if (other.TryGetComponent(out GooseFireSystem _))
             {
-                _stayPoints += PointsPerStayCount * Time.deltaTime;
+                if (InteractionType == FireInteractionType.Continuous)
+                {
+                    if (Time.time - _startInteractTime > _interactionCooldown)
+                    {
+                        _stayPoints += _difficultyLevel;
+                        _startInteractTime = Time.time;
+                    }
+                }
             }
         }
 
         private void OnTriggerExit2D(Collider2D other)
         {
-            if (other.TryGetComponent(out PointReceiver pointReceiver))
+            if(InteractionType == FireInteractionType.Manual) return;
+            if (other.TryGetComponent(out GooseFireSystem gooseFireSystem))
             {
                 EarnStayPoints();
+                _stayPoints = 0;
+                _startInteractTime = 0;
             }
         }
     }
