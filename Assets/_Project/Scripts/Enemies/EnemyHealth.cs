@@ -30,10 +30,9 @@ namespace Scripts.Enemies
 
         private void HealthController_Died()
         {
-            // Award score for killing this enemy
             if (ScoreManager.Instance && _baseEnemy)
             {
-                ScoreManager.Instance.OnEnemyKilled(_baseEnemy, _lastDamageReceived);
+                ScoreManager.Instance.OnEnemyKilled(_baseEnemy);
             }
 
             AudioManager.Instance.PlayOneShot(SoundChanelType.Enemy, "killEnemy");
@@ -46,6 +45,11 @@ namespace Scripts.Enemies
 
         private void HealthController_Damaged()
         {
+            if (ScoreManager.Instance && _baseEnemy)
+            {
+                ScoreManager.Instance.OnDamageDealt(_baseEnemy, _lastDamageReceived);
+            }
+
             AudioManager.Instance.PlayOneShot(SoundChanelType.Enemy, "damageEnemy");
             if (_punchTween != null) return;
 

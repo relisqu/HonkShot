@@ -52,6 +52,8 @@ namespace Scripts.ScoreSystem
 
         public event Action<long> OnScoreChanged;
         public event Action<long, ScoreBreakdown> OnScoreAwarded;
+        public event Action<long, DamageScoreBreakdown> OnDamageScoreAwarded;
+        public event Action<long, KillScoreBreakdown> OnKillScoreAwarded;
 
         private void Awake()
         {
@@ -92,14 +94,37 @@ namespace Scripts.ScoreSystem
         {
         }
 
-        public void OnEnemyKilled(BaseEnemy enemy, float damageDealt)
+        public void OnDamageDealt(BaseEnemy enemy, float damageDealt)
+        {
+            if (!enemy) return;
+
+            _totalDamageDealt += damageDealt;
+
+            var breakdown = CalculateDamageScore(damageDealt);
+            long score = (long)breakdown.FinalScore;
+
+            _currentRunScore += score;
+
+            if (_debugMode)
+            {
+                Debug.Log($"[ScoreManager] Damage dealt to: {enemy.EnemyName} | " +
+                          $"Damage: {breakdown.DamagePoints:F1} | " +
+                          $"Buffs: {breakdown.ItemBuffs:F1} | " +
+                          $"Time: {breakdown.TimeCoefficient:F1} | " +
+                          $"Final: {score}");
+            }
+
+            OnScoreChanged?.Invoke(_currentRunScore);
+            OnDamageScoreAwarded?.Invoke(score, breakdown);
+        }
+
+        public void OnEnemyKilled(BaseEnemy enemy)
         {
             if (!enemy) return;
 
             _enemiesKilledThisRoom++;
-            _totalDamageDealt += damageDealt;
 
-            var breakdown = CalculateScore(enemy.DifficultyRating, damageDealt);
+            var breakdown = CalculateKillScore(enemy.DifficultyRating);
             long score = (long)breakdown.FinalScore;
 
             _currentRunScore += score;
@@ -109,31 +134,34 @@ namespace Scripts.ScoreSystem
                 Debug.Log($"[ScoreManager] Enemy killed: {enemy.EnemyName} | " +
                           $"Difficulty: {breakdown.DifficultyPoints} | " +
                           $"Speed: {breakdown.SpeedMultiplier:F2} | " +
-                          $"Damage: {breakdown.DamagePoints:F1} | " +
-                          $"Buffs: {breakdown.ItemBuffs:F1} | " +
-                          $"Time: {breakdown.TimeCoefficient:F1} | " +
                           $"Final: {score}");
             }
 
             OnScoreChanged?.Invoke(_currentRunScore);
-            OnScoreAwarded?.Invoke(score, breakdown);
+            OnKillScoreAwarded?.Invoke(score, breakdown);
         }
 
-        private ScoreBreakdown CalculateScore(int difficultyRating, float damageDealt)
+        private DamageScoreBreakdown CalculateDamageScore(float damageDealt)
         {
-            var breakdown = new ScoreBreakdown();
+            var breakdown = new DamageScoreBreakdown();
 
-            breakdown.DifficultyPoints = Mathf.Clamp(difficultyRating, _minDifficultyRating, _maxDifficultyRating);
-            breakdown.SpeedMultiplier = CalculateSpeedMultiplier();
             breakdown.DamagePoints = damageDealt / _damageDivisor;
             breakdown.ItemBuffs = _scoreBonusModifierSystem.Calculate(0f);
             breakdown.TimeCoefficient = CalculateTimeCoefficient();
 
-            float baseScore = (breakdown.DifficultyPoints * breakdown.SpeedMultiplier) +
-                              breakdown.DamagePoints +
-                              breakdown.ItemBuffs;
-
+            float baseScore = breakdown.DamagePoints + breakdown.ItemBuffs;
             breakdown.FinalScore = Mathf.Max(_minScore, baseScore * breakdown.TimeCoefficient);
+
+            return breakdown;
+        }
+
+        private KillScoreBreakdown CalculateKillScore(int difficultyRating)
+        {
+            var breakdown = new KillScoreBreakdown();
+
+            breakdown.DifficultyPoints = Mathf.Clamp(difficultyRating, _minDifficultyRating, _maxDifficultyRating);
+            breakdown.SpeedMultiplier = CalculateSpeedMultiplier();
+            breakdown.FinalScore = breakdown.DifficultyPoints * breakdown.SpeedMultiplier;
 
             return breakdown;
         }
@@ -191,6 +219,21 @@ namespace Scripts.ScoreSystem
         public float DamagePoints;
         public float ItemBuffs;
         public float TimeCoefficient;
+        public float FinalScore;
+    }
+
+    public struct DamageScoreBreakdown
+    {
+        public float DamagePoints;
+        public float ItemBuffs;
+        public float TimeCoefficient;
+        public float FinalScore;
+    }
+
+    public struct KillScoreBreakdown
+    {
+        public int DifficultyPoints;
+        public float SpeedMultiplier;
         public float FinalScore;
     }
 }

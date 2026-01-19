@@ -16,7 +16,7 @@ namespace Scripts.Enemies.Bosses
     public class RavageBossEnemy : BaseEnemy
     {
         [Header("References")]
-        [SerializeField] private DefaultShootingModule _shootingModule;
+        [SerializeField] private RavageBossShootingModule _shootingModule;
         [SerializeField] private ShieldController _shieldController;
         [SerializeField] private Rigidbody2D _rigidbody2D;
 
@@ -130,6 +130,12 @@ namespace Scripts.Enemies.Bosses
         public float _thirdPhaseShootingSpeed;
         public float _thirdPhaseBulletDamage;
         public float _thirdPhaseShootingCooldown;
+
+        [Header("Third Phase Attack Pattern")]
+        [Tooltip("Pattern of attacks: Single=0, Spread=1. Example: [0,0,0,1] = 3 single, 1 spread")]
+        public BossAttackType[] _thirdPhaseAttackPattern = { BossAttackType.Single, BossAttackType.Single, BossAttackType.Single, BossAttackType.Spread };
+        public float _thirdPhasePatternCycleDelay = 1f;
+        private int _attackPatternIndex;
         private IEnumerator FollowPlayerCoroutine()
         {
             while (_currentPhase < 2)
@@ -161,9 +167,26 @@ namespace Scripts.Enemies.Bosses
         private IEnumerator LastPhaseShootingCoroutine()
         {
             _shootingModule.SetParameters(_thirdPhaseShootingSpeed, _thirdPhaseBulletDamage);
+            _attackPatternIndex = 0;
+
             while (true)
             {
                 yield return new WaitForSeconds(_thirdPhaseShootingCooldown);
+
+                if (_thirdPhaseAttackPattern.Length > 0)
+                {
+                    _shootingModule.SetAttackType(_thirdPhaseAttackPattern[_attackPatternIndex]);
+                    _attackPatternIndex++;
+
+                    if (_attackPatternIndex >= _thirdPhaseAttackPattern.Length)
+                    {
+                        _attackPatternIndex = 0;
+                        _shootingModule.TryShoot(() => { });
+                        yield return new WaitForSeconds(_thirdPhasePatternCycleDelay);
+                        continue;
+                    }
+                }
+
                 _shootingModule.TryShoot(() => { });
             }
         }
@@ -215,13 +238,24 @@ namespace Scripts.Enemies.Bosses
 
         private void GoToThirdPhase()
         {
+            if (_currentPhase == 2) return;
+
             _currentPhase = 2;
             _shieldController.AddShield(_thirdPhaseShieldsCount);
-            StartCoroutine(ThirdPhaseMovement());
-            StartCoroutine(LastPhaseShootingCoroutine());
+
+            if (_thirdPhaseMovementCoroutine != null)
+                StopCoroutine(_thirdPhaseMovementCoroutine);
+            if (_lastPhaseShootingCoroutine != null)
+                StopCoroutine(_lastPhaseShootingCoroutine);
+
+            _thirdPhaseMovementCoroutine = StartCoroutine(ThirdPhaseMovement());
+            _lastPhaseShootingCoroutine = StartCoroutine(LastPhaseShootingCoroutine());
         }
 
         private int currentPointIndex;
+
+        private Coroutine _thirdPhaseMovementCoroutine;
+        private Coroutine _lastPhaseShootingCoroutine;
 
         private int _bezierStartIndex;
 
@@ -323,6 +357,7 @@ namespace Scripts.Enemies.Bosses
 
                     yield return MoveToPoint(_thirdPhasePointsList[currentPointIndex], _thirdPhaseMoveSpeed);
                     _rigidbody2D.position = _thirdPhasePointsList[currentPointIndex].position;
+                    _rigidbody2D.linearVelocity = Vector2.zero;
 
                     yield return new WaitForSeconds(1f);
 
@@ -332,12 +367,15 @@ namespace Scripts.Enemies.Bosses
 
                     yield return MoveToPoint(_thirdPhasePointsList[dashPoint], _thirdPhaseDashSpeed);
                     _rigidbody2D.position = _thirdPhasePointsList[dashPoint].position;
+                    _rigidbody2D.linearVelocity = Vector2.zero;
 
+                    yield return new WaitForSeconds(1.5f);
+
+                    _rigidbody2D.position = _thirdPhasePointsList[dashPoint].position;
                     _bezierStartIndex = dashPoint;
                     currentPointIndex = (_bezierStartIndex + 1) % _thirdPhasePointsList.Count;
                     SetupThirdPhaseBezier();
 
-                    yield return new WaitForSeconds(1.5f);
                     dashTime = Time.time;
                     currentDashCooldown = Random.Range(_thirdPhaseDashCooldownMin, _thirdPhaseDashCooldownMax);
                 }
@@ -354,6 +392,7 @@ namespace Scripts.Enemies.Bosses
                         else
                         {
                             _rigidbody2D.linearVelocity = Vector2.zero;
+                            _rigidbody2D.position = point.position;
                             _bossHealth.SetInvincible(0, false);
 
                             _bezierStartIndex = currentPointIndex;
@@ -367,6 +406,7 @@ namespace Scripts.Enemies.Bosses
 
                         if (_bezierT >= 1f)
                         {
+                            _bezierT = 1f;
                             _rigidbody2D.linearVelocity = Vector2.zero;
                             _rigidbody2D.position = _bezierD;
 
@@ -377,8 +417,7 @@ namespace Scripts.Enemies.Bosses
                         else
                         {
                             _rigidbody2D.linearVelocity = Vector2.zero;
-                            _rigidbody2D.position =
-                                EvaluateCubicBezier(_bezierA, _bezierB, _bezierC, _bezierD, _bezierT);
+                            _rigidbody2D.position = EvaluateCubicBezier(_bezierA, _bezierB, _bezierC, _bezierD, _bezierT);
                         }
                     }
                 }

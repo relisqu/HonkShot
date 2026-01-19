@@ -280,7 +280,7 @@ namespace Scripts.Player
             foreach (var mb in root.GetComponentsInChildren<MonoBehaviour>(false))
             {
                 // keep this script (Projection) or other whitelisted ones if ever needed
-                mb.enabled = false;
+                 mb.enabled = false;
             }
         }
 
