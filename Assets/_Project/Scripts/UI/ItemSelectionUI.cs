@@ -18,14 +18,17 @@ namespace Scripts.UI
     {
         private ILocalizationService _localizationService;
 
-        public ItemSelectionSlotUI[] slots; // Assign in inspector
+        public ItemSelectionSlotUI[] slots;
         [SerializeField] private TMP_Text _itemNameText;
         [SerializeField] private TMP_Text _itemDescriptionText;
-        public GameObject panel; // Assign in inspector
-
+        public GameObject panel;
 
         [SerializeField] private ItemManager _itemManager;
         [SerializeField] private PlayerInventory _playerInventory;
+
+        [Header("Reroll Settings")]
+        [SerializeField] private Button _rerollButton;
+        [SerializeField] private TMP_Text _rerollCountText;
 
         [Inject]
         private void Construct(ILocalizationService localizationService)
@@ -42,8 +45,20 @@ namespace Scripts.UI
             _isActive = true;
             ClearTexts();
             panel.SetActive(true);
-            var items = _itemManager.GetRandomItems(3);
             _onItemSelected = onItemSelected;
+
+            if (ExtraPickSystem.Instance)
+            {
+                ExtraPickSystem.Instance.CalculateExtraPicks();
+            }
+
+            RefreshItems();
+            UpdateRerollButton();
+        }
+
+        private void RefreshItems()
+        {
+            var items = _itemManager.GetRandomItems(3);
 
             for (int i = 0; i < slots.Length; i++)
             {
@@ -73,11 +88,35 @@ namespace Scripts.UI
             }
         }
 
+        private void UpdateRerollButton()
+        {
+            if (!_rerollButton) return;
+
+            int rerolls = RerollSystem.Instance ? RerollSystem.Instance.GetTotalRerolls() : 0;
+
+            _rerollButton.gameObject.SetActive(rerolls > 0);
+
+            if (_rerollCountText)
+            {
+                _rerollCountText.text = rerolls.ToString();
+            }
+        }
+
+        public void OnRerollButtonClicked()
+        {
+            if (!RerollSystem.Instance) return;
+
+            if (RerollSystem.Instance.TryUseReroll())
+            {
+                RefreshItems();
+                UpdateRerollButton();
+            }
+        }
+
         private void ItemSlot_StartedHover(ItemSelectionSlotUI slotUI)
         {
             _itemDescriptionText.text = _localizationService.Get($"item_{slotUI.PlayerItemSO.Id}_description");
             _itemNameText.text = _localizationService.Get($"item_{slotUI.PlayerItemSO.Id}_title");
-            
         }
 
         private void ClearTexts()
@@ -111,9 +150,17 @@ namespace Scripts.UI
 
         private void OnItemSelected(PlayerItemSO item)
         {
+            _playerInventory.AddItem(item);
+
+            if (ExtraPickSystem.Instance && ExtraPickSystem.Instance.TryUseExtraPick())
+            {
+                RefreshItems();
+                UpdateRerollButton();
+                return;
+            }
+
             _isActive = false;
             panel.SetActive(false);
-            _playerInventory.AddItem(item);
         }
     }
 }

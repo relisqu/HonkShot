@@ -22,6 +22,7 @@ namespace Scripts.Health
         public Action OnTakeDamageTriggered;
         public Action OnDied;
         public Action OnDamaged;
+        public Action OnRevived;
 
 
         public bool IsAlive => GetCurrentHealth() > 0;
@@ -81,7 +82,14 @@ namespace Scripts.Health
 
                 if (_defaultCurrentHealth == 0)
                 {
-                    OnDied?.Invoke();
+                    if (ReviveSystem.Instance && ReviveSystem.Instance.TryRevive(this))
+                    {
+                        OnRevived?.Invoke();
+                    }
+                    else
+                    {
+                        OnDied?.Invoke();
+                    }
                 }
                 else
                 {
