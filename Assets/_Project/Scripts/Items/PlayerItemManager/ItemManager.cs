@@ -9,6 +9,7 @@ namespace Scripts.Items.PlayerItemManager
 {
     public class ItemManager : MonoBehaviour
     {
+        public ItemPoolSO itemPool;
         public List<PlayerItemSO> allItems;
         public PlayerInventory playerInventory;
 
@@ -17,20 +18,7 @@ namespace Scripts.Items.PlayerItemManager
         private void Awake()
         {
             instance = this;
-        }
-
-        [Button]
-        public void LoadItems()
-        {
-            var items = Resources.LoadAll<PlayerItemSO>("Data/Items").ToList();
-            foreach (var item in items.ToList())
-            {
-                if (!item.Enabled)
-                {
-                    items.Remove(item);
-                }
-            }
-            allItems = items;
+            allItems = itemPool.Items.Where(item => item.Enabled).ToList();
         }
 
         public List<PlayerItemSO> GetRandomItems(int count)

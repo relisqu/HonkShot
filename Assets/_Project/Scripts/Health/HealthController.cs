@@ -117,14 +117,13 @@ namespace Scripts.Health
 
         public void SetInvincible(int invTag, bool isInvincible)
         {
-            var id = invTag.ToString();
-            if (_invisibilitySystem.GetModifier(id) != null)
+            if (_invisibilitySystem.GetModifier(invTag) != null)
             {
-                _invisibilitySystem.UpdateModifier(id, isInvincible);
+                _invisibilitySystem.UpdateModifier(invTag, isInvincible);
             }
             else
             {
-                _invisibilitySystem.AddModifier(new BoolStatModifier(id, BoolModType.OverrideIfTrue, isInvincible,
+                _invisibilitySystem.AddModifier(new BoolStatModifier(invTag, BoolModType.OverrideIfTrue, isInvincible,
                     _invisibilitySystem.GetLastOrder() + 1));
             }
         }

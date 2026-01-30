@@ -14,7 +14,7 @@ namespace Scripts.Items.StatSystems
             _modifiers = _modifiers.OrderBy(m => m.Order).ToList();
         }
 
-        public void UpdateModifier(string invTag, T value)
+        public void UpdateModifier(int invTag, T value)
         {
             foreach (var modifier in _modifiers.ToList())
             {
@@ -25,7 +25,7 @@ namespace Scripts.Items.StatSystems
             }
         }
 
-        public void RemoveModifier(string id)
+        public void RemoveModifier(int id)
         {
             foreach (var modifier in _modifiers.ToList())
             {
@@ -59,12 +59,12 @@ namespace Scripts.Items.StatSystems
             return order;
         }
 
-        public bool HasModifier(string id)
+        public bool HasModifier(int id)
         {
             return _modifiers.Any(statModifier => statModifier.Id == id);
         }
 
-        public IStatModifier<T> GetModifier(string id)
+        public IStatModifier<T> GetModifier(int id)
         {
             foreach (var statModifier in _modifiers)
             {

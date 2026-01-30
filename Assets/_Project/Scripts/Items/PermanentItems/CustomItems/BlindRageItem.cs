@@ -46,12 +46,12 @@ namespace Scripts.Items.PermanentItems.CustomItems
         {
             foreach (var numericStatModifier in DamageStatModifiers)
             {
-                numericStatModifier.SetId(playerItemSO.Id);
+                numericStatModifier.SetId(playerItemSO.NumericId);
             }
 
             foreach (var numericStatModifier in DashForceStatModifiers)
             {
-                numericStatModifier.SetId(playerItemSO.Id);
+                numericStatModifier.SetId(playerItemSO.NumericId);
             }
         }
     }

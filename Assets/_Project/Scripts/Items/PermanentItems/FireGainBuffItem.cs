@@ -25,7 +25,7 @@ namespace Scripts.Items.PermanentItems
         {
             foreach (var modifier in FireGainModifiers)
             {
-                modifier.SetId(playerItemSO.Id);
+                modifier.SetId(playerItemSO.NumericId);
             }
         }
     }

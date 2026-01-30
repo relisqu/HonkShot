@@ -27,7 +27,7 @@ namespace Scripts.Items.PermanentItems
         {
             foreach (var modifier in ScoreStatModifiers)
             {
-                modifier.SetId(playerItemSO.Id);
+                modifier.SetId(playerItemSO.NumericId);
             }
         }
     }

@@ -230,11 +230,11 @@ namespace Scripts.Player
             {
 
                 _playerBallMovement.DragForceModifierSystem.AddModifier(
-                    new NumericStatModifier(nameof(ModifierTypeEnum.HonkMode), NumericModType.Mult,
+                    new NumericStatModifier((int)ModifierTypeEnum.HonkMode, NumericModType.Mult,
                         _ultimateDragCoefficient,
                         _playerBallMovement.DragForceModifierSystem.GetLastOrder() + 1));
                 _playerPointReceiveModifierSystem.AddModifier(
-                    new NumericStatModifier(nameof(ModifierTypeEnum.HonkMode), NumericModType.Mult,
+                    new NumericStatModifier((int)ModifierTypeEnum.HonkMode, NumericModType.Mult,
                         _ultimateMultiplyCoefficient,
                         _playerPointReceiveModifierSystem.GetLastOrder() + 1));
                 UltimateStarted?.Invoke();
@@ -246,8 +246,8 @@ namespace Scripts.Player
             if (!_isUltimate) return;
             _isUltimate = false;
             if (PointSystem.PointReceiver.Instance)
-                _playerPointReceiveModifierSystem.RemoveModifier(nameof(ModifierTypeEnum.HonkMode));
-            _playerBallMovement.DragForceModifierSystem.RemoveModifier(nameof(ModifierTypeEnum.HonkMode));
+                _playerPointReceiveModifierSystem.RemoveModifier((int)ModifierTypeEnum.HonkMode);
+            _playerBallMovement.DragForceModifierSystem.RemoveModifier((int)ModifierTypeEnum.HonkMode);
             UltimateEnded?.Invoke();
         }
 

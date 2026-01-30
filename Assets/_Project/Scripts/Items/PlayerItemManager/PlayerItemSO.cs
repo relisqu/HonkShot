@@ -20,6 +20,41 @@ namespace Scripts.Items.PlayerItemManager
         [FormerlySerializedAs("itemPrefab")] [FormerlySerializedAs("itemPrefabs")] public Item ItemPrefab;
         public bool Enabled;
 
+        private int _numericId;
+        private bool _numericIdCached;
+
+        public int NumericId
+        {
+            get
+            {
+                if (!_numericIdCached)
+                {
+                    _numericId = ComputeNumericId(Id);
+                    _numericIdCached = true;
+                }
+                return _numericId;
+            }
+        }
+
+        private static int ComputeNumericId(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+                return 0;
+
+            var parts = id.Split('-');
+            if (parts.Length >= 2
+                && int.TryParse(parts[0], out var first)
+                && int.TryParse(parts[1], out var second))
+            {
+                return first * 10000 + second * 10;
+            }
+
+            if (int.TryParse(id, out var singleNum))
+                return singleNum * 10000;
+
+            return 0;
+        }
+
         public virtual Item OnPickup(GameObject player)
         {
             if (ItemPrefab)

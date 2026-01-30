@@ -37,7 +37,7 @@ namespace Scripts.Items.PermanentItems
         {
             foreach (var numericStatModifier in HealthModifiers)
             {
-                numericStatModifier.SetId(playerItemSO.Id);
+                numericStatModifier.SetId(playerItemSO.NumericId);
             }
         }
     }

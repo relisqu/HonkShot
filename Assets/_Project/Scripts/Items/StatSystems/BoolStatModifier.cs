@@ -15,13 +15,13 @@ namespace Scripts.Items.StatSystems
     [Serializable]
     public class BoolStatModifier : IStatModifier<bool>
     {
-        private string _id;
+        private int _id;
 
         [SerializeField] private BoolModType _type;
         [SerializeField] private bool _value;
         [SerializeField] private int _order;
 
-        public string Id => _id;
+        public int Id => _id;
         public BoolModType Type => _type;
         public bool Value => _value;
         public int Order => _order;
@@ -36,12 +36,12 @@ namespace Scripts.Items.StatSystems
             _order = order;
         }
 
-        public void SetId(string id)
+        public void SetId(int id)
         {
             _id = id;
         }
 
-        public BoolStatModifier(string id, BoolModType type, bool value, int order = 0)
+        public BoolStatModifier(int id, BoolModType type, bool value, int order = 0)
         {
             SetId(id);
             SetOrder(order);

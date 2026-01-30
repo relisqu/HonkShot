@@ -19,7 +19,15 @@ namespace Scripts.Other
         [Button]
         public void SpawnItemWithIndex()
         {
-            PlayerInventory.Instance.AddItem(ItemManager.instance.allItems.First(so => so.Id == itemId));
+            var so = ItemManager.instance.allItems.FirstOrDefault(x => x.Id == itemId);
+            if (!so)
+            {
+                Debug.LogError($"Item with Id '{itemId}' not found in allItems");
+                return;
+            }
+
+            PlayerInventory.Instance.AddItem(so);
+            Debug.Log($"Spawned item: {so.name} (Id: {so.Id})");
         }
 
         [Button]

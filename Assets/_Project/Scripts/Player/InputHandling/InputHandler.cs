@@ -25,13 +25,13 @@ namespace Scripts.Player.InputHandling
         public void SetInputEnabled(InputLayer inputLayer, bool value)
         {
             Debug.Log($"InputHandler:: Set layer {inputLayer} to {value}");
-            if (_inputModifierSystem.HasModifier(inputLayer.ToString()))
+            if (_inputModifierSystem.HasModifier((int)inputLayer))
             {
-                _inputModifierSystem.UpdateModifier(inputLayer.ToString(), value);
+                _inputModifierSystem.UpdateModifier((int)inputLayer, value);
             }
             else
             {
-                _inputModifierSystem.AddModifier(new BoolStatModifier(inputLayer.ToString(), BoolModType.And, value, 1));
+                _inputModifierSystem.AddModifier(new BoolStatModifier((int)inputLayer, BoolModType.And, value, 1));
             }
 
             if (!value && _currentInputHandler is { IsDragging: true })

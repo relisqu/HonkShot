@@ -28,7 +28,7 @@ namespace Scripts.Items.PermanentItems
         {
             foreach (var numericStatModifier in DamageTakenStatModifiers)
             {
-                numericStatModifier.SetId(playerItemSO.Id);
+                numericStatModifier.SetId(playerItemSO.NumericId);
             }
 
         }

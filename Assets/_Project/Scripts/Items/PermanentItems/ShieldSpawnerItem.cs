@@ -13,7 +13,7 @@ public class ShieldSpawnerItem : Item
 
     private ShieldController _shieldController;
     private bool _isSpawning = false;
-    private string _id;
+    private int _id;
 
     private NumericStatModifierSystem _shieldCooldownModifier;
 
@@ -30,7 +30,7 @@ public class ShieldSpawnerItem : Item
 
         foreach (var item in PlayerInventory.Instance.ownedItems)
         {
-            if (item.Id == _id)
+            if (item.NumericId == _id)
             {
                 _shieldCooldownModifier.AddModifier(CooldownModifier);
                 Destroy(gameObject);
@@ -72,7 +72,7 @@ public class ShieldSpawnerItem : Item
 
     public override void InitItem(PlayerItemSO playerItemSO)
     {
-        _id = playerItemSO.Id;
+        _id = playerItemSO.NumericId;
     }
 
     public GameObject GameObject => gameObject;

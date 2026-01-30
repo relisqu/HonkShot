@@ -83,7 +83,7 @@ namespace Scripts.Items.PermanentItems
         {
             foreach (var numericStatModifier in DamageStatModifiers)
             {
-                numericStatModifier.SetId(playerItemSO.Id);
+                numericStatModifier.SetId(playerItemSO.NumericId);
             }
         }
     }
