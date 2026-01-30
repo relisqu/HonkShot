@@ -12,12 +12,12 @@ namespace Scripts.Items.StatSystems
     [Serializable]
     public class NumericStatModifier : IStatModifier<float>
     {
-        private int _id;
+        private string _id;
         [SerializeField] private NumericModType _type;
         [SerializeField] private float _value;
         [SerializeField] private int _order;
 
-        public int Id => _id;
+        public string Id => _id;
         public NumericModType Type => _type;
         public float Value => _value;
         public int Order => _order;
@@ -32,12 +32,12 @@ namespace Scripts.Items.StatSystems
             _order = order;
         }
 
-        public void SetId(int id)
+        public void SetId(string id)
         {
             _id = id;
         }
 
-        public NumericStatModifier(int id, NumericModType type, float value, int order = 0)
+        public NumericStatModifier(string id, NumericModType type, float value, int order = 0)
         {
             SetId(id);
             SetOrder(order);

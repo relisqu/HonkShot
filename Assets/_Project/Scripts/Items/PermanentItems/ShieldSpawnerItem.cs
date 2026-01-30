@@ -13,7 +13,7 @@ public class ShieldSpawnerItem : Item
 
     private ShieldController _shieldController;
     private bool _isSpawning = false;
-    private int _id = 0;
+    private string _id;
 
     private NumericStatModifierSystem _shieldCooldownModifier;
 

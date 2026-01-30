@@ -14,7 +14,7 @@ namespace Scripts.Other
 
         public static DebugMode Instance;
 
-        public int itemId;
+        public string itemId;
 
         [Button]
         public void SpawnItemWithIndex()

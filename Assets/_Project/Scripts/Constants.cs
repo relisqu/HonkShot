@@ -8,5 +8,11 @@
         public static string LevelExitPortalPrefabPath = "Prefabs/LevelObjects/Portals/LevelExitPortal";
 
         #endregion
+
+        #region Items
+
+        public static string ItemPrefabsPath = "Assets/_Project/Resources/Prefabs/Items";
+
+        #endregion
     }
 }
