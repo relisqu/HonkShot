@@ -1,8 +1,5 @@
-﻿using System;
+﻿ using System;
 using UnityEngine;
-using System.Collections.Generic;
-using System.Linq;
-using Scripts.Items;
 using Scripts.Items.StatSystems;
 
 namespace Scripts.Health
@@ -12,6 +9,7 @@ namespace Scripts.Health
         [SerializeField] private float _maxHealth;
         [SerializeField] private float _defaultHealth;
         [SerializeField] private ShieldController _shieldController;
+        [SerializeField] private ReviveSystem _reviveSystem;
 
         private float _defaultCurrentHealth = 10;
 
@@ -40,7 +38,10 @@ namespace Scripts.Health
         private void Awake()
         {
             _defaultCurrentHealth = _defaultHealth;
-            _shieldController = GetComponent<ShieldController>();
+            if (!_shieldController)
+                _shieldController = GetComponent<ShieldController>();
+            if (!_reviveSystem)
+                _reviveSystem = GetComponent<ReviveSystem>();
         }
 
         public float GetCurrentHealth()

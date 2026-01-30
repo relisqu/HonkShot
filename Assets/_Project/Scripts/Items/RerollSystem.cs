@@ -4,12 +4,6 @@ using UnityEngine;
 
 namespace Scripts.Items
 {
-    public interface IRerollProvider
-    {
-        int RemainingRerolls { get; }
-        bool TryUseReroll();
-    }
-
     public class RerollSystem : MonoBehaviour
     {
         public static RerollSystem Instance { get; private set; }
