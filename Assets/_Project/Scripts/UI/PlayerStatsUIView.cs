@@ -89,6 +89,7 @@ namespace Scripts.UI
                             _dashViews[^1].transform.localPosition + _dashViewsOffset;
                     }
 
+                    dashView.DOColor(Color.clear, 0.1f);
                     _dashViews.Add(dashView);
                 }
 

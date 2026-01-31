@@ -68,7 +68,7 @@ namespace Scripts.Enemies.Bosses
                 minionHealth.HealthController.OnDied += Minion_Died;
             }
 
-            _bossHealth.OnDamaged += BossHealth_Damaged;
+            _bossHealth.OnNonLethalDamageReceived += BossHealth_OnNonLethalDamageReceived;
             _bossHealth.OnDied += BossHealth_Died;
 
 
@@ -94,11 +94,11 @@ namespace Scripts.Enemies.Bosses
 
         private void OnDestroy()
         {
-            _bossHealth.OnDamaged -= BossHealth_Damaged;
+            _bossHealth.OnNonLethalDamageReceived -= BossHealth_OnNonLethalDamageReceived;
             _bossHealth.OnDied -= BossHealth_Died;
         }
 
-        private void BossHealth_Damaged()
+        private void BossHealth_OnNonLethalDamageReceived(float damage)
         {
         }
 

@@ -63,7 +63,7 @@ namespace Scripts.Enemies
             _playerDashController.ResetDashes();
         }
 
-        private void HealthController_Damaged()
+        private void HealthController_OnNonLethalDamageReceived(float damage)
         {
             AudioManager.Instance.PlayOneShot(SoundChanelType.Player, "takeDamage", 0.5f);
             CameraShakeHandler.Instance.ShakeCameraOutsideOfQueue(0.2f, 3f);
@@ -72,13 +72,13 @@ namespace Scripts.Enemies
         private void Start()
         {
             _healthController.OnDied += HealthController_Died;
-            _healthController.OnDamaged += HealthController_Damaged;
+            _healthController.OnNonLethalDamageReceived += HealthController_OnNonLethalDamageReceived;
         }
 
         private void OnDestroy()
         {
             _healthController.OnDied -= HealthController_Died;
-            _healthController.OnDamaged -= HealthController_Damaged;
+            _healthController.OnNonLethalDamageReceived -= HealthController_OnNonLethalDamageReceived;
         }
     }
 }

@@ -19,8 +19,9 @@ namespace Scripts.Health
 
         public Action OnTakeDamageTriggered;
         public Action<float> OnDamageBlocked;
+        public Action<float> OnDamageReceived;
         public Action OnDied;
-        public Action OnDamaged;
+        public Action<float> OnNonLethalDamageReceived;
         public Action OnRevived;
 
 
@@ -83,6 +84,8 @@ namespace Scripts.Health
                     _defaultCurrentHealth = 0;
                 }
 
+                OnDamageReceived?.Invoke(finalDamage);
+
                 if (_defaultCurrentHealth == 0)
                 {
                     if (ReviveSystem.Instance && ReviveSystem.Instance.TryRevive(this))
@@ -96,7 +99,7 @@ namespace Scripts.Health
                 }
                 else
                 {
-                    OnDamaged?.Invoke();
+                    OnNonLethalDamageReceived?.Invoke(finalDamage);
                 }
             }
             return finalDamage;

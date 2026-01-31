@@ -211,6 +211,11 @@ namespace Scripts.Player
         {
         }
 
+        public void AddFire(float amount)
+        {
+            ChangeFire(amount);
+        }
+
         private void ChangeFire(float amount, bool applyModifiers = true)
         {
             float prev = _fire;

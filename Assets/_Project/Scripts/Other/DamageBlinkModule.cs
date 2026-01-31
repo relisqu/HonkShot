@@ -17,16 +17,16 @@ namespace Scripts.Other
 
         private void Awake()
         {
-            _healthController.OnDamaged += HealthController_Damaged;
+            _healthController.OnNonLethalDamageReceived += HealthController_OnNonLethalDamageReceived;
             _spriteRenderers = new List<SpriteRenderer>(_healthController.GetComponentsInChildren<SpriteRenderer>());
         }
 
         private void OnDestroy()
         {
-            _healthController.OnDamaged -= HealthController_Damaged;
+            _healthController.OnNonLethalDamageReceived -= HealthController_OnNonLethalDamageReceived;
         }
 
-        private void HealthController_Damaged()
+        private void HealthController_OnNonLethalDamageReceived(float damage)
         {
             if (_blinkCoroutine == null)
                 _blinkCoroutine = StartCoroutine(BlinkRoutine());

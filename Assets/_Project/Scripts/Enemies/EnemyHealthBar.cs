@@ -19,18 +19,18 @@ namespace Scripts.Enemies
             private void Start()
             {
                 _canvasGroup.alpha = 0;
-                _enemyHealth.HealthController.OnDamaged += ShowHealthBar;
+                _enemyHealth.HealthController.OnNonLethalDamageReceived += HealthController_OnNonLethalDamageReceived;
                 _enemyHealth.HealthController.OnDied += HideHealthBar;
                 UpdateHealthBar();
             }
 
             private void OnDestroy()
             {
-                _enemyHealth.HealthController.OnDamaged -= ShowHealthBar;
+                _enemyHealth.HealthController.OnNonLethalDamageReceived -= HealthController_OnNonLethalDamageReceived;
                 _enemyHealth.HealthController.OnDied -= HideHealthBar;
             }
 
-            private void ShowHealthBar()
+            private void HealthController_OnNonLethalDamageReceived(float damage)
             {
                 _canvasGroup.DOFade(1f, 0.1f);
                 UpdateHealthBar();

@@ -17,7 +17,7 @@ namespace Scripts.Items.PermanentItems
             _health = GetComponentInParent<HealthController>();
             if (_health)
             {
-                _health.OnDamaged += OnDamaged;
+                _health.OnNonLethalDamageReceived += HealthController_OnNonLethalDamageReceived;
             }
             if (LevelManager.Instance)
             {
@@ -29,7 +29,7 @@ namespace Scripts.Items.PermanentItems
         {
             if (_health)
             {
-                _health.OnDamaged -= OnDamaged;
+                _health.OnNonLethalDamageReceived -= HealthController_OnNonLethalDamageReceived;
             }
             if (LevelManager.Instance)
             {
@@ -37,7 +37,7 @@ namespace Scripts.Items.PermanentItems
             }
         }
 
-        private void OnDamaged()
+        private void HealthController_OnNonLethalDamageReceived(float damage)
         {
             _tookDamageThisLevel = true;
         }

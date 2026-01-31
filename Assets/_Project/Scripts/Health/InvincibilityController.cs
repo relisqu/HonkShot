@@ -12,7 +12,7 @@ namespace Scripts.Health
         [SerializeField] private float _iFrameDuration;
         public float IrameDuration => _iFrameDuration;
 
-        private void HealthController_Damaged()
+        private void HealthController_OnNonLethalDamageReceived(float damage)
         {
             StartInvincibility(_iFrameDuration);
         }
@@ -32,12 +32,12 @@ namespace Scripts.Health
         private void Awake()
         {
             _healthController = GetComponent<HealthController>();
-            _healthController.OnDamaged += HealthController_Damaged;
+            _healthController.OnNonLethalDamageReceived += HealthController_OnNonLethalDamageReceived;
         }
 
         private void OnDestroy()
         {
-            _healthController.OnDamaged -= HealthController_Damaged;
+            _healthController.OnNonLethalDamageReceived -= HealthController_OnNonLethalDamageReceived;
         }
     }
 }

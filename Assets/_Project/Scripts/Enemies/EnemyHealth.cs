@@ -43,7 +43,7 @@ namespace Scripts.Enemies
 
         private Tweener _punchTween;
 
-        private void HealthController_Damaged()
+        private void HealthController_OnNonLethalDamageReceived(float damage)
         {
             if (ScoreManager.Instance && _baseEnemy)
             {
@@ -128,13 +128,13 @@ namespace Scripts.Enemies
         private void Start()
         {
             _healthController.OnDied += HealthController_Died;
-            _healthController.OnDamaged += HealthController_Damaged;
+            _healthController.OnNonLethalDamageReceived += HealthController_OnNonLethalDamageReceived;
         }
 
         private void OnDestroy()
         {
             _healthController.OnDied -= HealthController_Died;
-            _healthController.OnDamaged -= HealthController_Damaged;
+            _healthController.OnNonLethalDamageReceived -= HealthController_OnNonLethalDamageReceived;
         }
     }
 }
