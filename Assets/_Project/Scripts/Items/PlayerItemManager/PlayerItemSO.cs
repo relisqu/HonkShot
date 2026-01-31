@@ -18,7 +18,7 @@ namespace Scripts.Items.PlayerItemManager
         [FormerlySerializedAs("ItemKey")] public string ItemNotes;
         public Sprite icon;
         [FormerlySerializedAs("itemPrefab")] [FormerlySerializedAs("itemPrefabs")] public Item ItemPrefab;
-        public bool Enabled;
+        public bool Enabled = true;
 
         private int _numericId;
         private bool _numericIdCached;
@@ -52,7 +52,7 @@ namespace Scripts.Items.PlayerItemManager
             if (int.TryParse(id, out var singleNum))
                 return singleNum * 10000;
 
-            return 0;
+            return id.GetHashCode();
         }
 
         public virtual Item OnPickup(GameObject player)
