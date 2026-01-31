@@ -9,7 +9,10 @@ namespace Scripts.Items.PermanentItems
 {
     public class VampiricOnKillItem : Item
     {
-        public float healPercent = 0.05f; // 5% of max health per kill
+        [Tooltip("The percentage of the health of healed before adding healing amount")]
+        [SerializeField] private float _healedHpPercent = 0f; // 5% of max health per kill
+
+        [SerializeField] private int _healedHpAmount = 1;
 
         private HealthController _health;
         private List<HealthController> _subscribedEnemies = new List<HealthController>();
@@ -57,14 +60,14 @@ namespace Scripts.Items.PermanentItems
         {
             if (_health)
             {
-                float healAmount = _health.GetMaxHealth() * healPercent;
+                float healAmount = _health.GetMaxHealth() * _healedHpPercent + _healedHpAmount;
                 _health.AddHealth(healAmount);
             }
         }
 
         public override void InitItem(PlayerItemSO playerItemSO)
         {
-            throw new System.NotImplementedException();
+            Debug.Log("[VampiricOnKillItem] Inited VampiricOnKillItem");
         }
     }
 }

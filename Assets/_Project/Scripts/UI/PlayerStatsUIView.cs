@@ -14,6 +14,9 @@ namespace Scripts.UI
         [SerializeField] private Slider _hpSlider;
         [SerializeField] private Image _dashPrefab;
 
+        [SerializeField] private Transform _dashViewsTransform;
+        [SerializeField] private Vector3 _startPosition;
+        [SerializeField] private Vector3 _dashViewsOffset;
         [SerializeField] private List<Image> _dashViews = new List<Image>();
 
         [SerializeField] private PlayerDashController _playerDashController;
@@ -27,6 +30,21 @@ namespace Scripts.UI
             _playerHealthController = player.GetComponent<HealthController>();
             var dashes = _playerDashController.MaxDashCount;
 
+            for (int i = 0; i < _playerDashController.MaxDashCount; i++)
+            {
+                var dashView = Instantiate(_dashPrefab, _dashViewsTransform);
+                if (i == 0)
+                {
+                    dashView.transform.localPosition = _startPosition;
+                }
+                else
+                {
+                    dashView.transform.localPosition = _dashViews[i - 1].transform.localPosition + _dashViewsOffset;
+                }
+
+                _dashViews.Add(dashView);
+            }
+
             foreach (var dashView in _dashViews)
             {
                 dashView.color = Color.clear;
@@ -34,11 +52,48 @@ namespace Scripts.UI
 
             PlayerDashController_UpdatedDashCount();
             _playerDashController.UpdatedDashCount += PlayerDashController_UpdatedDashCount;
+            _playerDashController.UpdatedMaxDashCount += PlayerDashController_UpdatedMaxDashCount;
         }
 
         private void OnDestroy()
         {
             _playerDashController.UpdatedDashCount -= PlayerDashController_UpdatedDashCount;
+            _playerDashController.UpdatedMaxDashCount -= PlayerDashController_UpdatedMaxDashCount;
+        }
+
+        private void PlayerDashController_UpdatedMaxDashCount()
+        {
+            if (_playerDashController.MaxDashCount < _dashViews.Count)
+            {
+                while (_playerDashController.MaxDashCount < _dashViews.Count)
+                {
+                    Destroy(_dashViews[^1].gameObject);
+                    _dashViews.RemoveAt(_dashViews.Count - 1);
+                }
+
+                Debug.Log("[PlayerStatsUIView] Destroyed dash images:  " + _playerDashController.MaxDashCount);
+            }
+
+            else if (_playerDashController.MaxDashCount > _dashViews.Count)
+            {
+                while (_playerDashController.MaxDashCount > _dashViews.Count)
+                {
+                    var dashView = Instantiate(_dashPrefab, _dashViewsTransform);
+                    if (_playerDashController.MaxDashCount == 0)
+                    {
+                        dashView.transform.localPosition = _dashViewsOffset;
+                    }
+                    else
+                    {
+                        dashView.transform.localPosition =
+                            _dashViews[^1].transform.localPosition + _dashViewsOffset;
+                    }
+
+                    _dashViews.Add(dashView);
+                }
+
+                Debug.Log("[PlayerStatsUIView] Added dash images:  " + _playerDashController.MaxDashCount);
+            }
         }
 
         private void PlayerDashController_UpdatedDashCount()

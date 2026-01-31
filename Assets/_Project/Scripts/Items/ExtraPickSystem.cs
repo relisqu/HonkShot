@@ -39,6 +39,7 @@ namespace Scripts.Items
         {
             if (!_providers.Contains(provider))
             {
+                Debug.Log($"[ExtraPickSystem] Registering {provider.GetType().Name}");
                 _providers.Add(provider);
             }
         }
@@ -50,7 +51,6 @@ namespace Scripts.Items
 
         public void CalculateExtraPicks()
         {
-            Debug.Log("Calculating extra picks:");
             _pendingExtraPicks = 0;
 
             foreach (var provider in _providers)
@@ -74,6 +74,7 @@ namespace Scripts.Items
 
         public bool TryUseExtraPick()
         {
+            Debug.Log($"[ExtraPickSystem] Trying to use extra pick, current picks: {_pendingExtraPicks}");
             if (_pendingExtraPicks <= 0) return false;
 
             _pendingExtraPicks--;

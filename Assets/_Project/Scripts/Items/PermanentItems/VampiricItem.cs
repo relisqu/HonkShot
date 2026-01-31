@@ -7,8 +7,8 @@ namespace Scripts.Items.PermanentItems
 {
     public class VampiricItem : Item
     {
-        public float healPercent = 0.1f; // 10% of max health
-
+        [Tooltip("The percentage of the health of healed before adding healing amount")]
+        public float healPercentAmount = 0.1f; 
         private HealthController _health;
         private bool _tookDamageThisLevel = false;
 
@@ -46,7 +46,7 @@ namespace Scripts.Items.PermanentItems
         {
             if (_health && !_tookDamageThisLevel)
             {
-                float healAmount = _health.GetMaxHealth() * healPercent;
+                float healAmount = _health.GetMaxHealth() * healPercentAmount;
                 _health.AddHealth(healAmount);
             }
             _tookDamageThisLevel = false; // Reset for next level

@@ -21,6 +21,7 @@ namespace Scripts.Player.Dash
         private int _currentDashCount;
 
         public Action UpdatedDashCount;
+        public Action UpdatedMaxDashCount;
         public int CurrentDashCount => _currentDashCount;
         public bool CanDash => _currentDashCount > 0;
         private Coroutine _regenerateDashCoroutine;
@@ -81,10 +82,20 @@ namespace Scripts.Player.Dash
             UpdatedDashCount?.Invoke();
         }
 
+        public void AddMaxDashes(int dashCount)
+        {
+            _maxDashCount += dashCount;
+            _maxDashCount = Mathf.Clamp(_maxDashCount, 0, _maxDashCount);
+            Debug.Log($"Changed max dashes count, current: {_maxDashCount}");
+            UpdatedMaxDashCount?.Invoke();
+            UpdatedDashCount?.Invoke();
+        }
+
         public void ResetDashes()
         {
             _currentDashCount = MaxDashCount;
             UpdatedDashCount?.Invoke();
+            UpdatedMaxDashCount?.Invoke();
         }
 
         public void DecreaseDashCount()

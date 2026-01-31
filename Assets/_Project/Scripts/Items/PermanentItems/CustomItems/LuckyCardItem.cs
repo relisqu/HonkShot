@@ -62,6 +62,11 @@ namespace Scripts.Items.PermanentItems.CustomItems
 
         public override void InitItem(PlayerItemSO playerItemSO)
         {
+            if (ExtraPickSystem.Instance)
+                ExtraPickSystem.Instance.Register(this);
+
+            if (RerollSystem.Instance)
+                RerollSystem.Instance.Register(this);
         }
     }
 }

@@ -18,6 +18,7 @@ namespace Scripts.Health
         private NumericStatModifierSystem _maxHpModifierSystem = new NumericStatModifierSystem();
 
         public Action OnTakeDamageTriggered;
+        public Action<float> OnDamageBlocked;
         public Action OnDied;
         public Action OnDamaged;
         public Action OnRevived;
@@ -58,6 +59,7 @@ namespace Scripts.Health
 
             if (IsInvincible())
             {
+                OnDamageBlocked?.Invoke(damageAmount);
                 return 0;
             }
 

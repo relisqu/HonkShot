@@ -152,11 +152,16 @@ namespace Scripts.UI
         {
             _playerInventory.AddItem(item);
 
-            if (ExtraPickSystem.Instance && ExtraPickSystem.Instance.TryUseExtraPick())
+            if (ExtraPickSystem.Instance)
             {
-                RefreshItems();
-                UpdateRerollButton();
-                return;
+                ExtraPickSystem.Instance.CalculateExtraPicks();
+
+                if (ExtraPickSystem.Instance.TryUseExtraPick())
+                {
+                    RefreshItems();
+                    UpdateRerollButton();
+                    return;
+                }
             }
 
             _isActive = false;
