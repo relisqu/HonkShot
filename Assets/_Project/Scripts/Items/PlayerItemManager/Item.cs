@@ -33,6 +33,25 @@ namespace Scripts.Items.PlayerItemManager
 
             Debug.LogError($"No PlayerItemSO found with Id matching '{goName}'. Expected SO with Id that makes 'Item {{Id}}' == '{goName}'.");
         }
+
+        [Button("Select SO")]
+        private void SelectSO()
+        {
+            var allSOs = Resources.LoadAll<PlayerItemSO>("Data/Items");
+            var goName = gameObject.name;
+
+            foreach (var so in allSOs)
+            {
+                if ("Item " + so.Id == goName)
+                {
+                    EditorGUIUtility.PingObject(so);
+                    Selection.activeObject = so;
+                    return;
+                }
+            }
+
+            Debug.LogError($"No PlayerItemSO found matching '{goName}'");
+        }
 #endif
     }
 }

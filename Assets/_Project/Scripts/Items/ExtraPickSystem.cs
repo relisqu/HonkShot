@@ -50,6 +50,7 @@ namespace Scripts.Items
 
         public void CalculateExtraPicks()
         {
+            Debug.Log("Calculating extra picks:");
             _pendingExtraPicks = 0;
 
             foreach (var provider in _providers)

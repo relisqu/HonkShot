@@ -16,14 +16,14 @@ namespace Scripts.LevelSystem.LevelObjects.Interaction
 
         public virtual void OnEnterCannon()
         {
-            if (_rb != null)
+            if (_rb)
             {
                 _storedVelocity = _rb.linearVelocity;
                 _rb.linearVelocity = Vector2.zero;
                 _rb.isKinematic = true;
             }
 
-            if (_collider != null)
+            if (_collider)
                 _collider.enabled = false;
 
             gameObject.SetActive(false);
