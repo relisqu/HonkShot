@@ -54,7 +54,6 @@ namespace Scripts.Items.PermanentItems
 
         public override void InitItem(PlayerItemSO playerItemSO)
         {
-            throw new System.NotImplementedException();
         }
     }
 } 

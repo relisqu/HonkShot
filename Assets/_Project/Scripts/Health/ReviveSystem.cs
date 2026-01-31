@@ -34,6 +34,7 @@ namespace Scripts.Health
 
         public void Register(IReviveProvider provider)
         {
+            Debug.Log($"[ReviveSystem] Registering {provider.GetType().Name}");
             if (!_reviveProviders.Contains(provider))
             {
                 _reviveProviders.Add(provider);
@@ -48,6 +49,7 @@ namespace Scripts.Health
 
         public bool TryRevive(HealthController healthController)
         {
+            Debug.Log("[ReviveSystem] Trying to revive: ");
             foreach (var provider in _reviveProviders)
             {
                 if (provider.CanRevive && provider.TryRevive(healthController))
@@ -58,6 +60,7 @@ namespace Scripts.Health
                 }
             }
 
+            Debug.Log("[ReviveSystem] Revive failed. ");
             return false;
         }
 

@@ -95,6 +95,7 @@ Scripts/
 - Private fields: `_camelCase`
 - Public properties: `PascalCase`
 - Namespaces: `Scripts.Player`, `Scripts.Enemies`, etc.
+- Always encapsulate fields — expose via public properties, keep backing fields private with `_camelCase`
 
 **Events**
 - Pattern: `On[EventName]` (e.g., `OnEnemyKilled`, `EnteredRoom`)
@@ -132,4 +133,6 @@ Scripts/
 
 ## Plugin Use
 
-- Make sure to use plugin planning-with-files for all tasks.
+- BEFORE starting any task, invoke the planning-with-files skill and run session-catchup.
+- Do NOT begin implementation without task_plan.md, findings.md, and progress.md being read or created.
+- Update these files throughout the session as work progresses.
