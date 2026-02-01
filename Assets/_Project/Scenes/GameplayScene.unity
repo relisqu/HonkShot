@@ -2986,6 +2986,56 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _currentScoreText: {fileID: 1776840338}
   _maxScoreText: {fileID: 2140384179}
+--- !u!1 &975808231
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 975808232}
+  - component: {fileID: 975808233}
+  m_Layer: 6
+  m_Name: MagicModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &975808232
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 975808231}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5850454434361405685}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &975808233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 975808231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db61824613c4c6946929497b8a8cf2c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Player.ExplosionSystem
+  _defaultDamage: 10
+  _defaultRadius: 2
+  _defaultKnockback: 5
+  _enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 4608
 --- !u!1 &1002346723
 GameObject:
   m_ObjectHideFlags: 0
@@ -6061,7 +6111,10 @@ PrefabInstance:
     - {fileID: 8775949429320510418, guid: 635f55700916d53488a986bc77cdb31b, type: 3}
     - {fileID: 4036645032857045961, guid: 635f55700916d53488a986bc77cdb31b, type: 3}
     - {fileID: 3470889478107485071, guid: 635f55700916d53488a986bc77cdb31b, type: 3}
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2444467111608435475, guid: 635f55700916d53488a986bc77cdb31b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 975808232}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 225159964537138388, guid: 635f55700916d53488a986bc77cdb31b, type: 3}
       insertIndex: -1
@@ -6293,6 +6346,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 329d93a693579f146bc0d032fc32c4cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Scripts.Health.ReviveSystem
+--- !u!4 &5850454434361405685 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2444467111608435475, guid: 635f55700916d53488a986bc77cdb31b, type: 3}
+  m_PrefabInstance: {fileID: 5850454434361405532}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6533775991100205741
 PrefabInstance:
   m_ObjectHideFlags: 0

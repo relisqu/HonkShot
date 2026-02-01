@@ -22,6 +22,7 @@ namespace Scripts.Player.Dash
 
         public Action UpdatedDashCount;
         public Action UpdatedMaxDashCount;
+        public Action OnDashUsed;
         public int CurrentDashCount => _currentDashCount;
         public bool CanDash => _currentDashCount > 0;
         private Coroutine _regenerateDashCoroutine;
@@ -105,6 +106,7 @@ namespace Scripts.Player.Dash
             Debug.Log($"Dash removed: {_currentDashCount}");
             _currentDashCount--;
             UpdatedDashCount?.Invoke();
+            OnDashUsed?.Invoke();
         }
     }
 }

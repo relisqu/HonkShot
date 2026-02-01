@@ -56,6 +56,17 @@ Items stored at `Assets/_Project/Resources/Data/Items/` — loaded via `Resource
 - `TryUseExtraPick()` called immediately after recalculation — if true, refreshes items for another pick
 - With `ExtraPickChance = 0.25`, each pick independently has 25% chance to trigger another pick (converges naturally)
 
+## ExplosionSystem Architecture
+- `ExplosionSystem` — Singleton on player, has 3 `NumericStatModifierSystem` (damage, radius, knockback)
+- `Explosion` — Spawned object, does `Physics2D.OverlapCircleAll` for instant AOE damage + knockback, plays VFX, self-destructs
+- `OnExplosionCreated(Vector2, float)` — Event fired after every explosion, used by PiromaniacItem
+- Items use `ExplosionSystem.Instance.CreateExplosion()` overloads (position only, with baseDamage, or full 3-param)
+- Modifier items (PirotechnicItem) add `NumericStatModifier` to the system, affecting all explosions globally
+
+## Player Events (new)
+- `PlayerDashController.OnDashUsed` — fires in `DecreaseDashCount()` after dash consumed
+- `PlayerBallMovement.OnBounced` — fires in `OnCollisionEnter2D()` on every collision while in Ball state
+
 ## Code Style Reminders
 - Always encapsulate fields: private `_camelCase` backing field + public `PascalCase` property
 - Never expose raw fields as public when a property will do

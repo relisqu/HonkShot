@@ -34,6 +34,7 @@ namespace Scripts.Player
 
 
         [SerializeField] private float _additionalDragForce = 1.01f;
+        public Action<Collision2D> OnBounced;
         public float MaxForceMagnitude => _maxForceMagnitude;
 
         private float _throwStartTime;
@@ -143,6 +144,8 @@ namespace Scripts.Player
 
                 AudioManager.Instance.PlayOneShot(SoundChanelType.Player, "gooseCollision", force);
             }
+
+            OnBounced?.Invoke(other);
         }
 
         public void StopMovement()

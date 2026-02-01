@@ -111,11 +111,94 @@
   3. Assign to `ItemManager.itemPool` in scene
   4. Play mode test
 
+---
+
+## Session: 2026-02-01
+
+### Explosion System — core
+- **Status:** complete
+- Actions taken:
+  - Created `ExplosionSystem.cs` — singleton on player, 3 `NumericStatModifierSystem` (damage, radius, knockback), `CreateExplosion()` overloads, `OnExplosionCreated` event
+  - Created `Explosion.cs` — spawnable explosion object, `Physics2D.OverlapCircleAll` for instant AOE damage + knockback via `EnemyHealth`/`Rigidbody2D`, scales VFX, self-destructs
+- Files created:
+  - `Assets/_Project/Scripts/Player/ExplosionSystem.cs` (new)
+  - `Assets/_Project/Scripts/Player/Explosion.cs` (new)
+
+### Player events — OnDashUsed, OnBounced
+- **Status:** complete
+- Actions taken:
+  - Added `public Action OnDashUsed` to `PlayerDashController`, fires in `DecreaseDashCount()`
+  - Added `public Action<Collision2D> OnBounced` to `PlayerBallMovement`, fires in `OnCollisionEnter2D()`
+- Files modified:
+  - `Assets/_Project/Scripts/Player/Dash/PlayerDashController.cs` (edited)
+  - `Assets/_Project/Scripts/Player/PlayerBallMovement.cs` (edited)
+
+### StickyMine refactor
+- **Status:** complete
+- Actions taken:
+  - Replaced direct `HealthController.TakeDamage()` with `ExplosionSystem.Instance.CreateExplosion()`
+  - StickyMine now benefits from all explosion modifiers (damage, radius, knockback)
+  - Removed unused `_enemy` field and `HealthController`/`UIFactory` references
+- Files modified:
+  - `Assets/_Project/Scripts/Items/PermanentItems/StickyMine.cs` (edited)
+
+### PirotechnicItem — radius buff
+- **Status:** complete
+- Actions taken:
+  - Created `PirotechnicItem.cs` — adds `NumericStatModifier(Mult)` to `ExplosionSystem.RadiusModifierSystem`
+  - Uses `playerItemSO.NumericId` for modifier ID (same pattern as DamageBuffItem)
+- Files created:
+  - `Assets/_Project/Scripts/Items/PermanentItems/CustomItems/PirotechnicItem.cs` (new)
+
+### DashExplosionItem — explosion on dash
+- **Status:** complete
+- Actions taken:
+  - Created `DashExplosionItem.cs` — subscribes to `PlayerDashController.OnDashUsed`, creates explosion at player position
+- Files created:
+  - `Assets/_Project/Scripts/Items/PermanentItems/CustomItems/DashExplosionItem.cs` (new)
+
+### UnstableItem — explosion on bounce with chance
+- **Status:** complete
+- Actions taken:
+  - Created `UnstableItem.cs` — subscribes to `PlayerBallMovement.OnBounced`, `_explosionChance` (30%) check, explosion at contact point
+- Files created:
+  - `Assets/_Project/Scripts/Items/PermanentItems/CustomItems/UnstableItem.cs` (new)
+
+### FireworksItem — periodic explosion
+- **Status:** complete
+- Actions taken:
+  - Created `FireworksItem.cs` — explosion around player every `_cooldown` seconds
+- Files created:
+  - `Assets/_Project/Scripts/Items/PermanentItems/CustomItems/FireworksItem.cs` (new)
+
+### BigBombItem — explosion on ult
+- **Status:** complete
+- Actions taken:
+  - Created `BigBombItem.cs` — subscribes to `GooseFireSystem.UltimateStarted`, massive explosion with custom damage/radius/knockback + cooldown
+- Files created:
+  - `Assets/_Project/Scripts/Items/PermanentItems/CustomItems/BigBombItem.cs` (new)
+
+### PiromaniacItem — explosions add fire
+- **Status:** complete
+- Actions taken:
+  - Created `PiromaniacItem.cs` — subscribes to `ExplosionSystem.OnExplosionCreated`, adds `_fireAmount` fire per explosion
+- Files created:
+  - `Assets/_Project/Scripts/Items/PermanentItems/CustomItems/PiromaniacItem.cs` (new)
+
+### Verification (requires Unity editor)
+- **Status:** pending
+- Steps for user:
+  1. Create `Explosion` prefab (empty GameObject with `Explosion` component)
+  2. Add `ExplosionSystem` component to player prefab/GameObject
+  3. Assign `_explosionPrefab` and configure `_enemyLayerMask`, default values
+  4. Create 7 PlayerItemSO assets + prefabs for each new item
+  5. Add all to ItemPool, test via DebugMode
+
 ## 5-Question Reboot Check
 | Question | Answer |
 |----------|--------|
-| Where am I? | Session complete |
-| Where am I going? | User verification in Unity editor for all new items/changes |
-| What's the goal? | Item system improvements, new items, HealthController event cleanup |
-| What have I learned? | See findings.md — item system, health events, fire system, pool patterns |
-| What have I done? | See session log above — all tasks complete |
+| Where am I? | Explosion system implementation complete |
+| Where am I going? | User verification in Unity editor |
+| What's the goal? | Explosion system with modifier systems + 7 explosive items |
+| What have I learned? | See findings.md — explosion architecture, player events, modifier patterns |
+| What have I done? | See session log above — all code tasks complete |
