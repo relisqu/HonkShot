@@ -21,18 +21,27 @@ namespace Scripts.Services.Localization.Editor
         private UnityWebRequest _unityWebRequest;
         private LocalizationSettings _localizationSettings;
 
-        private string TableUri => string.Format(UriFormat, LocalizationSettings.TableId, LocalizationSettings.SheetId);
+        private int _currentSheetIndex;
+        private bool _isProcessing;
+        private Dictionary<string, Dictionary<string, string>> _accumulatedInternal;
+        private Dictionary<string, Dictionary<string, string>> _accumulatedExternal;
+
         public UnityWebRequest UnityWebRequest => _unityWebRequest;
         public LocalizationSettings LocalizationSettings => _localizationSettings;
-        public bool IsProcessed => _unityWebRequest != null;
+        public bool IsProcessed => _isProcessing;
+        public int CurrentSheetIndex => _currentSheetIndex;
+        public int TotalSheets => _localizationSettings.SheetIds.Count;
 
         public LocalizationHandler() =>
             _localizationSettings =
                 EditorSettingsUtility.LoadOrCreate<LocalizationSettings>(LocalizationSettings.FileName);
 
+        private string GetTableUri(string sheetId) =>
+            string.Format(UriFormat, LocalizationSettings.TableId, sheetId);
+
         public void Update()
         {
-            if (_unityWebRequest == null)
+            if (!_isProcessing || _unityWebRequest == null)
                 return;
 
             if (!_unityWebRequest.isDone)
@@ -40,57 +49,114 @@ namespace Scripts.Services.Localization.Editor
 
             if (_unityWebRequest.result != UnityWebRequest.Result.Success)
             {
-                Debug.LogError($"Process. Download error {_unityWebRequest.error}");
-                _unityWebRequest = null;
+                Debug.LogError($"Process. Download error for sheet {_currentSheetIndex + 1}/{TotalSheets}: {_unityWebRequest.error}");
+                Reset();
                 return;
             }
 
             try
             {
+                var text = _unityWebRequest.downloadHandler.text;
+                _unityWebRequest = null;
+
                 if (LocalizationSettings.IsSplitInternalAndExternal)
                 {
-                    var dictionaries = ParsingText(_unityWebRequest.downloadHandler.text, true);
-
-                    foreach (var keyValuePair in dictionaries)
-                    {
-                        string filePath = Path.Combine(LocalizationSettings.InternalFolder, keyValuePair.Key + ".txt");
-                        SaveToFile(keyValuePair.Value, filePath);
-                    }
-
-                    dictionaries = ParsingText(_unityWebRequest.downloadHandler.text, false);
-
-                    foreach (var keyValuePair in dictionaries)
-                    {
-                        string filePath = Path.Combine(LocalizationSettings.ExternalFolder, keyValuePair.Key + ".txt");
-                        SaveToFile(keyValuePair.Value, filePath);
-                    }
+                    MergeDictionaries(_accumulatedInternal, ParsingText(text, true));
+                    MergeDictionaries(_accumulatedExternal, ParsingText(text, false));
                 }
                 else
                 {
-                    var dictionaries = ParsingText(_unityWebRequest.downloadHandler.text, false);
-
-                    foreach (var keyValuePair in dictionaries)
-                    {
-                        string filePath = Path.Combine(LocalizationSettings.InternalFolder, keyValuePair.Key + ".txt");
-                        SaveToFile(keyValuePair.Value, filePath);
-                    }
+                    MergeDictionaries(_accumulatedInternal, ParsingText(text, false));
                 }
 
-                _unityWebRequest = null;
-                Debug.Log($"Process. Complete!");
+                Debug.Log($"Process. Sheet {_currentSheetIndex + 1}/{TotalSheets} parsed.");
+                _currentSheetIndex++;
+
+                if (_currentSheetIndex < TotalSheets)
+                {
+                    DownloadSheet(_currentSheetIndex);
+                }
+                else
+                {
+                    SaveAccumulatedResults();
+                    Reset();
+                    Debug.Log("Process. All sheets complete!");
+                }
             }
             catch (Exception e)
             {
-                _unityWebRequest = null;
+                Reset();
                 Debug.LogError($"Process. Exception {e}");
             }
         }
 
         public void StartProcessing()
         {
-            _unityWebRequest = UnityWebRequest.Get(TableUri);
+            if (LocalizationSettings.SheetIds.Count == 0)
+            {
+                Debug.LogError("Process. No sheet IDs configured.");
+                return;
+            }
+
+            _currentSheetIndex = 0;
+            _isProcessing = true;
+            _accumulatedInternal = new Dictionary<string, Dictionary<string, string>>();
+            _accumulatedExternal = new Dictionary<string, Dictionary<string, string>>();
+
+            DownloadSheet(0);
+        }
+
+        private void DownloadSheet(int index)
+        {
+            var sheetId = LocalizationSettings.SheetIds[index];
+            _unityWebRequest = UnityWebRequest.Get(GetTableUri(sheetId));
             _unityWebRequest.SendWebRequest();
-            Debug.Log($"Process. Starting! {_unityWebRequest.uri}");
+            Debug.Log($"Process. Downloading sheet {index + 1}/{TotalSheets} (gid={sheetId})");
+        }
+
+        private void MergeDictionaries(
+            Dictionary<string, Dictionary<string, string>> target,
+            Dictionary<string, Dictionary<string, string>> source)
+        {
+            foreach (var kvp in source)
+            {
+                if (!target.ContainsKey(kvp.Key))
+                    target[kvp.Key] = new Dictionary<string, string>();
+
+                foreach (var entry in kvp.Value)
+                {
+                    if (target[kvp.Key].ContainsKey(entry.Key))
+                        Debug.LogWarning($"Process. Duplicate key '{entry.Key}' in language '{kvp.Key}', overwriting with later sheet value.");
+
+                    target[kvp.Key][entry.Key] = entry.Value;
+                }
+            }
+        }
+
+        private void SaveAccumulatedResults()
+        {
+            foreach (var kvp in _accumulatedInternal)
+            {
+                string filePath = Path.Combine(LocalizationSettings.InternalFolder, kvp.Key + ".txt");
+                SaveToFile(kvp.Value, filePath);
+            }
+
+            if (LocalizationSettings.IsSplitInternalAndExternal)
+            {
+                foreach (var kvp in _accumulatedExternal)
+                {
+                    string filePath = Path.Combine(LocalizationSettings.ExternalFolder, kvp.Key + ".txt");
+                    SaveToFile(kvp.Value, filePath);
+                }
+            }
+        }
+
+        private void Reset()
+        {
+            _unityWebRequest = null;
+            _isProcessing = false;
+            _accumulatedInternal = null;
+            _accumulatedExternal = null;
         }
 
         private Dictionary<string, Dictionary<string, string>> ParsingText(string text, bool innerOnly)
@@ -153,11 +219,10 @@ namespace Scripts.Services.Localization.Editor
 
         public void Abort()
         {
-            if (_unityWebRequest == null)
-                return;
+            if (_unityWebRequest != null)
+                _unityWebRequest.Abort();
 
-            _unityWebRequest.Abort();
-            _unityWebRequest = null;
+            Reset();
         }
 
         public void SaveSettings() =>

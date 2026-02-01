@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Scripts.Services.Localization.Editor
@@ -9,7 +10,7 @@ namespace Scripts.Services.Localization.Editor
         public const string FileName = "LocalizationSettings.asset";
 
         public string TableId;
-        public string SheetId;
+        public List<string> SheetIds = new();
         public bool IsSplitInternalAndExternal;
         public string InternalFolder;
         public string ExternalFolder;
@@ -17,7 +18,7 @@ namespace Scripts.Services.Localization.Editor
         public override string ToString() =>
             $"[{GetType().Name}] " +
             $"{nameof(TableId)}: {TableId}, " +
-            $"{nameof(SheetId)}: {SheetId}, " +
+            $"SheetIds: [{string.Join(", ", SheetIds)}], " +
             $"{nameof(IsSplitInternalAndExternal)}: {IsSplitInternalAndExternal}, " +
             $"{nameof(InternalFolder)}: {InternalFolder}, " +
             $"{nameof(ExternalFolder)}: {ExternalFolder}";
