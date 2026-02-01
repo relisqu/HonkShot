@@ -3,7 +3,6 @@ using Scripts.Items.PlayerItemManager;
 using Scripts.Player;
 using Scripts.Services.Pooling;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Scripts.Items.PermanentItems
 {
@@ -12,6 +11,8 @@ namespace Scripts.Items.PermanentItems
         [SerializeField] private StickyMine _minePrefab;
         [SerializeField] private float _explosionDelay = 1f;
         [SerializeField] private float _explosionDamage = 20f;
+        [SerializeField] private float _explosionRadius = 2f;
+        [SerializeField] private float _explosionKnockback = 5f;
         [SerializeField] private int _minesPoolSize = 5;
 
         private PlayerAttackController _attack;
@@ -35,9 +36,8 @@ namespace Scripts.Items.PermanentItems
         private void PlayerAttackController_OnHit(GameObject enemy)
         {
             if (!enemy || !_minePrefab) return;
-            var mine = _stickyMinesPool.Get(Vector3.zero, Quaternion.identity);
-            mine.transform.localPosition = Vector3.zero;
-            mine.transform.parent = enemy.transform;
+            var mine = _stickyMinesPool.Get(enemy.transform.position, Quaternion.identity);
+            mine.Init(enemy.transform, _explosionDelay, _explosionDamage, _explosionRadius, _explosionKnockback);
         }
 
         public override void InitItem(PlayerItemSO playerItemSO)
