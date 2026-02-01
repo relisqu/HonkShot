@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &8948031305372679937
+--- !u!1 &8430148076478456039
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4007082639271075536}
-  - component: {fileID: 3204420388014619909}
+  - component: {fileID: 1434276546227605530}
+  - component: {fileID: -1015598188751393501}
   m_Layer: 0
-  m_Name: Item 1-14
+  m_Name: Item 1-16
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4007082639271075536
+--- !u!4 &1434276546227605530
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8948031305372679937}
+  m_GameObject: {fileID: 8430148076478456039}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -32,17 +32,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3204420388014619909
+--- !u!114 &-1015598188751393501
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8948031305372679937}
+  m_GameObject: {fileID: 8430148076478456039}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9792f26520f844e459062fd52dc69ef4, type: 3}
+  m_Script: {fileID: 11500000, guid: a9e279a644329c8409810aa53345d4cd, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Items.PermanentItems.CustomItems.HonkHpConverterItem
-  _conversionCoefficient: 0.75
-  _cooldown: 15
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Items.PermanentItems.CustomItems.PassiveFireRegenItem
+  _fireAmount: 2
+  _interval: 1
+  _fireThreshold: 30
