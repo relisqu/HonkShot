@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3902611659522861375
+--- !u!1 &2807740046623593746
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 911036768116496434}
-  - component: {fileID: 2535606023309421187}
+  - component: {fileID: 1871654943815189896}
+  - component: {fileID: -7365174815894139064}
   m_Layer: 0
-  m_Name: Item 2-4
+  m_Name: Item 2-3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &911036768116496434
+--- !u!4 &1871654943815189896
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3902611659522861375}
+  m_GameObject: {fileID: 2807740046623593746}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -32,19 +32,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2535606023309421187
+--- !u!114 &-7365174815894139064
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3902611659522861375}
+  m_GameObject: {fileID: 2807740046623593746}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e80227260211bc549a6825bafa9bfc6e, type: 3}
+  m_Script: {fileID: 11500000, guid: 6b92fddb3f2e83d49aa47505e650b4a0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Items.PermanentItems.CustomItems.FireworksItem
-  _baseDamage: 12
-  _cooldown: 5
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Items.PermanentItems.CustomItems.UnstableItem
+  _baseDamage: 8
+  _explosionChance: 0.2
   _explosionPrefab: {fileID: 7744252725487626129, guid: b28d8b79c7791df478ef14a3c9da3c34, type: 3}
-  _poolSize: 5
+  _poolSize: 15

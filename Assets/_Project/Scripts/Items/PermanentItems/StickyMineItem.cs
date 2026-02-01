@@ -3,24 +3,23 @@ using Scripts.Items.PlayerItemManager;
 using Scripts.Player;
 using Scripts.Services.Pooling;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Scripts.Items.PermanentItems
 {
     public class StickyMineItem : Item
     {
         [SerializeField] private StickyMine _minePrefab;
-        [SerializeField] private Explosion _explosionPrefab;
         [SerializeField] private float _explosionDelay = 1f;
         [SerializeField] private float _explosionDamage = 20f;
-        [SerializeField] private int _explosionPoolSize = 5;
+        [SerializeField] private int _minesPoolSize = 5;
 
         private PlayerAttackController _attack;
-        private ComponentPool<Explosion> _explosionPool;
+        private ComponentPool<StickyMine> _stickyMinesPool;
 
         private void Start()
         {
-            if (_explosionPrefab)
-                _explosionPool = new ComponentPool<Explosion>(_explosionPrefab, _explosionPoolSize);
+            _stickyMinesPool = new ComponentPool<StickyMine>(_minePrefab, _minesPoolSize);
 
             _attack = GetComponentInParent<PlayerAttackController>();
             if (_attack)
@@ -36,10 +35,9 @@ namespace Scripts.Items.PermanentItems
         private void PlayerAttackController_OnHit(GameObject enemy)
         {
             if (!enemy || !_minePrefab) return;
-
-            var mine = Instantiate(_minePrefab, enemy.transform);
+            var mine = _stickyMinesPool.Get(Vector3.zero, Quaternion.identity);
             mine.transform.localPosition = Vector3.zero;
-            mine.Init(enemy, _explosionDelay, _explosionDamage, _explosionPool);
+            mine.transform.parent = enemy.transform;
         }
 
         public override void InitItem(PlayerItemSO playerItemSO)

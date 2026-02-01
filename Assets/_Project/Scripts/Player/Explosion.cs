@@ -1,3 +1,4 @@
+using System.Collections;
 using Scripts.Enemies;
 using UnityEngine;
 
@@ -28,16 +29,19 @@ namespace Scripts.Player
             _damage = ExplosionSystem.Instance.GetDamage(baseDamage);
             _radius = ExplosionSystem.Instance.GetRadius(baseRadius);
             _knockback = ExplosionSystem.Instance.GetKnockback(baseKnockback);
-            Explode();
         }
 
-        private void Explode()
+        public void Explode()
         {
+            Debug.Log("[Explosion] Exploded");
             var hits = Physics2D.OverlapCircleAll(transform.position, _radius, ExplosionSystem.Instance.EnemyLayerMask);
             foreach (var hit in hits)
             {
                 if (hit.TryGetComponent(out EnemyHealth enemyHealth))
+                {
+                    Debug.Log("Explode");
                     enemyHealth.HealthController.TakeDamage(_damage);
+                }
 
                 if (hit.TryGetComponent(out Rigidbody2D rb))
                 {
@@ -47,11 +51,13 @@ namespace Scripts.Player
             }
 
             ExplosionSystem.Instance.NotifyExplosionCreated(transform.position, _damage);
-            Invoke(nameof(ReturnToPool), _returnDelay);
+
+            StartCoroutine(ReturnAfterDelay());
         }
 
-        private void ReturnToPool()
+        private IEnumerator ReturnAfterDelay()
         {
+            yield return new WaitForSeconds(_returnDelay);
             gameObject.SetActive(false);
         }
 

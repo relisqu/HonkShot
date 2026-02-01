@@ -8,15 +8,15 @@ namespace Scripts.Items.PermanentItems
 {
     public class StickyMine : MonoBehaviour
     {
+        [SerializeField] private Explosion _explosion;
         private float _delay;
         private float _damage;
-        private ComponentPool<Explosion> _explosionPool;
 
-        public void Init(GameObject enemy, float delay, float damage, ComponentPool<Explosion> explosionPool)
+        public void Init(float delay, float damage, float radius, float knockback)
         {
             _delay = delay;
             _damage = damage;
-            _explosionPool = explosionPool;
+            _explosion.Init(_damage, radius, knockback);
             StartCoroutine(ExplodeAfterDelay());
         }
 
@@ -27,14 +27,10 @@ namespace Scripts.Items.PermanentItems
             yield return new WaitForSeconds(waitTime);
             transform.DOScale(2f, scaleTime).SetEase(Ease.InBack);
             yield return new WaitForSeconds(scaleTime);
+            _explosion.gameObject.SetActive(true);
+            _explosion.Explode();
 
-            if (_explosionPool != null)
-            {
-                var explosion = _explosionPool.Get(transform.position, Quaternion.identity);
-                explosion.Init(_damage);
-            }
-
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 }
