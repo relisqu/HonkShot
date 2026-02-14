@@ -36,8 +36,17 @@ namespace Scripts.LevelSystem.LevelObjects
             averageNormal /= other.contactCount;
             var newDirection = Vector2.Reflect(direction, averageNormal);
 
+            float speed = _currentVelocity.magnitude;
+
+            if (other.rigidbody)
+            {
+                float relativeApproach = Mathf.Abs(Vector2.Dot(other.relativeVelocity, averageNormal));
+                speed = Mathf.Max(speed, relativeApproach);
+            }
+
             _rigidbody2D.linearVelocity
-                = newDirection * _currentVelocity.magnitude * bounceObject.Bounciness;
+                = newDirection * speed * bounceObject.Bounciness;
+
         }
     }
 }

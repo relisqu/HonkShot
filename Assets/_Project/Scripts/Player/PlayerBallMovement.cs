@@ -18,6 +18,7 @@ namespace Scripts.Player
         [SerializeField] private PlayerStatus _playerStatus;
         [SerializeField] private PlayerDashController _playerDashController;
         [SerializeField] private GooseFireSystem _gooseFireSystem;
+        [SerializeField] private BouncingObject _bouncingObject;
 
         [Header("Input Handling Parameters")] [Space] [SerializeField]
         private float _forceModifier;
@@ -110,6 +111,8 @@ namespace Scripts.Player
             ThrowRigidbody(_rigidbody2D, dragForce);
             _playerStatus.SetPlayerState(PlayerState.Ball);
             _throwStartTime = Time.time;
+            if (_bouncingObject)
+                _bouncingObject.SetCurrentVelocity(_rigidbody2D.linearVelocity);
             if (_gooseFireSystem != null)
                 _gooseFireSystem.OnLaunchOrAcceleration();
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Scripts.ScoreSystem;
 
 namespace Scripts.Progress
@@ -13,6 +14,20 @@ namespace Scripts.Progress
             NotStarted,
             InProcess,
             Completed
+        }
+
+        public class DialogProgressData
+        {
+            public List<string> CompletedConditions;
+
+            public void CompleteFirstFloor()
+            {
+                string completion = "completed_1";
+                if (!CompletedConditions.Contains(completion))
+                {
+                    CompletedConditions.Add(completion);
+                }
+            }
         }
     }
 }
