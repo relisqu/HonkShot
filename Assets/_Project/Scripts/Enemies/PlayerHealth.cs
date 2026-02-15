@@ -15,7 +15,6 @@ using Zenject;
 
 namespace Scripts.Enemies
 {
-    [RequireComponent(typeof(HealthController))]
     public class PlayerHealth : MonoBehaviour
     {
         private ProgressSaver _progressSaver;

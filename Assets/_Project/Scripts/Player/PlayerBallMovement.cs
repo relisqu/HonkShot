@@ -60,6 +60,7 @@ namespace Scripts.Player
         private void Start()
         {
             _defaultDragValue = _rigidbody2D.linearDamping;
+            _rigidbody2D.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         }
 
         private void Update()

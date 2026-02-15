@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Scripts.LevelSystem.LevelGeneration;
+using Scripts.LevelSystem.LevelObjects;
 using Scripts.Player.InputHandling;
 
 namespace Scripts.Player
@@ -19,9 +20,16 @@ namespace Scripts.Player
         [Header("Trajectory visuals")] [SerializeField]
         private LineRenderer _line;
 
+        [SerializeField] private LineRenderer _raycastLine;
+
         [SerializeField] private int _maxPhysicsFrameIterations = 100; // renderer vertices (upper‑bound)
         [SerializeField] private float _simulationStepMultiplier = 2f; // dt multiplier for faster sim
         [SerializeField] private int _maxBounces = 2; // stop simulation after N bounces
+
+        [Header("Raycast trajectory")]
+        [SerializeField] private float _ballRadius = 0.25f;
+        [SerializeField] private LayerMask _bounceLayerMask;
+        [SerializeField] private float _maxRaycastDistance = 50f;
 
         [Header("References")] [SerializeField]
         private InputHandler _inputHandler;
@@ -29,6 +37,8 @@ namespace Scripts.Player
         [SerializeField] private PlayerMovement _playerMovement;
         [SerializeField] private PlayerBallMovement _playerBallMovement;
         [SerializeField] private PlayerGhostProjectile _playerGhostProjectile;
+        [SerializeField] private PlayerStatus _playerStatus;
+        [SerializeField] private float _flightSimInterval = 0.2f;
 
         // ─────────────────────────── Runtime fields ──────────────────────
         private Scene _simulationScene;
@@ -47,6 +57,8 @@ namespace Scripts.Player
         private float _simulationRefreshInterval = 0.05f; // seconds (unscaled) between trajectory refreshes
 
         private float _nextSimTime;
+        private float _nextFlightSimTime;
+        [SerializeField] private float _minFlightSpeedForPrediction = 0.5f;
 
         // Pooled projectile
         private PlayerGhostProjectile _pooledGhostProjectile;
@@ -170,10 +182,7 @@ namespace Scripts.Player
             _needsRecalculation = true;
 
             if (_pooledGhostProjectile)
-                _pooledGhostProjectile.gameObject.SetActive(false);
-
-            // hide line but keep simulation scene
-            _line.positionCount = 0;
+                _pooledGhostProjectile.Rigidbody2D.simulated = false;
         }
 
 
@@ -183,10 +192,10 @@ namespace Scripts.Player
             _needsRecalculation = true;
 
             if (_pooledGhostProjectile)
-                _pooledGhostProjectile.gameObject.SetActive(false);
+                _pooledGhostProjectile.Rigidbody2D.simulated = false;
 
-            // hide line but keep simulation scene
             _line.positionCount = 0;
+            _raycastLine.positionCount = 0;
         }
 
         // ─────────────────────────── Update loop ─────────────────────────
@@ -279,8 +288,7 @@ namespace Scripts.Player
         {
             foreach (var mb in root.GetComponentsInChildren<MonoBehaviour>(false))
             {
-                // keep this script (Projection) or other whitelisted ones if ever needed
-                 mb.enabled = false;
+                mb.enabled = false;
             }
         }
 
@@ -309,6 +317,10 @@ namespace Scripts.Player
             rb.angularVelocity = 0f;
 
             _playerBallMovement.ThrowRigidbody(rb, _lastDragDirection);
+            proj.BouncingObject.SetCurrentVelocity(rb.linearVelocity);
+            proj.BouncingObject.ClearDebugData();
+
+            CalculateRaycastTrajectory(proj.transform.position, rb.linearVelocity);
 
             // simulation variables
             float simDt = Time.fixedUnscaledDeltaTime;
@@ -324,7 +336,8 @@ namespace Scripts.Player
                 _physicsScene.Simulate(simDt);
                 proj.BouncingObject.SetCurrentVelocity(rb.linearVelocity);
                 _line.SetPosition(idx++, proj.transform.position);
-                if (rb.linearVelocity.sqrMagnitude > 0.0001f && Vector2.Angle(prevVelocity, rb.linearVelocity) > 5f)
+                if (rb.linearVelocity.sqrMagnitude > 0.0001f
+                    && Vector2.Angle(prevVelocity, rb.linearVelocity) > 5f)
                 {
                     bounceCount++;
                 }
@@ -335,7 +348,111 @@ namespace Scripts.Player
             _line.positionCount = idx;
 
             rb.simulated = false;
-            proj.gameObject.SetActive(false);
+        }
+
+        private void CalculateRaycastTrajectory(Vector2 startPos, Vector2 velocity)
+        {
+            int pointIndex = 0;
+            _raycastLine.positionCount = _maxBounces + 2;
+            _raycastLine.SetPosition(pointIndex++, startPos);
+
+            Vector2 origin = startPos;
+            Vector2 direction = velocity.normalized;
+
+            var contactFilter = new ContactFilter2D();
+            contactFilter.SetLayerMask(_bounceLayerMask);
+            contactFilter.useTriggers = false;
+
+            var results = new RaycastHit2D[1];
+
+            for (int bounce = 0; bounce <= _maxBounces; bounce++)
+            {
+                int hitCount = Physics2D.CircleCast(origin, _ballRadius, direction, contactFilter, results, _maxRaycastDistance);
+                var hit = hitCount > 0 ? results[0] : default;
+
+                if (hit.collider)
+                {
+                    _raycastLine.SetPosition(pointIndex++, hit.centroid);
+
+                    float bounciness = 1f;
+                    if (hit.collider.TryGetComponent(out BounceObject bounceObj))
+                        bounciness = bounceObj.Bounciness;
+                    else if (hit.transform.parent
+                             && hit.transform.parent.TryGetComponent(out bounceObj))
+                        bounciness = bounceObj.Bounciness;
+
+                    direction = Vector2.Reflect(direction, hit.normal).normalized;
+                    origin = hit.centroid + direction * (_ballRadius + 0.01f);
+                }
+                else
+                {
+                    _raycastLine.SetPosition(pointIndex++, origin + direction * _maxRaycastDistance);
+                    break;
+                }
+            }
+
+            _raycastLine.positionCount = pointIndex;
+        }
+
+        private void SimulateFromCurrentState()
+        {
+            if (!_pooledGhostProjectile) return;
+
+            SyncGhostRigidbodies();
+
+            var proj = _pooledGhostProjectile;
+            proj.gameObject.SetActive(true);
+            proj.transform.position = _playerBallMovement.transform.position;
+            proj.transform.rotation = _playerBallMovement.transform.rotation;
+
+            var rb = proj.Rigidbody2D;
+            rb.simulated = true;
+            rb.linearVelocity = _playerBallMovement.CurrentMovement;
+            rb.angularVelocity = 0f;
+
+            proj.BouncingObject.SetCurrentVelocity(rb.linearVelocity);
+
+            float simDt = Time.fixedUnscaledDeltaTime;
+            int idx = 0;
+            int bounceCount = 0;
+            Vector2 prevVelocity = rb.linearVelocity;
+
+            _line.positionCount = _maxPhysicsFrameIterations;
+            _line.SetPosition(idx++, proj.transform.position);
+
+            while (idx < _maxPhysicsFrameIterations && bounceCount <= _maxBounces)
+            {
+                _physicsScene.Simulate(simDt);
+                proj.BouncingObject.SetCurrentVelocity(rb.linearVelocity);
+                _line.SetPosition(idx++, proj.transform.position);
+                if (rb.linearVelocity.sqrMagnitude > 0.0001f &&
+                    Vector2.Angle(prevVelocity, rb.linearVelocity) > 5f)
+                {
+                    bounceCount++;
+                }
+
+                prevVelocity = rb.linearVelocity;
+            }
+
+            _line.positionCount = idx;
+            rb.simulated = false;
+        }
+
+        private void SyncGhostRigidbodies()
+        {
+            foreach (var pair in _spawnedObjects)
+            {
+                if (!pair.Key || !pair.Value) continue;
+
+                var srcRb = pair.Key.GetComponent<Rigidbody2D>();
+                var dstRb = pair.Value.GetComponent<Rigidbody2D>();
+
+                if (srcRb && dstRb)
+                {
+                    dstRb.linearVelocity = srcRb.linearVelocity;
+                    dstRb.angularVelocity = srcRb.angularVelocity;
+                }
+            }
         }
 
         public bool IsSimulationReady()
