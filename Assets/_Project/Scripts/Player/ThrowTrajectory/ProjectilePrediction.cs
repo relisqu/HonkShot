@@ -23,13 +23,9 @@ namespace Scripts.Player
         [SerializeField] private LineRenderer _raycastLine;
 
         [SerializeField] private int _maxPhysicsFrameIterations = 100; // renderer vertices (upper‑bound)
-        [SerializeField] private float _simulationStepMultiplier = 2f; // dt multiplier for faster sim
         [SerializeField] private int _maxBounces = 2; // stop simulation after N bounces
-
-        [Header("Raycast trajectory")]
-        [SerializeField] private float _ballRadius = 0.25f;
-        [SerializeField] private LayerMask _bounceLayerMask;
-        [SerializeField] private float _maxRaycastDistance = 50f;
+        [SerializeField] private Vector3 _lineOffset;
+        [SerializeField] private int _simSubSteps = 4;
 
         [Header("References")] [SerializeField]
         private InputHandler _inputHandler;
@@ -62,6 +58,7 @@ namespace Scripts.Player
 
         // Pooled projectile
         private PlayerGhostProjectile _pooledGhostProjectile;
+        private CircleCollider2D _ghostCollider;
 
         private Room _currentRoom;
 
@@ -301,6 +298,8 @@ namespace Scripts.Player
             if (!_pooledGhostProjectile)
             {
                 _pooledGhostProjectile = Instantiate(_playerGhostProjectile);
+                _pooledGhostProjectile.Rigidbody2D.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+                _ghostCollider = _pooledGhostProjectile.GetComponent<CircleCollider2D>();
                 SetLayerRecursively(_pooledGhostProjectile.transform, _simulationGhostLayer);
                 SceneManager.MoveGameObjectToScene(_pooledGhostProjectile.gameObject, _simulationScene);
                 _pooledGhostProjectile.gameObject.SetActive(false);
@@ -320,23 +319,24 @@ namespace Scripts.Player
             proj.BouncingObject.SetCurrentVelocity(rb.linearVelocity);
             proj.BouncingObject.ClearDebugData();
 
-            CalculateRaycastTrajectory(proj.transform.position, rb.linearVelocity);
 
             // simulation variables
-            float simDt = Time.fixedUnscaledDeltaTime;
+            float simDt = Time.fixedUnscaledDeltaTime / _simSubSteps;
             int idx = 0;
             int bounceCount = 0;
             Vector2 prevVelocity = rb.linearVelocity;
 
             _line.positionCount = _maxPhysicsFrameIterations;
-            _line.SetPosition(idx++, proj.transform.position);
+            _line.SetPosition(idx++, proj.transform.position + _lineOffset);
 
             while (idx < _maxPhysicsFrameIterations && bounceCount <= _maxBounces)
             {
                 _physicsScene.Simulate(simDt);
                 proj.BouncingObject.SetCurrentVelocity(rb.linearVelocity);
-                _line.SetPosition(idx++, proj.transform.position);
-                if (rb.linearVelocity.sqrMagnitude > 0.0001f
+                _line.SetPosition(idx++, proj.transform.position + _lineOffset);
+
+                if (prevVelocity.sqrMagnitude > 0.0001f
+                    && rb.linearVelocity.sqrMagnitude > 0.0001f
                     && Vector2.Angle(prevVelocity, rb.linearVelocity) > 5f)
                 {
                     bounceCount++;
@@ -348,50 +348,6 @@ namespace Scripts.Player
             _line.positionCount = idx;
 
             rb.simulated = false;
-        }
-
-        private void CalculateRaycastTrajectory(Vector2 startPos, Vector2 velocity)
-        {
-            int pointIndex = 0;
-            _raycastLine.positionCount = _maxBounces + 2;
-            _raycastLine.SetPosition(pointIndex++, startPos);
-
-            Vector2 origin = startPos;
-            Vector2 direction = velocity.normalized;
-
-            var contactFilter = new ContactFilter2D();
-            contactFilter.SetLayerMask(_bounceLayerMask);
-            contactFilter.useTriggers = false;
-
-            var results = new RaycastHit2D[1];
-
-            for (int bounce = 0; bounce <= _maxBounces; bounce++)
-            {
-                int hitCount = Physics2D.CircleCast(origin, _ballRadius, direction, contactFilter, results, _maxRaycastDistance);
-                var hit = hitCount > 0 ? results[0] : default;
-
-                if (hit.collider)
-                {
-                    _raycastLine.SetPosition(pointIndex++, hit.centroid);
-
-                    float bounciness = 1f;
-                    if (hit.collider.TryGetComponent(out BounceObject bounceObj))
-                        bounciness = bounceObj.Bounciness;
-                    else if (hit.transform.parent
-                             && hit.transform.parent.TryGetComponent(out bounceObj))
-                        bounciness = bounceObj.Bounciness;
-
-                    direction = Vector2.Reflect(direction, hit.normal).normalized;
-                    origin = hit.centroid + direction * (_ballRadius + 0.01f);
-                }
-                else
-                {
-                    _raycastLine.SetPosition(pointIndex++, origin + direction * _maxRaycastDistance);
-                    break;
-                }
-            }
-
-            _raycastLine.positionCount = pointIndex;
         }
 
         private void SimulateFromCurrentState()
@@ -412,21 +368,23 @@ namespace Scripts.Player
 
             proj.BouncingObject.SetCurrentVelocity(rb.linearVelocity);
 
-            float simDt = Time.fixedUnscaledDeltaTime;
+            float simDt = Time.fixedUnscaledDeltaTime / _simSubSteps;
             int idx = 0;
             int bounceCount = 0;
             Vector2 prevVelocity = rb.linearVelocity;
 
             _line.positionCount = _maxPhysicsFrameIterations;
-            _line.SetPosition(idx++, proj.transform.position);
+            _line.SetPosition(idx++, proj.transform.position + _lineOffset);
 
             while (idx < _maxPhysicsFrameIterations && bounceCount <= _maxBounces)
             {
                 _physicsScene.Simulate(simDt);
                 proj.BouncingObject.SetCurrentVelocity(rb.linearVelocity);
-                _line.SetPosition(idx++, proj.transform.position);
-                if (rb.linearVelocity.sqrMagnitude > 0.0001f &&
-                    Vector2.Angle(prevVelocity, rb.linearVelocity) > 5f)
+                _line.SetPosition(idx++, proj.transform.position + _lineOffset);
+
+                if (prevVelocity.sqrMagnitude > 0.0001f
+                    && rb.linearVelocity.sqrMagnitude > 0.0001f
+                    && Vector2.Angle(prevVelocity, rb.linearVelocity) > 5f)
                 {
                     bounceCount++;
                 }
