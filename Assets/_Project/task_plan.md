@@ -1,59 +1,34 @@
-# Fire System Implementation Plan
+# Task Plan: Balatro-Style UI Background Shader
 
 ## Goal
-Implement a comprehensive fire system for GooseFireSystem.cs with:
-- Fire scaled 0-100
-- Multiple fire gain sources: dash, damage, kills, environment interactions
-- Environment difficulty levels affecting fire gain
-- Continuous interaction support with delays for certain elements
-- Item modifier support
+Create a URP-compatible HLSL UI shader that produces a Balatro-like animated marbling background with pixelation, consistent across all resolutions and aspect ratios.
 
 ## Phases
 
-### Phase 1: Core GooseFireSystem Refactor `[complete]`
-- [x] Add fire gain modifier system for items
-- [x] Add dash fire gain (+5 default)
-- [x] Add damage dealt fire gain (damage/5)
-- [x] Add enemy kill fire gain (+20)
-- [x] Subscribe to ScoreManager events
+### Phase 1: Research & Planning [complete]
+- [x] Explore existing shader directory structure
+- [x] Study Balatro shader reference (Godot port from source)
+- [x] Study iquilezles domain warping technique
+- [x] Understand URP UI shader requirements
 
-### Phase 2: Environment Interaction System `[complete]`
-- [x] Create IFireInteractable interface with difficulty level
-- [x] Create FireInteractionType enum (Bounce, Continuous)
-- [x] Add interaction delay support for continuous elements
-- [x] Fire gain formula: 1-10 based on difficulty
+### Phase 2: Implement Shader [in_progress]
+- [x] Create `BalatroBackground.shader` in `_Project/Shaders/`
+- [x] Implement procedural noise (hash + value noise + fbm)
+- [x] Implement domain warping (iquilezles nested fbm)
+- [x] Implement spiral + rotation (Balatro atan-based)
+- [x] Implement center bias
+- [x] Implement pixelation (resolution-independent)
+- [x] Implement gradient2D color mapping
+- [x] Implement Balatro 3-color fallback
+- [x] Add UI stencil/blend support
 
-### Phase 3: Update Environment Objects `[complete]`
-- [x] Add fire interaction to BounceObject
-- [x] Add fire interaction to MoveRoadMovement (continuous with delay)
+### Phase 3: Verification [complete]
+- [x] Document usage instructions
 
-### Phase 4: Item Integration `[complete]`
-- [x] Create FireGainBuffItem example
-
-## Key Files Modified
-- `Scripts/Player/GooseFireSystem.cs` - Main fire system with new formula
-- `Scripts/Player/IFireInteractable.cs` - Interface for environment objects
-- `Scripts/LevelSystem/LevelObjects/BounceObject.cs` - Bounce fire interaction
-- `Scripts/LevelObjects/MoveRoads/MoveRoadMovement.cs` - Continuous fire interaction
-- `Scripts/Items/PermanentItems/FireGainBuffItem.cs` - Example item for fire boost
-
-## Implementation Summary
-
-### Fire Gain Sources:
-1. **Dash**: +5 points (configurable via `_fireGainPerDash`)
-2. **Damage Dealt**: damage / 5 (configurable via `_damageToFireDivisor`)
-3. **Enemy Kill**: +20 points (configurable via `_fireGainPerKill`)
-4. **Environment Interaction**: 1-10 points based on difficulty level (1-10)
-
-### Environment Difficulty Formula:
-`fireGain = Lerp(minGain, maxGain, (difficultyLevel - 1) / (maxDifficulty - 1))`
-
-### Continuous Interaction Cooldown:
-- MoveRoad and similar objects have cooldown to prevent spam
-- Default cooldown: 0.5 seconds (configurable per object)
-- Tracked via Dictionary<instanceId, remainingCooldown>
-
-### Item Modifier System:
-- `FireGainModifierSystem` on GooseFireSystem allows items to modify fire gain
-- Supports Add and Mult modifiers
-- FireGainBuffItem demonstrates usage pattern
+## Key Decisions
+- Use Dave Hoskins hash for reliable cross-platform noise
+- 4 octave fbm, 2-level nested domain warping (5 fbm calls total)
+- Normalize UVs by screen diagonal for aspect-ratio independence
+- `_PixelFilter` controls pixel density relative to screen diagonal
+- Gradient2D: X = pattern value, Y = center distance
+- Shader keyword `_USE_GRADIENT` toggles gradient texture vs 3-color fallback
