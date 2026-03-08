@@ -1,8 +1,9 @@
 using Scripts.ScoreSystem;
+using Zenject;
 
 namespace Scripts.Progress
 {
-    public class ProgressSaver
+    public class ProgressSaver : IInitializable
     {
         private ProgressData _progressData;
         public ProgressData ProgressData => _progressData;
@@ -18,7 +19,7 @@ namespace Scripts.Progress
             _progressData = ES3.Load<ProgressData>("saveFile", new ProgressData());
         }
 
-        public void Start()
+        public void Initialize()
         {
             LoadProgress();
         }

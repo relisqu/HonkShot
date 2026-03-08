@@ -1,21 +1,20 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Scripts.LevelSystem.LevelGeneration.Factories;
 using Scripts.Other;
 using UnityEngine;
+using Zenject;
 using Random = UnityEngine.Random;
 
 namespace Scripts.LevelSystem.LevelGeneration
 {
     public class LevelGenerator : MonoBehaviour
     {
-        [SerializeField] private StagePoolSO _tutorialPoolSO;
-        [SerializeField] private StagePoolSO _stagePoolSO;
+        [Inject] private LevelObjectsFactory _factory;
+        [SerializeField] private FloorConfigSO _defaultFloorConfig;
         [SerializeField] private float _roomHeight = 10f;
         private List<RoomModel> _shuffledRoomModels = new();
-
-        [Space] [Header("Generation Settings")] [SerializeField]
-        private int _roomCount = 5;
 
         private void Awake()
         {
@@ -27,7 +26,7 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         public Floor GenerateFloor()
         {
-            return GenerateFloor(_roomCount);
+            return GenerateFloor(_defaultFloorConfig);
         }
 
 
@@ -38,18 +37,32 @@ namespace Scripts.LevelSystem.LevelGeneration
                 Rooms = rooms.ToList()
             };
         }
-        public Floor GenerateFloor(int roomCount)
+
+        public Floor GenerateFloor(FloorConfigSO floorConfig)
         {
             var rooms = new List<Room>();
-            ShuffleRoomModels();
+            ShuffleRoomModels(floorConfig);
             Vector3 spawnPosition = Vector3.zero;
+
+            int roomCount = floorConfig.RoomCount;
             for (int i = 0; i < roomCount && i < _shuffledRoomModels.Count; i++)
             {
                 var model = _shuffledRoomModels[i];
                 if (!model.RoomPrefab) continue;
-                Room roomInstance = Instantiate(model.RoomPrefab, spawnPosition, Quaternion.identity, transform);
+                Room roomInstance = _factory.SpawnRoom(model.RoomPrefab, spawnPosition, transform);
                 if (rooms.Count > 0) rooms[^1].SetNextRoom(roomInstance);
                 rooms.Add(roomInstance);
+            }
+
+            if (floorConfig.BossRoomPrefabs != null && floorConfig.BossRoomPrefabs.Count > 0)
+            {
+                var bossPrefab = floorConfig.BossRoomPrefabs[Random.Range(0, floorConfig.BossRoomPrefabs.Count)];
+                if (bossPrefab)
+                {
+                    Room bossInstance = _factory.SpawnRoom(bossPrefab, spawnPosition, transform);
+                    if (rooms.Count > 0) rooms[^1].SetNextRoom(bossInstance);
+                    rooms.Add(bossInstance);
+                }
             }
 
             foreach (var room in rooms)
@@ -63,13 +76,10 @@ namespace Scripts.LevelSystem.LevelGeneration
             };
         }
 
-        private void ShuffleRoomModels()
+        private void ShuffleRoomModels(FloorConfigSO floorConfig)
         {
-            if (_shuffledRoomModels.Count == 0)
-            {
-                _shuffledRoomModels.Clear();
-                _shuffledRoomModels.AddRange(_stagePoolSO.RoomModels);
-            }
+            _shuffledRoomModels.Clear();
+            _shuffledRoomModels.AddRange(floorConfig.RoomModels);
 
             var rng = new System.Random();
             int n = _shuffledRoomModels.Count;

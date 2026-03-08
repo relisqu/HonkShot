@@ -24,5 +24,10 @@ namespace Scripts.LevelSystem.LevelGeneration.Factories
             var levelExitPortalPrefab = Resources.Load<LevelExitPortal>(Constants.LevelExitPortalPrefabPath);
             return _container.InstantiatePrefab(levelExitPortalPrefab, parent).GetComponent<LevelExitPortal>();
         }
+
+        public Room SpawnRoom(Room prefab, Vector3 position, Transform parent)
+        {
+            return _container.InstantiatePrefab(prefab, position, Quaternion.identity, parent).GetComponent<Room>();
+        }
     }
 }

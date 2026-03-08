@@ -138,6 +138,7 @@ GameObject:
   - component: {fileID: 7298714514701476617}
   - component: {fileID: 372067591849059236}
   - component: {fileID: 2403281483393435881}
+  - component: {fileID: 7612789391415748098}
   m_Layer: 12
   m_Name: Boss
   m_TagString: Untagged
@@ -177,6 +178,7 @@ MonoBehaviour:
   _enemyId: 15
   _enemyName: 
   _difficultyRating: 1
+  _bossIntro: {fileID: 7612789391415748098}
   _shootingModule: {fileID: 2403281483393435881}
   _shieldController: {fileID: 2357702564277749848}
   _rigidbody2D: {fileID: 6917758335651533037}
@@ -186,15 +188,15 @@ MonoBehaviour:
   _minionCount: 3
   _minionRotationRadius: 2
   _minionSpeed: 0
-  _rotationSpeed: 15
-  _rotationSpeedIncreaseAfterMinionDeath: 10
+  _rotationSpeed: 100
+  _rotationSpeedIncreaseAfterMinionDeath: 15
   _minSpaceBetweenPlayerAndBoss: 5
   _firstPhaseShieldCount: 3
   _followSpeed: 50
   _shootingCooldown: 2
-  _bulletSpeed: 6
+  _bulletSpeed: 5
   _bulletDamage: 15
-  _bulletPrediction: 2
+  _bulletPrediction: 1
   _thirdPhasePointsList:
   - {fileID: 0}
   - {fileID: 0}
@@ -202,14 +204,14 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  _thirdPhaseDashCooldownMin: 6
-  _thirdPhaseDashCooldownMax: 10
-  _thirdPhaseMoveSpeed: 4
-  _thirdPhaseDashSpeed: 10
-  _thirdPhaseShieldsCount: 2
-  _thirdPhaseShootingSpeed: 8
-  _thirdPhaseBulletDamage: 30
-  _thirdPhaseShootingCooldown: 0.5
+  _thirdPhaseDashCooldownMin: 3
+  _thirdPhaseDashCooldownMax: 6
+  _thirdPhaseMoveSpeed: 5
+  _thirdPhaseDashSpeed: 8
+  _thirdPhaseShieldsCount: 4
+  _thirdPhaseShootingSpeed: 6
+  _thirdPhaseBulletDamage: 20
+  _thirdPhaseShootingCooldown: 1.2
   _thirdPhaseAttackPattern: 00000000000000000000000001000000
   _thirdPhasePatternCycleDelay: 1
 --- !u!114 &6903777600374435259
@@ -227,6 +229,7 @@ MonoBehaviour:
   _maxHealth: 1
   _defaultHealth: 1
   _shieldController: {fileID: 2357702564277749848}
+  _reviveSystem: {fileID: 0}
 --- !u!114 &2357702564277749848
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -353,3 +356,16 @@ MonoBehaviour:
   _shootDistance: 5
   _spreadBulletCount: 3
   _spreadAngle: 30
+--- !u!114 &7612789391415748098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6801337584361558935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c02cd784d295444469cc2786e19cefcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.Bosses.BossIntro
+  _introDelay: 2

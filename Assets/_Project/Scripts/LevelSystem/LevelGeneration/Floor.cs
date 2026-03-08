@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Scripts.LevelSystem.LevelGeneration
 {
@@ -20,6 +21,17 @@ namespace Scripts.LevelSystem.LevelGeneration
             if (currentRoomIndex >= Rooms.Count)
                 return null;
             return Rooms[currentRoomIndex];
+        }
+
+        public void CleanUp()
+        {
+            foreach (var room in Rooms)
+            {
+                if (room)
+                    Object.Destroy(room.gameObject);
+            }
+            Rooms.Clear();
+            _visitedRooms.Clear();
         }
     }
 }

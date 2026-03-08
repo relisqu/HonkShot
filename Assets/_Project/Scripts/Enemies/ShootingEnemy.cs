@@ -9,7 +9,7 @@ namespace Scripts.Enemies
 {
     public class ShooterEnemy : BaseEnemy
     {
-        [Inject] private EnemyConfig _enemyConfig;
+        private EnemyConfig _enemyConfig;
         [SerializeField] private ShootingModule _shootingModule;
         [SerializeField] private float _shootInterval = 1.5f;
         [SerializeField] private EnemyHealth _enemyHealth;

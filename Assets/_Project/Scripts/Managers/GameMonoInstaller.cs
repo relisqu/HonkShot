@@ -34,15 +34,11 @@ namespace Scripts.Managers
             Container.BindInterfacesAndSelfTo<PointReceiver>().FromInstance(_pointReceiver).AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<LevelTransitionManager>().FromInstance(_levelTransitionManager).AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<LevelObjectsFactory>().AsSingle().NonLazy();
+
             Container.BindInterfacesAndSelfTo<ProgressSaver>().AsSingle().NonLazy();
+
             Container.BindInterfacesAndSelfTo<TutorialController>().FromInstance(_tutorialController).AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<PlayerBallMovement>().FromInstance(_playerBallMovement).AsSingle().NonLazy();
-        }
-
-        public override void Start()
-        {
-            base.Start();
-            Container.Resolve<ProgressSaver>().Start();
         }
     }
 }

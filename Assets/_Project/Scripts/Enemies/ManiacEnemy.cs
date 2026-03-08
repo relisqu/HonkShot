@@ -13,7 +13,7 @@ namespace Scripts.Enemies
     public class ManiacEnemy : BaseEnemy
     {
         [Inject] private PointReceiver _pointReceiver;
-        [Inject] private EnemyConfig _enemyConfig;
+        private EnemyConfig _enemyConfig;
 
         private Transform _target;
 

@@ -16,6 +16,7 @@ namespace Scripts.Enemies.Bosses
     public class RavageBossEnemy : BaseEnemy
     {
         [Header("References")]
+        [SerializeField] private BossIntro _bossIntro;
         [SerializeField] private RavageBossShootingModule _shootingModule;
         [SerializeField] private ShieldController _shieldController;
         [SerializeField] private Rigidbody2D _rigidbody2D;
@@ -60,6 +61,22 @@ namespace Scripts.Enemies.Bosses
         {
             _playerTransform = _pointReceiver.transform;
             _bossHealth.SetInvincible(0, true);
+            _bossHealth.OnNonLethalDamageReceived += BossHealth_OnNonLethalDamageReceived;
+            _bossHealth.OnDied += BossHealth_Died;
+
+            if (_bossIntro)
+            {
+                _bossIntro.IntroFinished += StartBossAI;
+                _bossIntro.Play();
+            }
+            else
+            {
+                StartBossAI();
+            }
+        }
+
+        private void StartBossAI()
+        {
             _firstPhaseHealth = _minionCount;
             for (int i = 0; i < _minionCount; i++)
             {
@@ -67,10 +84,6 @@ namespace Scripts.Enemies.Bosses
                 _minions.Add(minionHealth);
                 minionHealth.HealthController.OnDied += Minion_Died;
             }
-
-            _bossHealth.OnNonLethalDamageReceived += BossHealth_OnNonLethalDamageReceived;
-            _bossHealth.OnDied += BossHealth_Died;
-
 
             StartCoroutine(RotateMinions());
             StartCoroutine(FollowPlayerCoroutine());
@@ -96,6 +109,7 @@ namespace Scripts.Enemies.Bosses
         {
             _bossHealth.OnNonLethalDamageReceived -= BossHealth_OnNonLethalDamageReceived;
             _bossHealth.OnDied -= BossHealth_Died;
+            if (_bossIntro) _bossIntro.IntroFinished -= StartBossAI;
         }
 
         private void BossHealth_OnNonLethalDamageReceived(float damage)

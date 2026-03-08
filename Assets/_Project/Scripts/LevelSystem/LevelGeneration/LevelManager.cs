@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Scripts.Other;
 using Scripts.Player;
 using Scripts.PointSystem;
@@ -24,15 +24,18 @@ namespace Scripts.LevelSystem.LevelGeneration
         private LevelGenerator _levelGenerator;
 
         [SerializeField] private Projection _projection;
+        [SerializeField] private RunConfigSO _runConfig;
 
 
         private int _currentRoomIndex = 0;
         private int _levelsCompleted = 0;
         private Floor _currentFloor;
+        private RunProgress _runProgress = new RunProgress();
 
         public Action EnteredRoom;
         public Action CompletedRoom;
 
+        public RunProgress RunProgress => _runProgress;
         public Room CurrentRoom => _currentFloor?.VisitedRooms[^1];
 
 
@@ -53,9 +56,28 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         public void EnterFloor()
         {
+            _currentRoomIndex = 0;
+
             if (DebugMode.Instance.GeneratingLevels)
             {
-                _currentFloor = _levelGenerator.GenerateFloor();
+                if (_runConfig)
+                {
+                    var floorConfig = _runConfig.GetFloorConfig(_runProgress.CurrentFloorIndex);
+                    if (floorConfig)
+                    {
+                        _currentFloor = _levelGenerator.GenerateFloor(floorConfig);
+                    }
+                    else
+                    {
+                        _currentFloor = _levelGenerator.GenerateFloor();
+                    }
+                }
+                else
+                {
+                    _currentFloor = _levelGenerator.GenerateFloor();
+                }
+
+                _runProgress.OnFloorStarted();
                 EnterRoom(_currentFloor.Rooms[0]);
             }
             else
@@ -68,6 +90,11 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         public void Room_CompletedRoom(Room room)
         {
+            _runProgress.OnRoomCompleted();
+
+            if (room is BossRoom)
+                _runProgress.OnBossDefeated();
+
             CompletedRoom?.Invoke();
             room.CompletedRoom -= Room_CompletedRoom;
         }
@@ -113,7 +140,7 @@ namespace Scripts.LevelSystem.LevelGeneration
             bool portalClosed = false;
             exitPortal.OnPortalTrigger += () =>
             {
-                
+
                _levelTransitionManager.LevelTransitionStarted?.Invoke();
                 //_projection.DestroySimulation();
             };
@@ -146,7 +173,21 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         private void FinishFloor()
         {
-            Debug.LogError("Finishing floor");
+            _currentFloor.CleanUp();
+
+            if (_runConfig && _runProgress.AdvanceFloor(_runConfig.Floors.Count))
+            {
+                EnterFloor();
+            }
+            else
+            {
+                HandleRunCompleted();
+            }
+        }
+
+        private void HandleRunCompleted()
+        {
+            Debug.Log("Run completed!");
         }
 
         private void OnCompletedRoom()
