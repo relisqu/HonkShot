@@ -177,6 +177,7 @@ namespace Scripts.Player
         {
             _isDragging = false;
             _needsRecalculation = true;
+            _line.positionCount = 0;
 
             if (_pooledGhostProjectile)
                 _pooledGhostProjectile.Rigidbody2D.simulated = false;

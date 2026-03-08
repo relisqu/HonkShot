@@ -71,11 +71,11 @@ namespace Scripts.LevelSystem.LevelObjects
 
             _rigidbody2D.linearVelocity = newDirection * speed * bounceObject.Bounciness;
 
+#if DEBUG_LOG
             Vector2 contactPoint = Vector2.zero;
             foreach (var contact in other.contacts)
                 contactPoint += contact.point;
             contactPoint /= other.contactCount;
-
             bool isGhost = gameObject.layer == LayerMask.NameToLayer("SimulationGhost");
 
             if (!isGhost || !_hasDebugData)
@@ -107,6 +107,7 @@ namespace Scripts.LevelSystem.LevelObjects
 
             if (!isGhost && other.gameObject.layer == 9)
                 Debug.Break();
+
         }
 
         private void OnDrawGizmos()
@@ -166,6 +167,7 @@ namespace Scripts.LevelSystem.LevelObjects
                 Gizmos.DrawLine(prev, next);
                 prev = next;
             }
+#endif
         }
     }
 }

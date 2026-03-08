@@ -123,7 +123,8 @@ namespace Scripts.Player
             Vector2 origin = startPos;
             Collider2D lastHitCollider = null;
 
-            for (int bounce = 0; bounce <= _maxBounces; bounce++)
+            int maxBounces = _maxBounces;
+            for (int bounce = 0; bounce <= maxBounces; bounce++)
             {
                 int hitCount = Physics2D.CircleCast(
                     origin, radius, direction, _contactFilter, _hitBuffer, _maxSegmentDistance);
@@ -181,10 +182,13 @@ namespace Scripts.Player
             _line.positionCount = _linePoints.Count;
             _line.SetPositions(_linePoints.ToArray());
 
-            var sb = new System.Text.StringBuilder($"Trajectory: {_linePoints.Count} pts, dir={direction} | ");
-            for (int i = 0; i < _linePoints.Count; i++)
-                sb.Append($"[{i}]={_linePoints[i]:F2} ");
-            Debug.Log(sb.ToString());
+            if (_debugMode)
+            {
+                var sb = new System.Text.StringBuilder($"Trajectory: {_linePoints.Count} pts, dir={direction} | ");
+                for (int i = 0; i < _linePoints.Count; i++)
+                    sb.Append($"[{i}]={_linePoints[i]:F2} ");
+                Debug.Log(sb.ToString());
+            }
         }
 
         private void OnDrawGizmos()

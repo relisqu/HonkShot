@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using Scripts.Health;
 using Scripts.LevelSystem.LevelObjects.Interaction;
 using UnityEngine;
@@ -12,7 +13,7 @@ namespace Scripts.LevelSystem.LevelObjects
     public class Cannon : MonoBehaviour
     {
         [Inject] private InputHandler _inputHandler;
-        [Header("Rotation")] [SerializeField] private Transform rotatingPart;
+        [Header("Rotation")] [SerializeField] private List<Transform> _rotatingParts;
         [SerializeField] private float rotateAngle = 60f;
         [SerializeField] private float rotateSpeed = 2f;
 
@@ -34,8 +35,8 @@ namespace Scripts.LevelSystem.LevelObjects
         private void Awake()
         {
             _startRotation = transform.eulerAngles.z;
-            if (rotatingPart != null)
-                _originalScale = rotatingPart.localScale;
+            if (_rotatingParts is { Count: > 0 })
+                _originalScale = _rotatingParts[0].localScale;
         }
 
         private void Update()
@@ -54,7 +55,10 @@ namespace Scripts.LevelSystem.LevelObjects
             }
 
             // Apply relative rotation to base cannon rotation
-            rotatingPart.localRotation = Quaternion.Euler(0f, 0f, _angle);
+            foreach (var rotatingPart in _rotatingParts)
+            {
+                rotatingPart.localRotation = Quaternion.Euler(0f, 0f, _angle);
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -76,25 +80,31 @@ namespace Scripts.LevelSystem.LevelObjects
                 if (_inputHandler) _inputHandler.SetInputEnabled(InputLayer.Cannon, false);
             }
 
-            if (rotatingPart)
-                rotatingPart
-                    .DOScale(new Vector3(_originalScale.x * 1.2f, _originalScale.y * 0.7f, _originalScale.z), 0.15f)
-                    .SetEase(Ease.OutQuad);
+            if (_rotatingParts is { Count: > 0 })
+                foreach (var rotatingPart in _rotatingParts)
+                {
+                    rotatingPart
+                        .DOScale(new Vector3(_originalScale.x * 1.2f, _originalScale.y * 0.7f, _originalScale.z), 0.15f)
+                        .SetEase(Ease.OutQuad);
+                }
 
             interactable.OnEnterCannon();
 
             yield return new WaitForSeconds(pauseTime);
 
-            Vector2 shootDirection = rotatingPart.up;
+            Vector2 shootDirection = _rotatingParts[0].up;
+
             Debug.Log(shootDirection);
             interactable.OnExitCannon(shootDirection, shootForce);
 
-            if (rotatingPart)
-                rotatingPart.DOScale(_originalScale, 0.25f).SetEase(Ease.OutBack);
+            if (_rotatingParts is { Count: > 0 })
+                foreach (var rotatingPart in _rotatingParts)
+                {
+                    rotatingPart.DOScale(_originalScale, 0.25f).SetEase(Ease.OutBack);
+                }
 
             if (interactable is PlayerCannonInteractable)
             {
-                
                 if (_inputHandler) _inputHandler.SetInputEnabled(InputLayer.Cannon, true);
             }
 
@@ -103,10 +113,10 @@ namespace Scripts.LevelSystem.LevelObjects
 
         private void OnDrawGizmosSelected()
         {
-            if (rotatingPart == null) return;
+            if (_rotatingParts is { Count: > 0 }) return;
 
             Gizmos.color = Color.yellow;
-            Vector3 pos = rotatingPart.position;
+            Vector3 pos = _rotatingParts[0].position;
 
             Quaternion left = Quaternion.Euler(0, 0, -rotateAngle / 2f);
             Quaternion right = Quaternion.Euler(0, 0, rotateAngle / 2f);
