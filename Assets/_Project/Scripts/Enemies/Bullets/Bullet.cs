@@ -19,7 +19,6 @@ namespace Scripts.Enemies.Bullets
             }
             else
             {
-                Debug.Log(other.name);
                 Destroy(gameObject);
             }
         }
