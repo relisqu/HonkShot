@@ -139,6 +139,7 @@ GameObject:
   - component: {fileID: 372067591849059236}
   - component: {fileID: 2403281483393435881}
   - component: {fileID: 7612789391415748098}
+  - component: {fileID: 4694782233750422631}
   m_Layer: 12
   m_Name: Boss
   m_TagString: Untagged
@@ -369,3 +370,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.Bosses.BossIntro
   _introDelay: 2
+--- !u!114 &4694782233750422631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6801337584361558935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db10873588a04fc9b4428b8fa464850c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.EnemyHealth
+  _healthController: {fileID: 0}
+  _baseEnemy: {fileID: 0}

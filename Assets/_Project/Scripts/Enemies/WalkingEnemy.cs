@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
-using Scripts.Config;
 using Scripts.Health;
 using Scripts.Player;
 using Scripts.PointSystem;
@@ -15,7 +14,6 @@ namespace Scripts.Enemies
     public class WalkingEnemy : BaseEnemy
     {
         [Inject] private PointReceiver _pointReceiver;
-        private EnemyConfig _enemyConfig;
 
         [Header("Path Settings")] [SerializeField]
         private List<Transform> _pathPoints = new();
@@ -64,41 +62,11 @@ namespace Scripts.Enemies
 
             _pathPoints.RemoveAll(point => point == null);
 
-            // Apply config settings if available
-            ApplyConfigSettings();
-
             StartCoroutine(FollowPath());
             StartCoroutine(AttackRoutine());
         }
 
-        private void ApplyConfigSettings()
-        {
-            if (_enemyConfig == null) return;
 
-            var settings = _enemyConfig.GetSettingsForEnemy(EnemyId);
-
-            _moveSpeed = settings.walkMoveSpeed;
-            _attackRange = settings.attackRange;
-            _attackInterval = settings.attackInterval;
-            _attackWarningTime = settings.attackWarningTime;
-            _damage = settings.damage;
-
-            // Apply health settings
-            if (_enemyHealth != null && _enemyHealth.HealthController != null)
-            {
-                var healthController = _enemyHealth.HealthController;
-                var healthType = typeof(HealthController);
-                var maxHealthField = healthType.GetField("_maxHealth",
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                var defaultHealthField = healthType.GetField("_defaultHealth",
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-                if (maxHealthField != null)
-                    maxHealthField.SetValue(healthController, settings.maxHealth);
-                if (defaultHealthField != null)
-                    defaultHealthField.SetValue(healthController, settings.defaultHealth);
-            }
-        }
 
         private IEnumerator FollowPath()
         {

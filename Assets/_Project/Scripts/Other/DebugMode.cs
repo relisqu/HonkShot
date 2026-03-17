@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Scripts.Enemies;
 using Scripts.Health;
 using Scripts.Items.PlayerItemManager;
 using Sirenix.OdinInspector;
@@ -46,11 +47,40 @@ namespace Scripts.Other
 
         private void Update()
         {
-            if (DebugEnabled && Input.GetKeyDown(KeyCode.F9))
+            if (!DebugEnabled) return;
+
+            if (Input.GetKeyDown(KeyCode.F9))
             {
                 var health = PlayerInventory.Instance.GetComponent<HealthController>();
                 if (health)
                     health.TakeDamage(1000000);
+            }
+
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                KillAllEnemies();
+            }
+        }
+
+        private void KillAllEnemies()
+        {
+            var enemies = FindObjectsByType<EnemyHealth>(FindObjectsSortMode.None);
+            foreach (var enemy in enemies)
+            {
+                if (enemy && enemy.IsAlive())
+                    enemy.HealthController.TakeDamage(1000000);
+            }
+
+            var baseEnemies = FindObjectsByType<BaseEnemy>(FindObjectsSortMode.None);
+            foreach (var baseEnemy in baseEnemies)
+            {
+                if (!baseEnemy) continue;
+                var health = baseEnemy.GetComponentInChildren<HealthController>();
+                if (health && health.IsAlive)
+                {
+                    health.SetInvincible(0, false);
+                    health.TakeDamage(1000000);
+                }
             }
         }
     }

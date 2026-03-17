@@ -1,7 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using Scripts.Config;
-using Scripts.Enemies;
 using Scripts.Health;
 using Scripts.Player;
 using Scripts.PointSystem;
@@ -13,7 +11,6 @@ namespace Scripts.Enemies
     public class ManiacEnemy : BaseEnemy
     {
         [Inject] private PointReceiver _pointReceiver;
-        private EnemyConfig _enemyConfig;
 
         private Transform _target;
 
@@ -55,41 +52,8 @@ namespace Scripts.Enemies
                 _target = pointReceiver.transform;
             }
 
-            // Apply config settings if available
-            ApplyConfigSettings();
-
             _avoidanceRoutine = StartCoroutine(AvoidanceCheck());
             _attackRoutine = StartCoroutine(AttackRoutine());
-        }
-
-        private void ApplyConfigSettings()
-        {
-            if (_enemyConfig == null) return;
-
-            var settings = _enemyConfig.GetSettingsForEnemy(EnemyId);
-
-            _movementSpeed = settings.chaseSpeed;
-            _attackRange = settings.attackRange;
-            _attackInterval = settings.attackInterval;
-            _attackWarningTime = settings.attackWarningTime;
-            _damage = settings.damage;
-
-            // Apply health settings
-            var enemyHealth = GetComponent<EnemyHealth>();
-            if (enemyHealth != null && enemyHealth.HealthController != null)
-            {
-                var healthController = enemyHealth.HealthController;
-                var healthType = typeof(HealthController);
-                var maxHealthField = healthType.GetField("_maxHealth",
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                var defaultHealthField = healthType.GetField("_defaultHealth",
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-                if (maxHealthField != null)
-                    maxHealthField.SetValue(healthController, settings.maxHealth);
-                if (defaultHealthField != null)
-                    defaultHealthField.SetValue(healthController, settings.defaultHealth);
-            }
         }
 
         private void OnDisable()

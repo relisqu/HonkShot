@@ -34,10 +34,10 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         public Action EnteredRoom;
         public Action CompletedRoom;
+        public Action<FloorConfigSO> FloorEntered;
 
         public RunProgress RunProgress => _runProgress;
         public Room CurrentRoom => _currentFloor?.VisitedRooms[^1];
-
 
         [Inject]
         private void Construct(PlayerMovement playerMovement, LevelObjectsFactory levelObjectsFactory,
@@ -60,9 +60,10 @@ namespace Scripts.LevelSystem.LevelGeneration
 
             if (DebugMode.Instance.GeneratingLevels)
             {
+                FloorConfigSO floorConfig = null;
                 if (_runConfig)
                 {
-                    var floorConfig = _runConfig.GetFloorConfig(_runProgress.CurrentFloorIndex);
+                    floorConfig = _runConfig.GetFloorConfig(_runProgress.CurrentFloorIndex);
                     if (floorConfig)
                     {
                         _currentFloor = _levelGenerator.GenerateFloor(floorConfig);
@@ -78,6 +79,7 @@ namespace Scripts.LevelSystem.LevelGeneration
                 }
 
                 _runProgress.OnFloorStarted();
+                FloorEntered?.Invoke(floorConfig);
                 EnterRoom(_currentFloor.Rooms[0]);
             }
             else

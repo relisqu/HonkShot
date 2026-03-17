@@ -22,10 +22,10 @@ namespace Scripts.Enemies
 
         private void Awake()
         {
+            if (!_healthController)
+                _healthController = GetComponent<HealthController>();
             if (!_baseEnemy)
-            {
                 _baseEnemy = GetComponent<BaseEnemy>();
-            }
         }
 
         private void HealthController_Died()
