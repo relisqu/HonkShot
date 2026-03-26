@@ -14,11 +14,11 @@ namespace Scripts.Items.StatSystems
             _modifiers = _modifiers.OrderBy(m => m.Order).ToList();
         }
 
-        public void UpdateModifier(int invTag, T value)
+        public void UpdateModifier(int tag, T value)
         {
             foreach (var modifier in _modifiers.ToList())
             {
-                if (modifier.Id == invTag)
+                if (modifier.Id == tag)
                 {
                     modifier.SetValue(value);
                 }

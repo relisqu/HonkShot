@@ -33,7 +33,6 @@ namespace Scripts.Player
 
         public void Explode()
         {
-            Debug.Log("[Explosion] Exploded");
             var hits = Physics2D.OverlapCircleAll(transform.position, _radius, ExplosionSystem.Instance.EnemyLayerMask);
             foreach (var hit in hits)
             {
