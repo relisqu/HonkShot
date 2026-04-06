@@ -1,28 +1,22 @@
-# Task Plan: Second Floor "Swamp" Enemies
+# Task Plan: Inner Wall Generation System
 
 ## Goal
-Create 5 new enemy types for the second floor (Swamp theme), with new scripts for hiding behavior, jumping movement, and armor integration.
+Create an inner wall/hole generator similar to WallGeneration.cs but for inner obstacles:
+- GameObject w/ child SpriteShape that renders inner "hole" using current floor color
+- Helper SpriteShape offset with top points 0.2 higher (visual depth)
+- Generates walls with thin colliders around the shape so the ball bounces off properly
+- Spawns random trees/details inside bounds, no overlap with outer field
+- Updates in editor when source SpriteShape is edited
+- Logically a solid obstacle (walls+details), visually a hole
 
 ## Phases
+- [x] Phase 1: Explore WallGeneration.cs + related level systems (floor color, ItemManager-like patterns)
+- [x] Phase 2: Design InnerWallGeneration script
+- [x] Phase 3: Write C# script
+- [x] Phase 4: Create prefab via MCP
+- [x] Phase 5: Verify/link
 
-### Phase 1: New Shared Scripts `in_progress`
-- [ ] `HidingBehavior.cs` - Reusable component: timer-based hide/show cycle, sets invincibility + optionally disables collider when hidden
-- [ ] `JumpingMovement.cs` - Reusable component: frog-like jump toward target with customizable jump length, pause duration, jump speed. Wall-check before jump.
-- [ ] `EnemyArmor.cs` - Reusable armor component: blocks X hits if damage > threshold, doesn't regen after destroyed. Hit-count based.
-
-### Phase 2: Enemy Scripts `not_started`
-1. **SwampFlyEnemy.cs** - Follows path (like WalkingEnemy) but flying. No standing still. No attack. Uses path points + WalkingType.
-2. **SwampShooterEnemy.cs** - Extends ShooterEnemy with HidingBehavior. Two prefab variants (different configs).
-3. **SwampWalkingEnemy.cs** - Jumps along waypoints (uses JumpingMovement + path system). Has armor.
-4. **SwampManiacEnemy.cs** - Chases player with jumps (uses JumpingMovement). Wall-check for collision targeting. Has armor.
-5. **SwampArmoredHider.cs** - Can't attack. Lots of armor. Hides periodically. Non-colliding when hidden. Player bounces off it.
-
-### Phase 3: Prefab Setup via Unity MCP `not_started`
-- Create `Resources/Prefabs/Enemies/Swamp/` folder
-- Copy base prefabs as starting constructors (not variants)
-
-## Key Design Decisions
-- HidingBehavior uses HealthController.SetInvincible() with new InvincibilityEnum.Hiding tag
-- JumpingMovement uses Rigidbody2D for physics, with raycast wall-check before jump
-- EnemyArmor is standalone: tracks hit count, blocks hits above damage threshold, no regen
-- All new enemies extend BaseEnemy for ID/score integration
+## Key Decisions (to refine)
+- Reuse the wall prefab used by WallGeneration for consistency (thin collider bouncing)
+- Floor color source: FloorConfigSO / CurrentFloor?
+- Use Random.insideUnitCircle + point-in-polygon check against helper shape for tree placement

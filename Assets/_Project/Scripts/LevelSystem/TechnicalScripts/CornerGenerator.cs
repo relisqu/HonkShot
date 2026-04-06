@@ -18,7 +18,7 @@ namespace Scripts.LevelSystem.TechnicalScripts
             [Range(-1f, 1f)] public float targetDotDown = 1f;
         }
 
-        [Header("Source Shape")] 
+        [Header("Source Shape")]
         [SerializeField] private SpriteShapeController spriteShape;
 
         [Header("Corner Decoration")]

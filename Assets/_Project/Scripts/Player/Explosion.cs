@@ -12,6 +12,8 @@ namespace Scripts.Player
         private float _radius;
         private float _knockback;
 
+        public float Radius => _radius;
+
         public void Init(float baseDamage)
         {
             if (!ExplosionSystem.Instance) return;

@@ -18,6 +18,7 @@ namespace Scripts.Other
 
         public bool DebugEnabled;
         public string itemId;
+        public string[] itemIds;
 
         [Button]
         public void SpawnItemWithIndex()
@@ -31,6 +32,29 @@ namespace Scripts.Other
 
             PlayerInventory.Instance.AddItem(so);
             Debug.Log($"Spawned item: {so.name} (Id: {so.Id})");
+        }
+
+        [Button]
+        public void SpawnItemsList()
+        {
+            if (itemIds == null || itemIds.Length == 0)
+            {
+                Debug.LogWarning("itemIds list is empty");
+                return;
+            }
+
+            foreach (var id in itemIds)
+            {
+                var so = ItemManager.instance.AllItems.FirstOrDefault(x => x.Id == id);
+                if (!so)
+                {
+                    Debug.LogError($"Item with Id '{id}' not found in allItems");
+                    continue;
+                }
+
+                PlayerInventory.Instance.AddItem(so);
+                Debug.Log($"Spawned item: {so.name} (Id: {so.Id})");
+            }
         }
 
         [Button]

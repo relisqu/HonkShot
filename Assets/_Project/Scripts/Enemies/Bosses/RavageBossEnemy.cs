@@ -20,6 +20,7 @@ namespace Scripts.Enemies.Bosses
         [SerializeField] private RavageBossShootingModule _shootingModule;
         [SerializeField] private ShieldController _shieldController;
         [SerializeField] private Rigidbody2D _rigidbody2D;
+        [SerializeField] private BossVFXController _vfxController;
 
         [SerializeField] private HealthController _bossHealth;
         [Space]
@@ -379,11 +380,13 @@ namespace Scripts.Enemies.Bosses
                     while (Mathf.Abs(dashPoint - currentPointIndex) < 2)
                         dashPoint = Random.Range(0, _thirdPhasePointsList.Count);
 
+                    if (_vfxController) _vfxController.SetDashTrailActive(true);
                     yield return MoveToPoint(_thirdPhasePointsList[dashPoint], _thirdPhaseDashSpeed);
                     _rigidbody2D.position = _thirdPhasePointsList[dashPoint].position;
                     _rigidbody2D.linearVelocity = Vector2.zero;
 
                     yield return new WaitForSeconds(1.5f);
+                    if (_vfxController) _vfxController.SetDashTrailActive(false);
 
                     _rigidbody2D.position = _thirdPhasePointsList[dashPoint].position;
                     _bezierStartIndex = dashPoint;

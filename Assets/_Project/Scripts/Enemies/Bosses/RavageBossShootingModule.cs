@@ -24,6 +24,8 @@ namespace Scripts.Enemies.Bosses
 
         private PlayerBallMovement _playerBallMovement;
 
+        public event Action OnShot;
+
         public void Start()
         {
             base.Start();
@@ -45,6 +47,8 @@ namespace Scripts.Enemies.Bosses
         protected override void Shoot(Action onShootFinish)
         {
             if (!_player) return;
+
+            OnShot?.Invoke();
 
             var predictedPosition =
                 (_playerBallMovement.transform.position + (Vector3)_playerBallMovement.CurrentMovement *

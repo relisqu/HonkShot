@@ -14,11 +14,13 @@ namespace Scripts.LevelSystem.LevelGeneration
         [SerializeField] private int _roomCount = 5;
         [SerializeField] private Color _backgroundColor = new Color(0.129f, 0.086f, 0.251f, 1f);
         [SerializeField] private Color _vignetteColor = new Color(0.063f, 0.012f, 0.188f, 1f);
+        [SerializeField] private FloorDecorationsSO _decorations;
 
         public List<Room> BossRoomPrefabs => _bossRoomPrefabs;
         public int RoomCount => _roomCount;
         public Color BackgroundColor => _backgroundColor;
         public Color VignetteColor => _vignetteColor;
+        public FloorDecorationsSO Decorations => _decorations;
 
         [Button]
         public void RefreshRooms()

@@ -1,7 +1,9 @@
-﻿using Sirenix.OdinInspector;
+﻿using Scripts.LevelSystem.LevelGeneration;
+using Sirenix.OdinInspector;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.U2D; // SpriteShapeController
+using PropDefinition = Scripts.LevelSystem.LevelGeneration.FloorDecorationsSO.PropDefinition;
 
 namespace Scripts.LevelSystem.TechnicalScripts
 {
@@ -25,26 +27,6 @@ namespace Scripts.LevelSystem.TechnicalScripts
     [ExecuteAlways]
     public class BackgroundPropSpawner : MonoBehaviour
     {
-        [System.Serializable]
-        public class PropDefinition
-        {
-            [Tooltip("Label for Inspector only.")] public string id;
-
-            [Tooltip("Sprites for this prop type. One is picked randomly.")]
-            public Sprite[] sprites;
-
-            [Tooltip("If true, flip X so the prop appears to 'lean' toward the map center.")]
-            public bool faceLevelCenter = false;
-
-            [Tooltip("Random uniform scale multiplier AFTER parallax scale.")]
-            public Vector2 randomScaleRange = new Vector2(0.9f, 1.1f);
-
-            [Tooltip("Max random XY jitter offset (world units) applied after placement.")]
-            public Vector2 positionJitterRange = new Vector2(0.2f, 0.2f);
-
-            [Tooltip("If false, this prop will NOT receive wind animation (WindFactor forced 0).")]
-            public bool affectedByWind = true;
-        }
 
         // -------------------------------------------------
         // References
@@ -110,7 +92,10 @@ namespace Scripts.LevelSystem.TechnicalScripts
         // Props library
         // -------------------------------------------------
         [Header("Props Library")]
-        [Tooltip("Different prop archetypes (bushes, rocks, mushrooms, etc.). We'll choose one at random per spawn.")]
+        [Tooltip("Shared per-floor decoration pool. When assigned at runtime, its PropDefinitions override _propDefinitions.")]
+        [SerializeField] private FloorDecorationsSO _floorDecorations;
+
+        [Tooltip("Inline fallback prop definitions used when _floorDecorations is null.")]
         [SerializeField] private List<PropDefinition> _propDefinitions = new List<PropDefinition>();
 
         // -------------------------------------------------
@@ -182,6 +167,32 @@ namespace Scripts.LevelSystem.TechnicalScripts
                 GenerateProps();
         }
 
+        private void Start()
+        {
+            if (!Application.isPlaying) return;
+            if (LevelManager.Instance)
+                LevelManager.Instance.FloorEntered += LevelManager_FloorEntered;
+        }
+
+        private void OnDestroy()
+        {
+            if (LevelManager.Instance)
+                LevelManager.Instance.FloorEntered -= LevelManager_FloorEntered;
+        }
+
+        private void LevelManager_FloorEntered(Scripts.LevelSystem.LevelGeneration.FloorConfigSO floorConfig)
+        {
+            if (!floorConfig || !floorConfig.Decorations) return;
+            _floorDecorations = floorConfig.Decorations;
+            if (_levelField)
+                GenerateProps();
+        }
+
+        public void SetFloorDecorations(FloorDecorationsSO decorations)
+        {
+            _floorDecorations = decorations;
+        }
+
 #if UNITY_EDITOR
         private void OnValidate()
         {
@@ -195,6 +206,8 @@ namespace Scripts.LevelSystem.TechnicalScripts
             _levelField = spriteField;
             GenerateProps();
         }
+
+        private List<PropDefinition> ActivePropDefinitions => _floorDecorations ? _floorDecorations.PropDefinitions : _propDefinitions;
 
         [Button]
         [ContextMenu("Generate Background Props")]
@@ -212,7 +225,8 @@ namespace Scripts.LevelSystem.TechnicalScripts
                 return;
             }
 
-            if (_propDefinitions == null || _propDefinitions.Count == 0)
+            var activeDefs = ActivePropDefinitions;
+            if (activeDefs == null || activeDefs.Count == 0)
             {
                 Debug.LogWarning("[BackgroundPropSpawner] No prop definitions assigned");
                 return;
@@ -467,12 +481,13 @@ namespace Scripts.LevelSystem.TechnicalScripts
             def = null;
             chosenSprite = null;
 
-            if (_propDefinitions == null || _propDefinitions.Count == 0)
+            var pool = ActivePropDefinitions;
+            if (pool == null || pool.Count == 0)
                 return false;
 
             for (int tries = 0; tries < 8; tries++)
             {
-                PropDefinition d = _propDefinitions[Random.Range(0, _propDefinitions.Count)];
+                PropDefinition d = pool[Random.Range(0, pool.Count)];
                 if (d == null || d.sprites == null || d.sprites.Length == 0)
                     continue;
 

@@ -252,9 +252,22 @@ namespace Scripts.Player
         {
             var ghost = Instantiate(source.gameObject, source.position, source.rotation);
             DisableBehavioursRecursive(ghost.transform);
+            DestroyTriggerColliders(source, ghost.transform);
             SetLayerRecursively(ghost.transform, _simulationGhostLayer);
             SceneManager.MoveGameObjectToScene(ghost, targetScene);
             _spawnedObjects[source] = ghost.transform;
+        }
+
+        private static void DestroyTriggerColliders(Transform source, Transform ghost)
+        {
+            var srcColliders = source.GetComponentsInChildren<Collider2D>(true);
+            var dstColliders = ghost.GetComponentsInChildren<Collider2D>(true);
+            int count = Mathf.Min(srcColliders.Length, dstColliders.Length);
+            for (int i = 0; i < count; i++)
+            {
+                if (srcColliders[i].isTrigger)
+                    Destroy(dstColliders[i]);
+            }
         }
 
         private void SetLayerRecursively(Transform root, int layer)

@@ -1,4 +1,5 @@
 using System;
+using Scripts.Camera;
 using Scripts.Items.StatSystems;
 using UnityEngine;
 
@@ -12,6 +13,13 @@ namespace Scripts.Player
         [SerializeField] private float _defaultDamage = 10f;
         [SerializeField] private float _defaultRadius = 2f;
         [SerializeField] private float _defaultKnockback = 5f;
+
+        [Header("Screen Shake")]
+        [SerializeField] private bool _shakeEnabled = true;
+        [SerializeField] private float _shakeStrengthPerDamage = 0.1f;
+        [SerializeField] private float _minShakeStrength = 0.5f;
+        [SerializeField] private float _maxShakeStrength = 5f;
+        [SerializeField] private float _shakeDuration = 0.3f;
 
         [Header("References")]
         [SerializeField] private LayerMask _enemyLayerMask;
@@ -54,6 +62,14 @@ namespace Scripts.Player
         public void NotifyExplosionCreated(Vector2 position, float finalDamage)
         {
             OnExplosionCreated?.Invoke(position, finalDamage);
+
+            if (_shakeEnabled && CameraShakeHandler.Instance)
+            {
+                float strength = Mathf.Clamp(
+                    finalDamage * _shakeStrengthPerDamage,
+                    _minShakeStrength, _maxShakeStrength);
+                CameraShakeHandler.Instance.ShakeCameraOutsideOfQueue(_shakeDuration, strength);
+            }
         }
     }
 }
