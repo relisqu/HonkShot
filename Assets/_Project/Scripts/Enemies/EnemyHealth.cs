@@ -16,6 +16,7 @@ namespace Scripts.Enemies
     {
         [SerializeField] private HealthController _healthController;
         [SerializeField] private BaseEnemy _baseEnemy;
+        [SerializeField] private EnemyArmor _armor;
 
         private float _lastDamageReceived;
         private EnemyTweenController _tweenController;
@@ -29,6 +30,8 @@ namespace Scripts.Enemies
                 _healthController = GetComponent<HealthController>();
             if (!_baseEnemy)
                 _baseEnemy = GetComponent<BaseEnemy>();
+            if (!_armor)
+                _armor = GetComponent<EnemyArmor>();
             _tweenController = GetComponent<EnemyTweenController>();
             _stateMachine = GetComponent<HidingShootingEnemyStateMachine>();
         }
@@ -93,6 +96,14 @@ namespace Scripts.Enemies
         private void ReceiveDamage(PlayerAttackController playerAttackController)
         {
             _lastDamageReceived = playerAttackController.GetDamage();
+
+            if (_armor && _armor.IsArmorActive && _armor.TryAbsorbDamage(_lastDamageReceived))
+            {
+                playerAttackController.Damage(gameObject);
+                playerAttackController.OnDamaged?.Invoke(0f);
+                return;
+            }
+
             var resultDamage = _healthController.TakeDamage(_lastDamageReceived);
             playerAttackController.Damage(gameObject);
             playerAttackController.OnDamaged?.Invoke(resultDamage);

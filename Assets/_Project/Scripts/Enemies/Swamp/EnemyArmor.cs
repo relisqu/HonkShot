@@ -1,5 +1,4 @@
 using System;
-using Scripts.Health;
 using UnityEngine;
 
 namespace Scripts.Enemies.Swamp
@@ -11,7 +10,6 @@ namespace Scripts.Enemies.Swamp
         [SerializeField] private float _damageThreshold = 5f;
 
         [Header("Components")]
-        [SerializeField] private HealthController _healthController;
         [SerializeField] private SpriteRenderer _armorVisual;
 
         private int _remainingHits;
@@ -24,46 +22,31 @@ namespace Scripts.Enemies.Swamp
 
         private void Awake()
         {
-            if (!_healthController)
-                _healthController = GetComponent<HealthController>();
-
             _remainingHits = _armorHits;
         }
 
-        private void Start()
+        /// <summary>
+        /// Called by EnemyHealth BEFORE any damage reaches HealthController.
+        /// Returns true if the armor absorbed the damage (the enemy takes no health loss).
+        /// Returns false if the armor is broken or inactive and damage should pass through.
+        /// </summary>
+        public bool TryAbsorbDamage(float damage)
         {
-            _healthController.OnTakeDamageTriggered += HealthController_OnTakeDamageTriggered;
-            _healthController.OnDamageReceived += HealthController_OnDamageReceived;
-        }
+            if (_armorDestroyed) return false;
 
-        private void OnDestroy()
-        {
-            if (_healthController)
-            {
-                _healthController.OnTakeDamageTriggered -= HealthController_OnTakeDamageTriggered;
-                _healthController.OnDamageReceived -= HealthController_OnDamageReceived;
-            }
-        }
+            // Small hits bounce off harmlessly — no health loss, no armor hit counted.
+            if (damage < _damageThreshold) return true;
 
-        private void HealthController_OnTakeDamageTriggered()
-        {
-            // Armor intercepts before damage is applied
-        }
-
-        private void HealthController_OnDamageReceived(float damage)
-        {
-            if (_armorDestroyed) return;
-            if (damage < _damageThreshold) return;
-
+            // Qualifying hit: armor absorbs the damage and loses one charge.
             _remainingHits--;
             OnArmorHit?.Invoke();
 
             if (_remainingHits <= 0)
-            {
                 DestroyArmor();
-            }
+            else
+                UpdateVisual();
 
-            UpdateVisual();
+            return true;
         }
 
         private void DestroyArmor()
