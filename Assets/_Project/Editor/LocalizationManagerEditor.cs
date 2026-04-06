@@ -10,7 +10,7 @@ public class LocalizationManagerEditor : Editor
         serializedObject.Update();
 
         DrawDefaultInspector();
-
+        
         var manager = (LocalizationManager)target;
         var db = manager.languageDatabase;
 
@@ -31,7 +31,7 @@ public class LocalizationManagerEditor : Editor
             if (manager.currentLanguageEntry == db.entries[i])
                 currentIndex = i;
         }
-
+        
         int newIndex = EditorGUILayout.Popup("Current Language", currentIndex, options);
 
         if (newIndex != currentIndex)
@@ -41,6 +41,10 @@ public class LocalizationManagerEditor : Editor
             EditorUtility.SetDirty(manager);
         }
 
+        EditorGUILayout.HelpBox(
+            "Если тут написано что язык русский, а надписи отображаются на англе" + 
+            " подёргайте опции в дропдауне туда-сюда, всё перебиндится",
+            MessageType.Info);
         serializedObject.ApplyModifiedProperties();
     }
 }

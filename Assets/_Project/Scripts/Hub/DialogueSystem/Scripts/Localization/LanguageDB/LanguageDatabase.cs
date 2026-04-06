@@ -10,6 +10,6 @@ public class LanguageDatabase : ScriptableObject
 [System.Serializable]
 public class LanguageEntry
 {
-    public string displayName; // Russian
-    public string code;        // ru
+    public string displayName; // eg Russian, ENglish
+    public string code;        // eg RU, EN
 }
