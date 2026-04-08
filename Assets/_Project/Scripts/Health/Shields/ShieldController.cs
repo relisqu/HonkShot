@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
 using Scripts.Items.StatSystems;
 using Sirenix.OdinInspector;
 
@@ -10,14 +9,11 @@ namespace Scripts.Health
     [RequireComponent(typeof(HealthController))]
     public class ShieldController : MonoBehaviour
     {
-        private List<Shield> _shields = new List<Shield>();
-
-        [Header("Visual Settings")] [SerializeField]
-        private Shield _shieldPrefab;
-
         [SerializeField] private int _defaultShields = 0;
         [SerializeField] private int _maxShields = 3;
-        [SerializeField] private Transform _shieldVisualParent;
+        [SerializeField] private float _shieldDamageThreshold = 5f;
+
+        private List<Shield> _shields = new List<Shield>();
 
         private HealthController _healthController;
         private NumericStatModifierSystem _maxShieldsModifierSystem = new();
@@ -33,26 +29,18 @@ namespace Scripts.Health
         private void Awake()
         {
             _healthController = GetComponent<HealthController>();
-            _healthController.OnTakeDamageTriggered += OnPlayerTakeDamage;
+        }
+
+        private void Start()
+        {
+            if (_defaultShields > 0 && _shields.Count == 0)
+                AddShield(_defaultShields);
         }
 
         public int GetMaxShields()
         {
             return (int)_maxShieldsModifierSystem.Calculate(_maxShields);
         }
-
-        private void OnDestroy()
-        {
-            if (_healthController != null)
-                _healthController.OnTakeDamageTriggered -= OnPlayerTakeDamage;
-        }
-
-        private void OnPlayerTakeDamage()
-        {
-            // This will be called before damage is applied to health
-            // We'll handle shield logic in TakeDamage method
-        }
-
 
         [Button]
         public void AddShield(int count = 1)
@@ -65,8 +53,7 @@ namespace Scripts.Health
 
             for (int i = 0; i < count; i++)
             {
-                var newShield = Instantiate(_shieldPrefab, _shieldVisualParent);
-
+                var newShield = new Shield(_shieldDamageThreshold);
                 _shields.Add(newShield);
                 OnShieldAdded?.Invoke(newShield);
             }
@@ -74,10 +61,9 @@ namespace Scripts.Health
 
         public void RemoveShield(Shield shield)
         {
-            Debug.Log("Removing shield: " + shield.gameObject.name);
             if (_shields.Remove(shield))
             {
-                shield.DestroyShield();
+                Debug.Log("[ShieldController] Removed Shield for " +  transform.name);
                 OnShieldDestroyed?.Invoke(shield);
             }
         }
@@ -93,7 +79,6 @@ namespace Scripts.Health
                 float absorbedDamage = shield.AbsorbDamage(remainingDamage);
                 remainingDamage -= absorbedDamage;
 
-                Debug.Log("Shield " + shield.gameObject.name + ": " + absorbedDamage);
                 if (absorbedDamage > 0)
                 {
                     OnShieldDamaged?.Invoke(shield);

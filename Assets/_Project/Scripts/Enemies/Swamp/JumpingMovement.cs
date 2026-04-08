@@ -34,6 +34,13 @@ namespace Scripts.Enemies.Swamp
                 _jumpAnimator = GetComponent<JumpAnimator>();
         }
 
+        private void OnDisable()
+        {
+            // Coroutines die when the GameObject is disabled, but the _isJumping flag would
+            // otherwise survive — leaving the enemy permanently locked in mid-jump state.
+            _isJumping = false;
+        }
+
         public bool CanJumpTowards(Vector2 direction)
         {
             var hit = Physics2D.Raycast(transform.position, direction, _wallCheckDistance, _obstacleMask);
@@ -75,36 +82,44 @@ namespace Scripts.Enemies.Swamp
             _isJumping = true;
             OnJumpStart?.Invoke();
 
-            if (_jumpAnimator)
+            try
             {
-                _jumpAnimator.PlayAnticipation();
-                yield return new WaitForSeconds(_jumpAnimator.AnticipationDuration);
-                _jumpAnimator.PlayLaunchStretch();
-            }
-
-            float distance = overrideDistance ?? _jumpDistance;
-            Vector2 startPos = _rb.position;
-            Vector2 endPos = startPos + direction * distance;
-
-            float elapsed = 0f;
-
-            while (elapsed < _jumpDuration)
-            {
-                elapsed += Time.fixedDeltaTime;
-                float t = Mathf.Clamp01(elapsed / _jumpDuration);
-
-                Vector2 flatPos = Vector2.Lerp(startPos, endPos, t);
-                _rb.MovePosition(flatPos);
-
                 if (_jumpAnimator)
-                    _jumpAnimator.UpdateArc(t);
+                {
+                    _jumpAnimator.PlayAnticipation();
+                    yield return new WaitForSeconds(_jumpAnimator.AnticipationDuration);
+                    _jumpAnimator.PlayLaunchStretch();
+                }
 
-                yield return new WaitForFixedUpdate();
+                float distance = overrideDistance ?? _jumpDistance;
+                Vector2 startPos = _rb.position;
+                Vector2 endPos = startPos + direction * distance;
+
+                float elapsed = 0f;
+
+                while (elapsed < _jumpDuration)
+                {
+                    elapsed += Time.fixedDeltaTime;
+                    float t = Mathf.Clamp01(elapsed / _jumpDuration);
+
+                    Vector2 flatPos = Vector2.Lerp(startPos, endPos, t);
+                    _rb.MovePosition(flatPos);
+
+                    if (_jumpAnimator)
+                        _jumpAnimator.UpdateArc(t);
+
+                    yield return new WaitForFixedUpdate();
+                }
+
+                _rb.MovePosition(endPos);
             }
-
-            _rb.MovePosition(endPos);
-            _isJumping = false;
-            OnJumpLand?.Invoke();
+            finally
+            {
+                // Guarantee the flag clears even if something inside the loop throws —
+                // otherwise the enemy gets permanently locked in the jumping state.
+                _isJumping = false;
+                OnJumpLand?.Invoke();
+            }
         }
     }
 }

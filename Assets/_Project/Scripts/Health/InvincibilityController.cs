@@ -17,6 +17,11 @@ namespace Scripts.Health
             StartInvincibility(_iFrameDuration);
         }
 
+        private void HealthController_OnDamageBlocked(float damage)
+        {
+            StartInvincibility(_iFrameDuration);
+        }
+
         public void StartInvincibility(float invincibilityDuration)
         {
             StartCoroutine(InvincibilityCoroutine(invincibilityDuration));
@@ -33,11 +38,13 @@ namespace Scripts.Health
         {
             _healthController = GetComponent<HealthController>();
             _healthController.OnNonLethalDamageReceived += HealthController_OnNonLethalDamageReceived;
+            _healthController.OnDamageBlocked += HealthController_OnDamageBlocked;
         }
 
         private void OnDestroy()
         {
             _healthController.OnNonLethalDamageReceived -= HealthController_OnNonLethalDamageReceived;
+            _healthController.OnDamageBlocked -= HealthController_OnDamageBlocked;
         }
     }
 }

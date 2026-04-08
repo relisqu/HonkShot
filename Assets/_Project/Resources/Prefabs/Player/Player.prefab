@@ -36,6 +36,7 @@ GameObject:
   - component: {fileID: 5020504577243975703}
   - component: {fileID: 7210995127067110868}
   - component: {fileID: 8588473697873562762}
+  - component: {fileID: 1234567890123456789}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -517,10 +518,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed2064ba8f1327b419acb6914fa9e1b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _shieldPrefab: {fileID: 6096183082381102688, guid: 577ccbc1fed154f449f75f67eeb6da40, type: 3}
   _defaultShields: 0
   _maxShields: 3
-  _shieldVisualParent: {fileID: 3112019895012964704}
+  _shieldDamageThreshold: 5
 --- !u!66 &5020504577243975703
 CompositeCollider2D:
   m_ObjectHideFlags: 0
@@ -614,6 +614,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 329d93a693579f146bc0d032fc32c4cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Scripts.Health.ReviveSystem
+--- !u!114 &1234567890123456789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 225159964537138388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ea38a7775c7461284bd31a1b9d577be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _shieldController: {fileID: 3323263315137026221}
+  _shieldVisualPrefab: {fileID: -3084956236828285870, guid: 577ccbc1fed154f449f75f67eeb6da40, type: 3}
+  _shieldVisualParent: {fileID: 3112019895012964704}
 --- !u!1 &334979677366588079
 GameObject:
   m_ObjectHideFlags: 0

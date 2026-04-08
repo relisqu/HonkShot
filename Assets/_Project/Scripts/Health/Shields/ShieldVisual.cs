@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using DG.Tweening;
 
 namespace Scripts.Health
 {
@@ -106,6 +107,24 @@ namespace Scripts.Health
             if (!active)
             {
                 gameObject.SetActive(false);
+            }
+        }
+
+        public void PlayDestructionAnimation()
+        {
+            _isActive = false;
+
+            if (_spriteRenderer)
+            {
+                _spriteRenderer.DOFade(0f, 0.3f)
+                    .SetEase(Ease.InQuad)
+                    .OnComplete(() => Destroy(gameObject));
+
+                transform.DOScale(0f, 0.3f).SetEase(Ease.InBack);
+            }
+            else
+            {
+                Destroy(gameObject);
             }
         }
 

@@ -21,13 +21,12 @@ namespace Scripts.LevelSystem.LevelObjects
 
             teleportableEntity.DisableTeleporting();
 
-            // Direction + power rotated around portal:
-            // convert entry velocity to THIS portal's local frame, then back out through the
-            // paired portal's frame. Equivalent to rotating the velocity by the angular delta
-            // between the two portals.
+            // The entry portal accepts any incoming direction. The paired portal acts like a
+            // launcher — the player always exits along its world normal, preserving the
+            // incoming speed magnitude.
             Vector2 entryVel = teleportableEntity.GetVelocity();
-            Vector2 localVel = transform.InverseTransformDirection(entryVel);
-            Vector2 exitVel = _pairedPortal.transform.TransformDirection(localVel);
+            float speed = entryVel.magnitude;
+            Vector2 exitVel = _pairedPortal.WorldNormal * speed;
 
             // Spawn along the exit direction so the player moves away from the paired portal
             // and doesn't instantly re-trigger it. Fall back to the paired portal's normal if

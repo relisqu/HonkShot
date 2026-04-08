@@ -153,7 +153,7 @@ namespace Scripts.Enemies
             while (true)
             {
                 yield return new WaitForSeconds(_attackInterval);
-                if (_isAttacking || _target == null) continue;
+                if (_isAttacking || !_target) continue;
 
                 float distance = Vector2.Distance(transform.position, _target.position);
                 if (distance <= _attackRange)

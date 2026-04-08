@@ -1,81 +1,33 @@
-﻿using UnityEngine;
-using DG.Tweening;
+using System;
 
 namespace Scripts.Health
 {
-    public class Shield : MonoBehaviour
+    [Serializable]
+    public class Shield
     {
-        [Header("Shield Settings")] 
-        public float damageThreshold = 5f;
-        
-        [Header("Visual Settings")]
-        [SerializeField] private ShieldVisual _shieldVisual;
-        [SerializeField] private SpriteRenderer _spriteRenderer;
-        
-        
+        public float DamageThreshold;
+        public bool IsActive;
 
-        private bool _isActive = true;
-
+        public Shield(float damageThreshold)
+        {
+            DamageThreshold = damageThreshold;
+            IsActive = true;
+        }
 
         public bool CanBlockDamage(float damage)
         {
-            return _isActive && damage <= damageThreshold;
+            return IsActive && damage <= DamageThreshold;
         }
 
         public float AbsorbDamage(float damage)
         {
             if (!CanBlockDamage(damage))
             {
-                // Shield will be destroyed
-                _isActive = false;
+                IsActive = false;
                 return damage;
             }
 
-            return 0f; // Damage below threshold, ignored
+            return 0f;
         }
-
-        public virtual void DestroyShield()
-        {
-            Debug.Log("Shield destroyed");
-            
-            // Play destruction animation
-            if (_spriteRenderer)
-            {
-                _spriteRenderer.DOFade(0f, 0.3f)
-                    .SetEase(Ease.InQuad)
-                    .OnComplete(() => {
-                        if (_shieldVisual)
-                        {
-                            _shieldVisual.SetActive(false);
-                        }
-                        Destroy(gameObject);
-                    });
-                
-                transform.DOScale(0f, 0.3f)
-                    .SetEase(Ease.InBack);
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-        }
-
-        public virtual void ActivateShield()
-        {
-            _isActive = true;
-            
-            if (_spriteRenderer)
-            {
-                _spriteRenderer.DOFade(1f, 0.2f);
-            }
-            
-            if (_shieldVisual)
-            {
-                _shieldVisual.SetActive(true);
-            }
-        }
-      
-
-
     }
 }

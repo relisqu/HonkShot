@@ -3,18 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using Scripts.Health;
-using Scripts.Player;
-using Scripts.PointSystem;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using Zenject;
 
 namespace Scripts.Enemies
 {
     public class WalkingEnemy : BaseEnemy
     {
-        [Inject] private PointReceiver _pointReceiver;
-
         [Header("Path Settings")] [SerializeField]
         private List<Transform> _pathPoints = new();
 
@@ -50,6 +45,8 @@ namespace Scripts.Enemies
 
 
         private bool _isAttacking = false;
+        private float _nextAttackTime;
+        private int _currentDirection = 1;
 
         private void OnEnable()
         {
@@ -62,87 +59,108 @@ namespace Scripts.Enemies
 
             _pathPoints.RemoveAll(point => point == null);
 
-            StartCoroutine(FollowPath());
-            StartCoroutine(AttackRoutine());
+            _nextAttackTime = Time.time + _attackInterval;
+            StartCoroutine(BehaviourRoutine());
         }
 
-
-
-        private IEnumerator FollowPath()
+        private IEnumerator BehaviourRoutine()
         {
             while (_enemyHealth.IsAlive())
             {
-                Transform targetPoint = _pathPoints[_currentTargetIndex];
-                _animator.SetBool("IsWalking", true);
-
-                while (Vector2.Distance(transform.position, targetPoint.position) > 0.1f)
+                // Attack always wins when ready and a player is inside the attack circle —
+                // pauses the walk for a strike, then resumes pathing on the next iteration.
+                if (Time.time >= _nextAttackTime && TryFindPlayerHealth(out _))
                 {
-                    while (_isAttacking)
-                    {
-                        yield return null;
-                    }
-
-                    Vector2 targetVelocity = ((Vector2)targetPoint.position - (Vector2)transform.position).normalized * _moveSpeed;
-                    _rigidbody2D.linearVelocity = Vector2.MoveTowards(_rigidbody2D.linearVelocity, targetVelocity, _moveSpeed * Time.deltaTime);
-                    yield return null;
+                    yield return AttackOnce();
+                    _nextAttackTime = Time.time + _attackInterval;
+                    continue;
                 }
 
-                switch (_walkingType)
-                {
-                    case WalkingType.YoYo:
-
-                        if (_currentTargetIndex == 0)
-                        {
-                            _currentDirection = 1;
-                        }
-                        else if (_currentTargetIndex >= _pathPoints.Count - 1)
-                        {
-                            _currentDirection = -1;
-                        }
-
-                        _currentTargetIndex = (_currentTargetIndex + 1 * _currentDirection) % _pathPoints.Count;
-                        break;
-                    case WalkingType.Closed:
-                        _currentTargetIndex = (_currentTargetIndex + 1) % _pathPoints.Count;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                yield return WalkStep();
             }
         }
 
-        private int _currentDirection = 1;
-
-        private IEnumerator AttackRoutine()
+        private IEnumerator WalkStep()
         {
-            while (_enemyHealth.IsAlive())
+            Transform targetPoint = _pathPoints[_currentTargetIndex];
+            if (_animator) _animator.SetBool("IsWalking", true);
+
+            Vector2 targetVelocity = ((Vector2)targetPoint.position - (Vector2)transform.position).normalized * _moveSpeed;
+            _rigidbody2D.linearVelocity = Vector2.MoveTowards(_rigidbody2D.linearVelocity, targetVelocity, _moveSpeed * Time.deltaTime);
+
+            if (Vector2.Distance(transform.position, targetPoint.position) <= 0.1f)
+                AdvanceToNextPoint();
+
+            yield return null;
+        }
+
+        private void AdvanceToNextPoint()
+        {
+            switch (_walkingType)
             {
-                if (_isAttacking) yield return null;
-                yield return new WaitForSeconds(_attackInterval);
+                case WalkingType.YoYo:
+                    if (_currentTargetIndex == 0)
+                        _currentDirection = 1;
+                    else if (_currentTargetIndex >= _pathPoints.Count - 1)
+                        _currentDirection = -1;
 
-                _rigidbody2D.linearVelocity = Vector2.zero;
+                    _currentTargetIndex = (_currentTargetIndex + _currentDirection) % _pathPoints.Count;
+                    break;
+
+                case WalkingType.Closed:
+                    _currentTargetIndex = (_currentTargetIndex + 1) % _pathPoints.Count;
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private bool TryFindPlayerHealth(out HealthController playerHealth)
+        {
+            var hits = Physics2D.OverlapCircleAll(transform.position, _attackRange, _playerLayer);
+            for (int i = 0; i < hits.Length; i++)
+            {
+                var hc = hits[i].GetComponentInParent<HealthController>();
+                if (hc)
+                {
+                    playerHealth = hc;
+                    return true;
+                }
+            }
+
+            playerHealth = null;
+            return false;
+        }
+
+        private IEnumerator AttackOnce()
+        {
+            _isAttacking = true;
+            _rigidbody2D.linearVelocity = Vector2.zero;
+            if (_animator)
+            {
                 _animator.SetBool("IsWalking", false);
-                _isAttacking = true;
+                _animator.SetTrigger("Attack");
+            }
 
+            if (_prefireSpriteRenderer)
+            {
                 _prefireSpriteRenderer.DOColor(_prefireSpriteColor, _attackWarningTime - 0.1f).SetEase(Ease.OutCirc);
                 _prefireSpriteRenderer.transform.localScale = Vector3.one * (_attackRange * 2f);
-                _attackWarningEffect.Play();
-                _animator.SetTrigger("Attack");
-                yield return new WaitForSeconds(_attackWarningTime);
-
-                var pointReceiver =
-                    _pointReceiver ?? PointReceiver.Instance; // Fallback to Instance if injection failed
-                if (pointReceiver != null)
-                {
-                    var distance = Vector2.Distance(transform.position, pointReceiver.transform.position);
-                    if (distance <= _attackRange)
-                    {
-                        pointReceiver.GetComponent<HealthController>()?.TakeDamage(_damage);
-                    }
-                }
-
-                _prefireSpriteRenderer.color = Color.clear;
             }
+
+            if (_attackWarningEffect)
+                _attackWarningEffect.Play();
+
+            yield return new WaitForSeconds(_attackWarningTime);
+
+            if (TryFindPlayerHealth(out var playerHealth))
+                playerHealth.TakeDamage(_damage);
+
+            if (_prefireSpriteRenderer)
+                _prefireSpriteRenderer.color = Color.clear;
+
+            _isAttacking = false;
         }
 
         public void FinishAnimation()

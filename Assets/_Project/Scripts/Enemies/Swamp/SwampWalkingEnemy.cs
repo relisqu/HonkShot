@@ -3,34 +3,32 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using Scripts.Health;
-using Scripts.Player;
-using Scripts.PointSystem;
 using UnityEngine;
-using Zenject;
 
 namespace Scripts.Enemies.Swamp
 {
     public class SwampWalkingEnemy : BaseEnemy
     {
-        [Inject] private PointReceiver _pointReceiver;
+        [Header("Path Settings")] [SerializeField]
+        private List<Transform> _pathPoints = new();
 
-        [Header("Path Settings")]
-        [SerializeField] private List<Transform> _pathPoints = new();
         [SerializeField] private WalkingType _walkingType = WalkingType.Closed;
 
-        [Header("Attack Settings")]
-        [SerializeField] private float _attackRange = 1.5f;
+        [Header("Attack Settings")] [SerializeField]
+        private float _attackRange = 1.5f;
+
+        [SerializeField] private LayerMask _playerLayer;
         [SerializeField] private float _attackInterval = 1f;
         [SerializeField] private float _attackWarningTime = 0.5f;
         [SerializeField] private int _damage = 1;
 
-        [Header("Visuals")]
-        [SerializeField] private ParticleSystem _attackWarningEffect;
+        [Header("Visuals")] [SerializeField] private ParticleSystem _attackWarningEffect;
         [SerializeField] private SpriteRenderer _prefireSpriteRenderer;
         [SerializeField] private Color _prefireSpriteColor;
 
-        [Header("Components")]
-        [SerializeField] private JumpingMovement _jumpingMovement;
+        [Header("Components")] [SerializeField]
+        private JumpingMovement _jumpingMovement;
+
         [SerializeField] private EnemyHealth _enemyHealth;
         [SerializeField] private Animator _animator;
         [SerializeField] private Rigidbody2D _rb;
@@ -38,6 +36,7 @@ namespace Scripts.Enemies.Swamp
         private int _currentTargetIndex;
         private int _currentDirection = 1;
         private bool _isAttacking;
+        private float _nextAttackTime;
 
         private void Awake()
         {
@@ -70,34 +69,65 @@ namespace Scripts.Enemies.Swamp
 
             _pathPoints.RemoveAll(point => point == null);
 
-            StartCoroutine(JumpAlongPath());
-            StartCoroutine(AttackRoutine());
+            _nextAttackTime = Time.time + _attackInterval;
+            StartCoroutine(BehaviourRoutine());
         }
 
-        private IEnumerator JumpAlongPath()
+        private IEnumerator BehaviourRoutine()
         {
             while (_enemyHealth.IsAlive())
             {
-                while (_isAttacking)
-                    yield return null;
-
-                Transform targetPoint = _pathPoints[_currentTargetIndex];
-                Vector2 direction = ((Vector2)targetPoint.position - (Vector2)transform.position).normalized;
-
-                if (_jumpingMovement.CanJumpTowards(direction))
+                // Attack always wins when ready and a player is inside the attack circle —
+                // pauses the path-walking cycle for a strike, then resumes jumping next iteration.
+                if (Time.time >= _nextAttackTime && TryFindPlayerHealth(out _))
                 {
-                    _animator.SetTrigger("Jump");
-                    _jumpingMovement.JumpToPosition(targetPoint.position);
-
-                    while (_jumpingMovement.IsJumping)
-                        yield return null;
+                    yield return AttackOnce();
+                    _nextAttackTime = Time.time + _attackInterval;
+                    continue;
                 }
 
-                if (Vector2.Distance(transform.position, targetPoint.position) < 0.5f)
-                    AdvanceToNextPoint();
-
+                yield return JumpAlongPathOnce();
                 yield return new WaitForSeconds(_jumpingMovement.PauseBetweenJumps);
             }
+        }
+
+        private bool TryFindPlayerHealth(out HealthController playerHealth)
+        {
+            var hits = Physics2D.OverlapCircleAll(transform.position, _attackRange, _playerLayer);
+            for (int i = 0; i < hits.Length; i++)
+            {
+                var hc = hits[i].GetComponentInParent<HealthController>();
+                if (hc)
+                {
+                    playerHealth = hc;
+                    return true;
+                }
+            }
+
+            playerHealth = null;
+            return false;
+        }
+
+        private IEnumerator JumpAlongPathOnce()
+        {
+            Transform targetPoint = _pathPoints[_currentTargetIndex];
+            Vector2 direction = ((Vector2)targetPoint.position - (Vector2)transform.position).normalized;
+
+            if (!_jumpingMovement.CanJumpTowards(direction))
+            {
+                // Path blocked — skip this waypoint instead of looping forever on it.
+                AdvanceToNextPoint();
+                yield break;
+            }
+
+            if (_animator) _animator.SetTrigger("Jump");
+            _jumpingMovement.JumpToPosition(targetPoint.position);
+
+            while (_jumpingMovement.IsJumping)
+                yield return null;
+
+            if (Vector2.Distance(transform.position, targetPoint.position) < 0.5f)
+                AdvanceToNextPoint();
         }
 
         private void AdvanceToNextPoint()
@@ -122,40 +152,31 @@ namespace Scripts.Enemies.Swamp
             }
         }
 
-        private IEnumerator AttackRoutine()
+        private IEnumerator AttackOnce()
         {
-            while (_enemyHealth.IsAlive())
+            _isAttacking = true;
+            _rb.linearVelocity = Vector2.zero;
+
+            if (_prefireSpriteRenderer)
             {
-                if (_isAttacking) yield return null;
-                yield return new WaitForSeconds(_attackInterval);
-
-                var pointReceiver = _pointReceiver ?? PointReceiver.Instance;
-                if (pointReceiver == null) continue;
-
-                float distance = Vector2.Distance(transform.position, pointReceiver.transform.position);
-                if (distance > _attackRange) continue;
-
-                _isAttacking = true;
-                _rb.linearVelocity = Vector2.zero;
-
                 _prefireSpriteRenderer.DOColor(_prefireSpriteColor, _attackWarningTime - 0.1f).SetEase(Ease.OutCirc);
                 _prefireSpriteRenderer.transform.localScale = Vector3.one * (_attackRange * 2f);
-                if (_attackWarningEffect)
-                    _attackWarningEffect.Play();
-                _animator.SetTrigger("Attack");
-
-                yield return new WaitForSeconds(_attackWarningTime);
-
-                if (pointReceiver)
-                {
-                    var dist = Vector2.Distance(transform.position, pointReceiver.transform.position);
-                    if (dist <= _attackRange)
-                        pointReceiver.GetComponent<HealthController>()?.TakeDamage(_damage);
-                }
-
-                _prefireSpriteRenderer.color = Color.clear;
-                _isAttacking = false;
             }
+
+            if (_attackWarningEffect)
+                _attackWarningEffect.Play();
+
+            if (_animator) _animator.SetTrigger("Attack");
+
+            yield return new WaitForSeconds(_attackWarningTime);
+
+            if (TryFindPlayerHealth(out var playerHealth))
+                playerHealth.TakeDamage(_damage);
+
+            if (_prefireSpriteRenderer)
+                _prefireSpriteRenderer.color = Color.clear;
+
+            _isAttacking = false;
         }
 
         public void FinishAnimation()

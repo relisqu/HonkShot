@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ namespace Scripts.LevelSystem.LevelObjects
 
         [Header("Visual")]
         [SerializeField] private SpriteRenderer _zoneVisual;
+        [SerializeField] private ParticleSystem _particleSystem;
         [SerializeField] private Color _zoneColor = new Color(0.2f, 0.5f, 0.1f, 0.3f);
 
         private readonly Dictionary<Rigidbody2D, int> _overlapCounts = new();
@@ -28,6 +30,14 @@ namespace Scripts.LevelSystem.LevelObjects
                 if (!col.GetComponent<SlowZoneCollider>())
                     col.gameObject.AddComponent<SlowZoneCollider>().Init(this);
             }
+
+        }
+
+        private void OnEnable()
+        {
+            
+            if(_particleSystem)
+                _particleSystem.Emit((int)_particleSystem.emission.rateOverTimeMultiplier*10);
         }
 
         public void BodyEnterCollider(Rigidbody2D rb)

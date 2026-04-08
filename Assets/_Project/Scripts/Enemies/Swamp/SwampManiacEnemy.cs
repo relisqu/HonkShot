@@ -34,8 +34,8 @@ namespace Scripts.Enemies.Swamp
         [SerializeField] private Rigidbody2D _rb;
 
         private bool _isAttacking;
-        private Coroutine _jumpRoutine;
-        private Coroutine _attackRoutine;
+        private float _nextAttackTime;
+        private Coroutine _behaviourRoutine;
 
         private void Awake()
         {
@@ -55,8 +55,8 @@ namespace Scripts.Enemies.Swamp
             if (pointReceiver)
                 _target = pointReceiver.transform;
 
-            _jumpRoutine = StartCoroutine(JumpChaseRoutine());
-            _attackRoutine = StartCoroutine(AttackRoutine());
+            _nextAttackTime = Time.time + _attackInterval;
+            _behaviourRoutine = StartCoroutine(BehaviourRoutine());
         }
 
         private void OnDisable()
@@ -64,72 +64,75 @@ namespace Scripts.Enemies.Swamp
             StopAllCoroutines();
         }
 
-        private IEnumerator JumpChaseRoutine()
+        private IEnumerator BehaviourRoutine()
         {
             while (_enemyHealth.IsAlive())
             {
                 yield return new WaitForSeconds(_jumpingMovement.PauseBetweenJumps);
 
-                if (_isAttacking || !_target) continue;
+                if (!_target) continue;
 
-                float distToPlayer = Vector2.Distance(transform.position, _target.position);
-                if (distToPlayer <= _attackRange) continue;
-
-                Vector2 directionToPlayer = ((Vector2)_target.position - (Vector2)transform.position).normalized;
-
-                if (_preferWallJumps)
+                // Attack always wins when ready and in range — pauses the jump cycle for a strike,
+                // then resumes jumping on the next iteration.
+                if (Time.time >= _nextAttackTime &&
+                    Vector2.Distance(transform.position, _target.position) <= _attackRange)
                 {
-                    Vector2 wallDir = _jumpingMovement.FindWallDirection(directionToPlayer);
-                    if (wallDir != Vector2.zero)
-                    {
-                        if (_animator) _animator.SetTrigger("Jump");
-                        _jumpingMovement.JumpTowards(wallDir);
-
-                        while (_jumpingMovement.IsJumping)
-                            yield return null;
-
-                        continue;
-                    }
+                    yield return AttackOnce();
+                    _nextAttackTime = Time.time + _attackInterval;
+                    continue;
                 }
 
-                if (_jumpingMovement.CanJumpTowards(directionToPlayer))
-                {
-                    if (_animator) _animator.SetTrigger("Jump");
-                    _jumpingMovement.JumpTowards(directionToPlayer);
-
-                    while (_jumpingMovement.IsJumping)
-                        yield return null;
-                }
+                yield return JumpOnce();
             }
         }
 
-        private IEnumerator AttackRoutine()
+        private IEnumerator JumpOnce()
         {
-            while (_enemyHealth.IsAlive())
+            Vector2 directionToPlayer = ((Vector2)_target.position - (Vector2)transform.position).normalized;
+
+            if (_preferWallJumps)
             {
-                yield return new WaitForSeconds(_attackInterval);
-                if (_isAttacking || !_target) continue;
-
-                float distance = Vector2.Distance(transform.position, _target.position);
-                if (distance > _attackRange) continue;
-
-                _isAttacking = true;
-                _rb.linearVelocity = Vector2.zero;
-                _animator.SetTrigger("Attack");
-
-                yield return new WaitForSeconds(_attackWarningTime);
-
-                if (_target && Vector2.Distance(transform.position, _target.position) <= _attackRange)
+                Vector2 wallDir = _jumpingMovement.FindWallDirection(directionToPlayer);
+                if (wallDir != Vector2.zero)
                 {
-                    if (_target.TryGetComponent(out HealthController playerHealth))
-                    {
-                        PlayParticles();
-                        playerHealth.TakeDamage(_damage);
-                    }
-                }
+                    if (_animator) _animator.SetTrigger("Jump");
+                    _jumpingMovement.JumpTowards(wallDir);
 
-                _isAttacking = false;
+                    while (_jumpingMovement.IsJumping)
+                        yield return null;
+
+                    yield break;
+                }
             }
+
+            if (_jumpingMovement.CanJumpTowards(directionToPlayer))
+            {
+                if (_animator) _animator.SetTrigger("Jump");
+                _jumpingMovement.JumpTowards(directionToPlayer);
+
+                while (_jumpingMovement.IsJumping)
+                    yield return null;
+            }
+        }
+
+        private IEnumerator AttackOnce()
+        {
+            _isAttacking = true;
+            _rb.linearVelocity = Vector2.zero;
+            if (_animator) _animator.SetTrigger("Attack");
+
+            yield return new WaitForSeconds(_attackWarningTime);
+
+            if (_target && Vector2.Distance(transform.position, _target.position) <= _attackRange)
+            {
+                if (_target.TryGetComponent(out HealthController playerHealth))
+                {
+                    PlayParticles();
+                    playerHealth.TakeDamage(_damage);
+                }
+            }
+
+            _isAttacking = false;
         }
 
         public void PlayParticles()

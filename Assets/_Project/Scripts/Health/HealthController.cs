@@ -71,7 +71,14 @@ namespace Scripts.Health
 
             if (_shieldController)
             {
-                finalDamage = _shieldController.ProcessDamageThroughShields(damageAmount);
+                finalDamage = _shieldController.ProcessDamageThroughShields(finalDamage);
+            }
+
+            // Shields absorbed everything: still treat it as a blocked hit so i-frames kick in
+            // and the same physics frame can't burn through additional shields.
+            if (finalDamage <= 0 && damageAmount > 0)
+            {
+                OnDamageBlocked?.Invoke(damageAmount);
             }
 
             // Apply remaining damage to health

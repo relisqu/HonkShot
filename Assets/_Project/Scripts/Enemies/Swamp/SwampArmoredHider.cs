@@ -7,7 +7,6 @@ namespace Scripts.Enemies.Swamp
     {
         [Header("Components")]
         [SerializeField] private HidingShootingEnemyStateMachine _stateMachine;
-        [SerializeField] private EnemyArmor _enemyArmor;
         [SerializeField] private BounceObject _bounceObject;
         [SerializeField] private Collider2D _bounceCollider;
 
@@ -15,8 +14,6 @@ namespace Scripts.Enemies.Swamp
         {
             if (!_stateMachine)
                 _stateMachine = GetComponent<HidingShootingEnemyStateMachine>();
-            if (!_enemyArmor)
-                _enemyArmor = GetComponent<EnemyArmor>();
             if (!_bounceObject)
                 _bounceObject = GetComponent<BounceObject>();
             if (!_bounceCollider)
