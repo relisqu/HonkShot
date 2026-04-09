@@ -1,13 +1,18 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Scripts.Enemies.Swamp
 {
     public class SwampFlyEnemy : BaseEnemy
     {
-        [Header("Random Flight Settings")]
-        [SerializeField] private float _maxDistanceFromStart = 4f;
-        [SerializeField] private float _dashDistance = 2f;
+        [Header("Path Settings")]
+        [SerializeField] private List<Transform> _pathPoints = new();
+        [SerializeField] private WalkingType _walkingType = WalkingType.Closed;
+
+        [Header("Flight Settings")]
         [SerializeField] private float _dashSpeed = 6f;
         [SerializeField] private float _arrivalThreshold = 0.15f;
         [SerializeField] private float _accelerationSpeed = 50f;
@@ -17,7 +22,8 @@ namespace Scripts.Enemies.Swamp
         [SerializeField] private Rigidbody2D _rb;
         [SerializeField] private EnemyHealth _enemyHealth;
 
-        private Vector2 _startPosition;
+        private int _currentTargetIndex;
+        private int _currentDirection = 1;
 
         private void Awake()
         {
@@ -25,20 +31,27 @@ namespace Scripts.Enemies.Swamp
                 _rb = GetComponent<Rigidbody2D>();
             if (!_enemyHealth)
                 _enemyHealth = GetComponent<EnemyHealth>();
-
-            _startPosition = transform.position;
         }
 
         private void OnEnable()
         {
-            StartCoroutine(RandomDashRoutine());
+            if (_pathPoints.Count == 0)
+            {
+                Debug.LogError("No path points assigned to SwampFlyEnemy.");
+                enabled = false;
+                return;
+            }
+
+            _pathPoints.RemoveAll(point => point == null);
+
+            StartCoroutine(DashRoutine());
         }
 
-        private IEnumerator RandomDashRoutine()
+        private IEnumerator DashRoutine()
         {
             while (_enemyHealth.IsAlive())
             {
-                Vector2 target = PickRandomTarget();
+                Vector2 target = _pathPoints[_currentTargetIndex].position;
 
                 while (_enemyHealth.IsAlive() &&
                        Vector2.Distance(transform.position, target) > _arrivalThreshold)
@@ -47,47 +60,59 @@ namespace Scripts.Enemies.Swamp
                     _rb.linearVelocity = Vector2.MoveTowards(
                         _rb.linearVelocity,
                         desiredVelocity,
-                        _accelerationSpeed* Time.deltaTime
+                        _accelerationSpeed * Time.deltaTime
                     );
                     yield return null;
                 }
 
                 _rb.linearVelocity = Vector2.zero;
+                AdvanceToNextPoint();
 
                 float pause = Random.Range(_pauseRange.x, _pauseRange.y);
                 yield return new WaitForSeconds(pause);
             }
         }
 
-        private Vector2 PickRandomTarget()
+        private void AdvanceToNextPoint()
         {
-            Vector2 currentPos = transform.position;
-
-            for (int i = 0; i < 15; i++)
+            switch (_walkingType)
             {
-                Vector2 dir = Random.insideUnitCircle.normalized;
-                Vector2 candidate = currentPos + dir * _dashDistance;
+                case WalkingType.YoYo:
+                    if (_currentTargetIndex == 0)
+                        _currentDirection = 1;
+                    else if (_currentTargetIndex >= _pathPoints.Count - 1)
+                        _currentDirection = -1;
 
-                if (Vector2.Distance(candidate, _startPosition) <= _maxDistanceFromStart)
-                    return candidate;
+                    _currentTargetIndex = (_currentTargetIndex + _currentDirection) % _pathPoints.Count;
+                    break;
+
+                case WalkingType.Closed:
+                    _currentTargetIndex = (_currentTargetIndex + 1) % _pathPoints.Count;
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-
-            // Fallback: aim back toward the spawn point so we never drift outside the bound.
-            Vector2 toStart = (_startPosition - currentPos).sqrMagnitude > 1e-4f
-                ? (_startPosition - currentPos).normalized
-                : Vector2.right;
-            return currentPos + toStart * _dashDistance;
         }
 
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
-            Vector3 center = Application.isPlaying ? (Vector3)_startPosition : transform.position;
-
             Gizmos.color = Color.cyan;
-            Gizmos.DrawWireSphere(center, _maxDistanceFromStart);
+            for (int i = 0; i < _pathPoints.Count; i++)
+            {
+                if (_pathPoints[i] != null)
+                {
+                    Gizmos.DrawSphere(_pathPoints[i].position, 0.2f);
+                    if (i < _pathPoints.Count - 1 && _pathPoints[i + 1] != null)
+                        Gizmos.DrawLine(_pathPoints[i].position, _pathPoints[i + 1].position);
+                }
+            }
 
-            Gizmos.color = new Color(0f, 1f, 1f, 0.35f);
-            Gizmos.DrawWireSphere(transform.position, _dashDistance);
+            if (_pathPoints.Count >= 2 && _walkingType == WalkingType.Closed)
+            {
+                if (_pathPoints[0] != null && _pathPoints[^1] != null)
+                    Gizmos.DrawLine(_pathPoints[0].position, _pathPoints[^1].position);
+            }
         }
     }
 }
