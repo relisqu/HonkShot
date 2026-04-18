@@ -8,7 +8,11 @@ Shader "Custom/BouncerWall"
 
         [Header(Bouncer)]
         _BouncerColor ("Bouncer Color", Color) = (1, 0.5, 0, 1)
+        _BouncerTex ("Bouncer Texture", 2D) = "white" {}
         [IntRange] _PixelCount ("Bouncer Pixels", Range(1, 10)) = 5
+        [Toggle] _BouncerTexStretch ("Stretch Texture to Band", Float) = 1
+        _BrokenAmount ("Broken Amount", Range(0, 1)) = 0
+        _BrokenShadowColor ("Broken Edge Shadow", Color) = (0, 0, 0, 0.4)
 
         [Header(Shadow)]
         _ShadowColor ("Shadow Color", Color) = (0, 0, 0, 0.4)
@@ -21,6 +25,7 @@ Shader "Custom/BouncerWall"
 
         [HideInInspector] _Color("Tint", Color) = (1,1,1,1)
         [HideInInspector] _RendererColor("RendererColor", Color) = (1,1,1,1)
+        [PerRendererData] _SpriteUVBounds("Sprite UV Bounds", Vector) = (0, 0, 1, 1)
     }
 
     SubShader
@@ -77,15 +82,24 @@ Shader "Custom/BouncerWall"
             TEXTURE2D(_MaskTex);
             SAMPLER(sampler_MaskTex);
 
+            TEXTURE2D(_BouncerTex);
+            SAMPLER(sampler_BouncerTex);
+            float4 _BouncerTex_TexelSize;
+
             CBUFFER_START(UnityPerMaterial)
                 half4 _Color;
                 half4 _BouncerColor;
                 half4 _ShadowColor;
                 half4 _HighlightColor;
                 float4 _HighlightDirection;
+                float4 _BouncerTex_ST;
                 float _PixelCount;
                 float _ShadowPixelCount;
                 float _HighlightPixelCount;
+                float _BouncerTexStretch;
+                float _BrokenAmount;
+                half4 _BrokenShadowColor;
+                float4 _SpriteUVBounds;
             CBUFFER_END
 
             #if USE_SHAPE_LIGHT_TYPE_0
@@ -128,7 +142,7 @@ Shader "Custom/BouncerWall"
                 float2 dUVdy = ddy(i.uv);
                 float2 uvStepUp    = dUVdy * sign(ddy(i.worldPos.y));
                 float2 uvStepRight = dUVdx * sign(ddx(i.worldPos.x));
-
+                float texelPerStep = length(float2(uvStepUp.x * _MainTex_TexelSize.z, uvStepUp.y * _MainTex_TexelSize.w));
                 half4 texCol = SAMPLE_TEXTURE2D_LOD(_MainTex, sampler_MainTex, i.uv, 0);
 
                 half4 mainColor;
@@ -165,6 +179,56 @@ Shader "Custom/BouncerWall"
 
                     if (isEdge)
                         mainColor = half4(_HighlightColor.rgb, mainColor.a);
+
+                    if (_BrokenAmount > 0.01)
+                    {
+                        float brickX = floor(i.uv.x * _MainTex_TexelSize.z / 3.0);
+                        float colNoise = frac(sin(dot(float2(brickX, 0), float2(127.1, 311.7))) * 43758.5453);
+                        int reduction = (int)floor(colNoise * _BrokenAmount * 7.0);
+                        if (reduction > 0)
+                        {
+                            bool replacedBouncer = false;
+                            [loop] for (int e = 1; e <= 6; e++)
+                            {
+                                float2 checkUV = i.uv + uvStepUp * (float)e;
+                                if (SAMPLE_TEXTURE2D_LOD(_MainTex, sampler_MainTex, checkUV, 0).a < 0.01)
+                                {
+                                    if (e <= reduction)
+                                        mainColor.a = 0;
+                                    break;
+                                }
+                            }
+                            int bottomReduction = max(reduction - 1, 0);
+                            if (bottomReduction > 0 && mainColor.a > 0)
+                            {
+                                [loop] for (int b = 1; b <= 5; b++)
+                                {
+                                    float2 checkUV = i.uv - uvStepUp * (float)b;
+                                    if (SAMPLE_TEXTURE2D_LOD(_MainTex, sampler_MainTex, checkUV, 0).a < 0.01)
+                                    {
+                                        if (b <= bottomReduction)
+                                        {
+                                            int bRow = bottomReduction - b + 1;
+                                            int bcB = (int)_PixelCount;
+                                            float2 bUV;
+                                            float pixBX = i.uv.x * _MainTex_TexelSize.z;
+                                            bUV.x = (pixBX + 0.5) * _BouncerTex_TexelSize.x * _BouncerTex_ST.x + _BouncerTex_ST.z;
+                                            float sY = (_BouncerTex_TexelSize.w - 0.5 - (float)(bRow - 1) / max((float)(bcB - 1), 1.0) * (_BouncerTex_TexelSize.w - 1.0)) * _BouncerTex_TexelSize.y;
+                                            float tY = (_BouncerTex_TexelSize.w - (float)bRow + 0.5) * _BouncerTex_TexelSize.y;
+                                            bUV.y = _BouncerTexStretch > 0.5 ? sY : tY;
+                                            half4 bTex = SAMPLE_TEXTURE2D_LOD(_BouncerTex, sampler_BouncerTex, bUV, 0);
+                                            mainColor = bTex * _BouncerColor;
+                                            mask = half4(1, 1, 1, 1);
+                                            replacedBouncer = true;
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                            if (mainColor.a > 0 && !replacedBouncer)
+                                mainColor.rgb *= _BrokenShadowColor.rgb;
+                        }
+                    }
                 }
                 else
                 {
@@ -175,18 +239,42 @@ Shader "Custom/BouncerWall"
                     mainColor = half4(0, 0, 0, 0);
                     mask = half4(1, 1, 1, 1);
 
-                    [loop] for (int s = 1; s <= totalCount; s++)
+                    float brickXS = floor(i.uv.x * _MainTex_TexelSize.z / 3.0);
+                    float colNoiseS = frac(sin(dot(float2(brickXS, 0), float2(127.1, 311.7))) * 43758.5453);
+                    int reductionS = (int)floor(colNoiseS * _BrokenAmount * 7.0);
+                    int bottomSkip = max(reductionS - 1, 0);
+                    int skippedCount = 0;
+
+                    [loop] for (int s = 1; s <= totalCount + bottomSkip; s++)
                     {
                         float2 sampleUV = i.uv + uvStepUp * (float)s;
+                        if (any(sampleUV < _SpriteUVBounds.xy) || any(sampleUV > _SpriteUVBounds.zw))
+                            break;
+                        if (length((sampleUV - i.uv) * _MainTex_TexelSize.zw) < 0.3)
+                            continue;
                         if (SAMPLE_TEXTURE2D_LOD(_MainTex, sampler_MainTex, sampleUV, 0).a > 0.01)
                         {
-                            if (s <= bouncerCount)
+                            if (skippedCount < bottomSkip)
                             {
-                                mainColor = _BouncerColor;
+                                skippedCount++;
+                                continue;
+                            }
+                            int es = s - skippedCount;
+                            if (es <= bouncerCount)
+                            {
+                                float localDist = texelPerStep * (float)es;
+                                float2 bUV;
+                                float pixelX = i.uv.x * _MainTex_TexelSize.z;
+                                bUV.x = (pixelX + 0.5) * _BouncerTex_TexelSize.x * _BouncerTex_ST.x + _BouncerTex_ST.z;
+                                float stretchY = (_BouncerTex_TexelSize.w - 0.5 - (float)(es - 1) / max((float)(bouncerCount - 1), 1.0) * (_BouncerTex_TexelSize.w - 1.0)) * _BouncerTex_TexelSize.y;
+                                float tileY = (_BouncerTex_TexelSize.w - localDist + 0.5) * _BouncerTex_TexelSize.y;
+                                bUV.y = _BouncerTexStretch > 0.5 ? stretchY : tileY;
+                                half4 bTex = SAMPLE_TEXTURE2D_LOD(_BouncerTex, sampler_BouncerTex, bUV, 0);
+                                mainColor = bTex * _BouncerColor;
                             }
                             else
                             {
-                                float t = (float)(s - bouncerCount) / (float)(shadowCount + 1);
+                                float t = (float)(es - bouncerCount) / (float)(shadowCount + 1);
                                 mainColor = _ShadowColor;
                             }
                             break;
@@ -256,9 +344,14 @@ Shader "Custom/BouncerWall"
                 half4 _ShadowColor;
                 half4 _HighlightColor;
                 float4 _HighlightDirection;
+                float4 _BouncerTex_ST;
                 float _PixelCount;
                 float _ShadowPixelCount;
                 float _HighlightPixelCount;
+                float _BouncerTexStretch;
+                float _BrokenAmount;
+                half4 _BrokenShadowColor;
+                float4 _SpriteUVBounds;
             CBUFFER_END
 
             Varyings BouncerNormalsVertex(Attributes v)
@@ -285,13 +378,46 @@ Shader "Custom/BouncerWall"
             half4 BouncerNormalsFragment(Varyings i) : SV_Target
             {
                 float2 uvStepUp = ddy(i.uv) * sign(ddy(i.worldPos.y));
-
                 half4 texCol = SAMPLE_TEXTURE2D_LOD(_MainTex, sampler_MainTex, i.uv, 0);
                 half  resolvedAlpha;
 
                 if (texCol.a > 0.01)
                 {
                     resolvedAlpha = texCol.a * i.color.a;
+
+                    if (_BrokenAmount > 0.01)
+                    {
+                        float brickX = floor(i.uv.x * _MainTex_TexelSize.z / 3.0);
+                        float colNoise = frac(sin(dot(float2(brickX, 0), float2(127.1, 311.7))) * 43758.5453);
+                        int reduction = (int)floor(colNoise * _BrokenAmount * 7.0);
+                        if (reduction > 0)
+                        {
+                            [loop] for (int e = 1; e <= 6; e++)
+                            {
+                                float2 checkUV = i.uv + uvStepUp * (float)e;
+                                if (SAMPLE_TEXTURE2D_LOD(_MainTex, sampler_MainTex, checkUV, 0).a < 0.01)
+                                {
+                                    if (e <= reduction)
+                                        resolvedAlpha = 0;
+                                    break;
+                                }
+                            }
+                            int bottomReduction = max(reduction - 1, 0);
+                            if (bottomReduction > 0 && resolvedAlpha > 0)
+                            {
+                                [loop] for (int b = 1; b <= 5; b++)
+                                {
+                                    float2 checkUV = i.uv - uvStepUp * (float)b;
+                                    if (SAMPLE_TEXTURE2D_LOD(_MainTex, sampler_MainTex, checkUV, 0).a < 0.01)
+                                    {
+                                        if (b <= bottomReduction)
+                                            resolvedAlpha = _BouncerColor.a;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -301,18 +427,34 @@ Shader "Custom/BouncerWall"
 
                     resolvedAlpha = 0;
 
-                    [loop] for (int s = 1; s <= totalCount; s++)
+                    float brickXS = floor(i.uv.x * _MainTex_TexelSize.z / 3.0);
+                    float colNoiseS = frac(sin(dot(float2(brickXS, 0), float2(127.1, 311.7))) * 43758.5453);
+                    int reductionS = (int)floor(colNoiseS * _BrokenAmount * 7.0);
+                    int bottomSkip = max(reductionS - 1, 0);
+                    int skippedCount = 0;
+
+                    [loop] for (int s = 1; s <= totalCount + bottomSkip; s++)
                     {
                         float2 sampleUV = i.uv + uvStepUp * (float)s;
+                        if (any(sampleUV < _SpriteUVBounds.xy) || any(sampleUV > _SpriteUVBounds.zw))
+                            break;
+                        if (length((sampleUV - i.uv) * _MainTex_TexelSize.zw) < 0.3)
+                            continue;
                         if (SAMPLE_TEXTURE2D_LOD(_MainTex, sampler_MainTex, sampleUV, 0).a > 0.01)
                         {
-                            if (s <= bouncerCount)
+                            if (skippedCount < bottomSkip)
+                            {
+                                skippedCount++;
+                                continue;
+                            }
+                            int es = s - skippedCount;
+                            if (es <= bouncerCount)
                             {
                                 resolvedAlpha = _BouncerColor.a;
                             }
                             else
                             {
-                                float t = (float)(s - bouncerCount) / (float)(shadowCount + 1);
+                                float t = (float)(es - bouncerCount) / (float)(shadowCount + 1);
                                 resolvedAlpha = _ShadowColor.a * (1.0 - t);
                             }
                             break;
@@ -366,15 +508,24 @@ Shader "Custom/BouncerWall"
             SAMPLER(sampler_MainTex);
             float4 _MainTex_TexelSize;
 
+            TEXTURE2D(_BouncerTex);
+            SAMPLER(sampler_BouncerTex);
+            float4 _BouncerTex_TexelSize;
+
             CBUFFER_START(UnityPerMaterial)
                 half4 _Color;
                 half4 _BouncerColor;
                 half4 _ShadowColor;
                 half4 _HighlightColor;
                 float4 _HighlightDirection;
+                float4 _BouncerTex_ST;
                 float _PixelCount;
                 float _ShadowPixelCount;
                 float _HighlightPixelCount;
+                float _BouncerTexStretch;
+                float _BrokenAmount;
+                half4 _BrokenShadowColor;
+                float4 _SpriteUVBounds;
             CBUFFER_END
 
             Varyings BouncerUnlitVertex(Attributes v)
@@ -399,7 +550,7 @@ Shader "Custom/BouncerWall"
                 float2 dUVdy = ddy(i.uv);
                 float2 uvStepUp    = dUVdy * sign(ddy(i.worldPos.y));
                 float2 uvStepRight = dUVdx * sign(ddx(i.worldPos.x));
-
+                float texelPerStep = length(float2(uvStepUp.x * _MainTex_TexelSize.z, uvStepUp.y * _MainTex_TexelSize.w));
                 half4 texCol = SAMPLE_TEXTURE2D_LOD(_MainTex, sampler_MainTex, i.uv, 0);
 
                 if (texCol.a > 0.01)
@@ -432,6 +583,55 @@ Shader "Custom/BouncerWall"
                     if (isEdge)
                         mainColor = half4(_HighlightColor.rgb, mainColor.a);
 
+                    if (_BrokenAmount > 0.01)
+                    {
+                        float brickX = floor(i.uv.x * _MainTex_TexelSize.z / 3.0);
+                        float colNoise = frac(sin(dot(float2(brickX, 0), float2(127.1, 311.7))) * 43758.5453);
+                        int reduction = (int)floor(colNoise * _BrokenAmount * 7.0);
+                        if (reduction > 0)
+                        {
+                            bool replacedBouncer = false;
+                            [loop] for (int e = 1; e <= 6; e++)
+                            {
+                                float2 checkUV = i.uv + uvStepUp * (float)e;
+                                if (SAMPLE_TEXTURE2D_LOD(_MainTex, sampler_MainTex, checkUV, 0).a < 0.01)
+                                {
+                                    if (e <= reduction)
+                                        mainColor.a = 0;
+                                    break;
+                                }
+                            }
+                            int bottomReduction = max(reduction - 1, 0);
+                            if (bottomReduction > 0 && mainColor.a > 0)
+                            {
+                                [loop] for (int b = 1; b <= 5; b++)
+                                {
+                                    float2 checkUV = i.uv - uvStepUp * (float)b;
+                                    if (SAMPLE_TEXTURE2D_LOD(_MainTex, sampler_MainTex, checkUV, 0).a < 0.01)
+                                    {
+                                        if (b <= bottomReduction)
+                                        {
+                                            int bRow = bottomReduction - b + 1;
+                                            int bcB = (int)_PixelCount;
+                                            float2 bUV;
+                                            float pixBX = i.uv.x * _MainTex_TexelSize.z;
+                                            bUV.x = (pixBX + 0.5) * _BouncerTex_TexelSize.x * _BouncerTex_ST.x + _BouncerTex_ST.z;
+                                            float sY = (_BouncerTex_TexelSize.w - 0.5 - (float)(bRow - 1) / max((float)(bcB - 1), 1.0) * (_BouncerTex_TexelSize.w - 1.0)) * _BouncerTex_TexelSize.y;
+                                            float tY = (_BouncerTex_TexelSize.w - (float)bRow + 0.5) * _BouncerTex_TexelSize.y;
+                                            bUV.y = _BouncerTexStretch > 0.5 ? sY : tY;
+                                            half4 bTex = SAMPLE_TEXTURE2D_LOD(_BouncerTex, sampler_BouncerTex, bUV, 0);
+                                            mainColor = bTex * _BouncerColor;
+                                            replacedBouncer = true;
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                            if (mainColor.a > 0 && !replacedBouncer)
+                                mainColor.rgb *= _BrokenShadowColor.rgb;
+                        }
+                    }
+
                     return mainColor;
                 }
 
@@ -439,15 +639,41 @@ Shader "Custom/BouncerWall"
                 int shadowCount  = (int)_ShadowPixelCount;
                 int totalCount   = bouncerCount + shadowCount;
 
-                [loop] for (int s = 1; s <= totalCount; s++)
+                float brickXS = floor(i.uv.x * _MainTex_TexelSize.z / 3.0);
+                float colNoiseS = frac(sin(dot(float2(brickXS, 0), float2(127.1, 311.7))) * 43758.5453);
+                int reductionS = (int)floor(colNoiseS * _BrokenAmount * 7.0);
+                int bottomSkip = max(reductionS - 1, 0);
+                int skippedCount = 0;
+
+                [loop] for (int s = 1; s <= totalCount + bottomSkip; s++)
                 {
                     float2 sampleUV = i.uv + uvStepUp * (float)s;
+                    if (any(sampleUV < _SpriteUVBounds.xy) || any(sampleUV > _SpriteUVBounds.zw))
+                        break;
+                    if (length((sampleUV - i.uv) * _MainTex_TexelSize.zw) < 0.3)
+                        continue;
                     if (SAMPLE_TEXTURE2D_LOD(_MainTex, sampler_MainTex, sampleUV, 0).a > 0.01)
                     {
-                        if (s <= bouncerCount)
-                            return _BouncerColor;
+                        if (skippedCount < bottomSkip)
+                        {
+                            skippedCount++;
+                            continue;
+                        }
+                        int es = s - skippedCount;
+                        if (es <= bouncerCount)
+                        {
+                            float localDist = texelPerStep * (float)es;
+                            float2 bUV;
+                            float pixelX = i.uv.x * _MainTex_TexelSize.z;
+                            bUV.x = (pixelX + 0.5) * _BouncerTex_TexelSize.x * _BouncerTex_ST.x + _BouncerTex_ST.z;
+                            float stretchY = (_BouncerTex_TexelSize.w - 0.5 - (float)(es - 1) / max((float)(bouncerCount - 1), 1.0) * (_BouncerTex_TexelSize.w - 1.0)) * _BouncerTex_TexelSize.y;
+                            float tileY = (_BouncerTex_TexelSize.w - localDist + 0.5) * _BouncerTex_TexelSize.y;
+                            bUV.y = _BouncerTexStretch > 0.5 ? stretchY : tileY;
+                            half4 bTex = SAMPLE_TEXTURE2D_LOD(_BouncerTex, sampler_BouncerTex, bUV, 0);
+                            return bTex * _BouncerColor;
+                        }
 
-                        float t = (float)(s - bouncerCount) / (float)(shadowCount + 1);
+                        float t = (float)(es - bouncerCount) / (float)(shadowCount + 1);
                         half4 shadow = _ShadowColor;
                         shadow.a *= (1.0 - t);
                         return shadow;
