@@ -6,6 +6,7 @@ namespace Scripts.LevelSystem.LevelObjects
     public class BouncerColliderAligner : MonoBehaviour
     {
         [SerializeField] private Collider2D _collider;
+        [SerializeField] private Transform _visual;
         [SerializeField] private Vector2 _baseOffset;
         [SerializeField] private Vector2 _pivotCorrection;
 
@@ -30,7 +31,11 @@ namespace Scripts.LevelSystem.LevelObjects
         {
             if (!_collider) return;
 
-            float angle = -transform.eulerAngles.z * Mathf.Deg2Rad;
+            if (_visual)
+                transform.rotation = _visual.rotation;
+
+            float visualRotation = _visual ? _visual.eulerAngles.z : transform.eulerAngles.z;
+            float angle = -visualRotation * Mathf.Deg2Rad;
             float cos = Mathf.Cos(angle);
             float sin = Mathf.Sin(angle);
 

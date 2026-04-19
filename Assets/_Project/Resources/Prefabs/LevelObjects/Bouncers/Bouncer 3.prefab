@@ -10,11 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5812540284483774167}
   - component: {fileID: 4700222863868080890}
-  - component: {fileID: 9200406896060433726}
-  - component: {fileID: 2118207667158021520}
-  - component: {fileID: 368856587199287796}
-  - component: {fileID: 6310890969492690209}
-  - component: {fileID: 38542517451023168}
   m_Layer: 0
   m_Name: Visual (1)
   m_TagString: Untagged
@@ -95,57 +90,49 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &9200406896060433726
-MonoBehaviour:
+--- !u!1 &9056134291611885910
+GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7922938721150472941}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07848764a75e458c81bd7fbce915c2bb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _bounciness: 1.1
-  _hasBounceAnimation: 1
-  _bounceAnimation: {fileID: 6579910219711884828}
---- !u!114 &2118207667158021520
-MonoBehaviour:
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1947254545820511423}
+  - component: {fileID: 5839623155101352247}
+  - component: {fileID: 5626851605941815888}
+  - component: {fileID: 2477715320916840054}
+  - component: {fileID: 1124602662787859072}
+  - component: {fileID: 7124239231287225030}
+  m_Layer: 0
+  m_Name: Collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1947254545820511423
+Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7922938721150472941}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0129d19e6cc4b7eaddf0af5f97397bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _bounceObject: {fileID: 9200406896060433726}
---- !u!114 &368856587199287796
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7922938721150472941}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 758a563917b745ff8c79799efef41cb2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attackPointsObjectType: 2
-  _interactionType: 0
-  _difficultyLevel: 1
-  _interactionCooldown: 0
---- !u!60 &6310890969492690209
+  m_GameObject: {fileID: 9056134291611885910}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.017, y: 0.01, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8516238491441952283}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!60 &5839623155101352247
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7922938721150472941}
+  m_GameObject: {fileID: 9056134291611885910}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
@@ -189,19 +176,64 @@ PolygonCollider2D:
       - {x: 0.011356999, y: 0.56611025}
       - {x: -0.48807243, y: -0.43547243}
   m_UseDelaunayMesh: 0
---- !u!114 &38542517451023168
+--- !u!114 &5626851605941815888
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7922938721150472941}
+  m_GameObject: {fileID: 9056134291611885910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07848764a75e458c81bd7fbce915c2bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bounciness: 1.1
+  _hasBounceAnimation: 1
+  _bounceAnimation: {fileID: 6579910219711884828}
+--- !u!114 &2477715320916840054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9056134291611885910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0129d19e6cc4b7eaddf0af5f97397bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bounceObject: {fileID: 5626851605941815888}
+--- !u!114 &1124602662787859072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9056134291611885910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 758a563917b745ff8c79799efef41cb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackPointsObjectType: 2
+  _interactionType: 0
+  _difficultyLevel: 1
+  _interactionCooldown: 0
+--- !u!114 &7124239231287225030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9056134291611885910}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 492172e5f476c8b42b4132c6211b33ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Scripts.LevelSystem.LevelObjects.BouncerColliderAligner
-  _collider: {fileID: 6310890969492690209}
+  _collider: {fileID: 5839623155101352247}
+  _visual: {fileID: 5812540284483774167}
   _baseOffset: {x: 0, y: -0.08}
   _pivotCorrection: {x: 0, y: 0.09}
 --- !u!1001 &5224044024900831031
@@ -273,10 +305,14 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 153327627032123377, guid: 369e988916fd938469ae05f1d0b41261, type: 3}
     - {fileID: 3966257885868361937, guid: 369e988916fd938469ae05f1d0b41261, type: 3}
+    - {fileID: 3320804328272761711, guid: 369e988916fd938469ae05f1d0b41261, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 4490169735804137772, guid: 369e988916fd938469ae05f1d0b41261, type: 3}
       insertIndex: 0
       addedObject: {fileID: 5812540284483774167}
+    - targetCorrespondingSourceObject: {fileID: 4490169735804137772, guid: 369e988916fd938469ae05f1d0b41261, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1947254545820511423}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 369e988916fd938469ae05f1d0b41261, type: 3}
 --- !u!114 &6579910219711884828 stripped
