@@ -1,11 +1,8 @@
-﻿using System;
-using DG.Tweening;
-using Scripts.Audio;
+﻿using Scripts.Audio;
 using Scripts.Camera;
 using Scripts.Health;
 using Scripts.Player;
 using Scripts.ScoreSystem;
-using Scripts.Enemies.Swamp;
 using Scripts.UI;
 using UnityEngine;
 
@@ -18,8 +15,6 @@ namespace Scripts.Enemies
         [SerializeField] private BaseEnemy _baseEnemy;
 
         private float _lastDamageReceived;
-        private EnemyTweenController _tweenController;
-        private HidingShootingEnemyStateMachine _stateMachine;
 
         public HealthController HealthController => _healthController;
 
@@ -29,8 +24,6 @@ namespace Scripts.Enemies
                 _healthController = GetComponent<HealthController>();
             if (!_baseEnemy)
                 _baseEnemy = GetComponent<BaseEnemy>();
-            _tweenController = GetComponent<EnemyTweenController>();
-            _stateMachine = GetComponent<HidingShootingEnemyStateMachine>();
         }
 
         private void HealthController_Died()
@@ -46,8 +39,6 @@ namespace Scripts.Enemies
             Destroy(gameObject);
         }
 
-        private Tweener _punchTween;
-
         private void HealthController_OnNonLethalDamageReceived(float damage)
         {
             if (ScoreManager.Instance && _baseEnemy)
@@ -56,19 +47,6 @@ namespace Scripts.Enemies
             }
 
             AudioManager.Instance.PlayOneShot(SoundChanelType.Enemy, "damageEnemy");
-
-            if (_stateMachine && !_stateMachine.IsVisible) return;
-
-            if (_tweenController)
-            {
-                _tweenController.RequestPunchScale(0.4f * Vector3.one, 0.2f, TweenPriority.Normal);
-            }
-            else
-            {
-                if (_punchTween != null) return;
-                _punchTween = transform.DOPunchScale(0.4f * Vector3.one, 0.2f)
-                    .OnComplete(() => { _punchTween = null; });
-            }
         }
 
         public bool IsAlive()

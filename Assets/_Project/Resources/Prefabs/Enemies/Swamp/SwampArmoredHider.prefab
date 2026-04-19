@@ -299,6 +299,7 @@ GameObject:
   - component: {fileID: 4605073259087093468}
   - component: {fileID: 475871932903816255}
   - component: {fileID: 7374634182011730924}
+  - component: {fileID: 6687970866312755902}
   m_Layer: 9
   m_Name: SwampArmoredHider
   m_TagString: Untagged
@@ -572,6 +573,23 @@ MonoBehaviour:
   _defaultShields: 3
   _maxShields: 3
   _shieldDamageThreshold: 5
+--- !u!114 &6687970866312755902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5852712469276863939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83aa9c2be32ed9b45b3806f9678dcf85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.Swamp.SwampEnemyDamagePunchEffect
+  _healthController: {fileID: 0}
+  _tweenController: {fileID: 0}
+  _stateMachine: {fileID: 0}
+  _punchStrength: {x: 0.4, y: 0.4, z: 0.4}
+  _punchDuration: 0.2
 --- !u!1 &8475522738984672965
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,10 +5,9 @@ using UnityEngine.Serialization;
 
 namespace Scripts.Health
 {
-    [RequireComponent(typeof(HealthController))]
     public class InvincibilityController : MonoBehaviour
     {
-        private HealthController _healthController;
+        [SerializeField] private HealthController _healthController;
         [SerializeField] private float _iFrameDuration;
         public float IrameDuration => _iFrameDuration;
 
@@ -36,6 +35,7 @@ namespace Scripts.Health
 
         private void Awake()
         {
+            if(_healthController == null)
             _healthController = GetComponent<HealthController>();
             _healthController.OnNonLethalDamageReceived += HealthController_OnNonLethalDamageReceived;
             _healthController.OnDamageBlocked += HealthController_OnDamageBlocked;

@@ -249,6 +249,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8924671554657805165, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6945404699160994010}
+    - targetCorrespondingSourceObject: {fileID: 8924671554657805165, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6537546821159376425}
     - targetCorrespondingSourceObject: {fileID: 6774123108268076226, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4081470473917213766}
@@ -311,6 +314,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6537546821159376425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3756805598485683926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f53505ab8aeb104ea957030a0402c20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.EnemyDamagePunchEffect
+  _healthController: {fileID: 0}
+  _punchStrength: {x: 0.4, y: 0.4, z: 0.4}
+  _punchDuration: 0.2
 --- !u!4 &4235211855637762424 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8448305441327721667, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}

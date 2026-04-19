@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6609783001741788759}
   - component: {fileID: 3228768110321217423}
   - component: {fileID: 6606378174365645422}
+  - component: {fileID: 1399365111876443314}
   m_Layer: 12
   m_Name: BossMinion
   m_TagString: Untagged
@@ -146,6 +147,7 @@ MonoBehaviour:
   _maxHealth: 15
   _defaultHealth: 15
   _shieldController: {fileID: 0}
+  _reviveSystem: {fileID: 0}
 --- !u!114 &6609783001741788759
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,6 +176,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.NoAIEnemy
   _enemyId: 0
   _enemyName: 
+  _difficultyRating: 1
 --- !u!114 &6606378174365645422
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189,3 +192,18 @@ MonoBehaviour:
   _bounciness: 1
   _hasBounceAnimation: 0
   _bounceAnimation: {fileID: 0}
+--- !u!114 &1399365111876443314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3087100017576193845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f53505ab8aeb104ea957030a0402c20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.EnemyDamagePunchEffect
+  _healthController: {fileID: 0}
+  _punchStrength: {x: 0.4, y: 0.4, z: 0.4}
+  _punchDuration: 0.2

@@ -137,12 +137,13 @@ Shader "Custom/BouncerWall"
             half4 BouncerLitFragment(Varyings i) : SV_Target
             {
                 // Screen-aligned UV steps — computed from derivatives, independent of any rotation.
-                // Must be computed before any branching.
+                // Normalized to 1 texel per step so the effect is zoom-independent (edit & play mode match).
                 float2 dUVdx = ddx(i.uv);
                 float2 dUVdy = ddy(i.uv);
-                float2 uvStepUp    = dUVdy * sign(ddy(i.worldPos.y));
-                float2 uvStepRight = dUVdx * sign(ddx(i.worldPos.x));
-                float texelPerStep = length(float2(uvStepUp.x * _MainTex_TexelSize.z, uvStepUp.y * _MainTex_TexelSize.w));
+                float2 uvDirUp    = dUVdy * sign(ddy(i.worldPos.y));
+                float2 uvDirRight = dUVdx * sign(ddx(i.worldPos.x));
+                float2 uvStepUp    = uvDirUp    / max(length(uvDirUp    * _MainTex_TexelSize.zw), 1e-8);
+                float2 uvStepRight = uvDirRight / max(length(uvDirRight * _MainTex_TexelSize.zw), 1e-8);
                 half4 texCol = SAMPLE_TEXTURE2D_LOD(_MainTex, sampler_MainTex, i.uv, 0);
 
                 half4 mainColor;
@@ -262,7 +263,7 @@ Shader "Custom/BouncerWall"
                             int es = s - skippedCount;
                             if (es <= bouncerCount)
                             {
-                                float localDist = texelPerStep * (float)es;
+                                float localDist = (float)es;
                                 float2 bUV;
                                 float pixelX = i.uv.x * _MainTex_TexelSize.z;
                                 bUV.x = (pixelX + 0.5) * _BouncerTex_TexelSize.x * _BouncerTex_ST.x + _BouncerTex_ST.z;
@@ -377,7 +378,8 @@ Shader "Custom/BouncerWall"
 
             half4 BouncerNormalsFragment(Varyings i) : SV_Target
             {
-                float2 uvStepUp = ddy(i.uv) * sign(ddy(i.worldPos.y));
+                float2 uvDirUp = ddy(i.uv) * sign(ddy(i.worldPos.y));
+                float2 uvStepUp = uvDirUp / max(length(uvDirUp * _MainTex_TexelSize.zw), 1e-8);
                 half4 texCol = SAMPLE_TEXTURE2D_LOD(_MainTex, sampler_MainTex, i.uv, 0);
                 half  resolvedAlpha;
 
@@ -548,9 +550,10 @@ Shader "Custom/BouncerWall"
             {
                 float2 dUVdx = ddx(i.uv);
                 float2 dUVdy = ddy(i.uv);
-                float2 uvStepUp    = dUVdy * sign(ddy(i.worldPos.y));
-                float2 uvStepRight = dUVdx * sign(ddx(i.worldPos.x));
-                float texelPerStep = length(float2(uvStepUp.x * _MainTex_TexelSize.z, uvStepUp.y * _MainTex_TexelSize.w));
+                float2 uvDirUp    = dUVdy * sign(ddy(i.worldPos.y));
+                float2 uvDirRight = dUVdx * sign(ddx(i.worldPos.x));
+                float2 uvStepUp    = uvDirUp    / max(length(uvDirUp    * _MainTex_TexelSize.zw), 1e-8);
+                float2 uvStepRight = uvDirRight / max(length(uvDirRight * _MainTex_TexelSize.zw), 1e-8);
                 half4 texCol = SAMPLE_TEXTURE2D_LOD(_MainTex, sampler_MainTex, i.uv, 0);
 
                 if (texCol.a > 0.01)
@@ -662,7 +665,7 @@ Shader "Custom/BouncerWall"
                         int es = s - skippedCount;
                         if (es <= bouncerCount)
                         {
-                            float localDist = texelPerStep * (float)es;
+                            float localDist = (float)es;
                             float2 bUV;
                             float pixelX = i.uv.x * _MainTex_TexelSize.z;
                             bUV.x = (pixelX + 0.5) * _BouncerTex_TexelSize.x * _BouncerTex_ST.x + _BouncerTex_ST.z;

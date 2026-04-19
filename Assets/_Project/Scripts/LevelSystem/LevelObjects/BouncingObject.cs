@@ -47,6 +47,7 @@ namespace Scripts.LevelSystem.LevelObjects
 
         private void OnCollisionEnter2D(Collision2D other)
         {
+            if(!other.enabled) return;
             if (!other.gameObject.TryGetComponent(out BounceObject bounceObject)) return;
 
             var averageNormal = GetBounceNormal(other);

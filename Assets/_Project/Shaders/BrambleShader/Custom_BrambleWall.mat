@@ -7,13 +7,13 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: StandardBouncerWall
-  m_Shader: {fileID: 4800000, guid: cbd40047b43499446a3009f1105ae78d, type: 3}
+  m_Name: Custom_BrambleWall
+  m_Shader: {fileID: 4800000, guid: af65d5c5efbc58b4c85be9ee2a19a896, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords:
-  - _BOUNCERTEXSTRETCH_ON
+  - _OVERLAYEDGE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -24,8 +24,16 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _BouncerTex:
-        m_Texture: {fileID: 0}
+    - _BrambleTex:
+        m_Texture: {fileID: 2800000, guid: e0d3cde115f9a724d8b20195bf353cb7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EdgeTex:
+        m_Texture: {fileID: 2800000, guid: e0d3cde115f9a724d8b20195bf353cb7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FillTex:
+        m_Texture: {fileID: 2800000, guid: 76e36c9d9f5de48498c6f186d68f0d39, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -42,20 +50,22 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BouncerTexRotation: 1
-    - _BouncerTexStretch: 1
-    - _BrokenAmount: 0
-    - _HighlightPixelCount: 1
-    - _PixelCount: 5
-    - _ShadowPixelCount: 6
+    - _BlendWidth: 1
+    - _BrambleScale: 16
+    - _EdgeExtend: 6
+    - _EdgeExtendTiles: 0.79
+    - _EdgeScale: 0.38
+    - _EdgeWidth: 1
+    - _FillScale: 0.25
+    - _InnerShadowWidth: 0
+    - _OverlayEdge: 1
     m_Colors:
-    - _BouncerColor: {r: 0.7490196, g: 0.34509805, b: 0.18431373, a: 1}
-    - _BrokenShadowColor: {r: 0, g: 0, b: 0, a: 0.4}
+    - _BrambleColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _HighlightColor: {r: 0.9960785, g: 0.9607844, b: 0.60784316, a: 1}
-    - _HighlightDirection: {r: 1.8, g: 9.3, b: 0, a: 0}
+    - _EdgeColor: {r: 1, g: 1, b: 1, a: 1}
+    - _FillColor: {r: 1, g: 1, b: 1, a: 1}
+    - _InnerShadowColor: {r: 0, g: 0, b: 0, a: 0.3}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ShadowColor: {r: 0, g: 0, b: 0, a: 0.4}
     - _SpriteUVBounds: {r: 0, g: 0, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
