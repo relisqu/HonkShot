@@ -53,6 +53,7 @@ namespace Scripts.Health
 
         public float TakeDamage(float damageAmount)
         {
+            
             if (_defaultCurrentHealth == 0)
             {
                 return 0;
@@ -66,7 +67,6 @@ namespace Scripts.Health
 
             OnTakeDamageTriggered?.Invoke();
 
-            // Process damage through shields first
             float finalDamage = CalculateDamageTaken(damageAmount);
 
             if (_shieldController)
@@ -74,14 +74,11 @@ namespace Scripts.Health
                 finalDamage = _shieldController.ProcessDamageThroughShields(finalDamage);
             }
 
-            // Shields absorbed everything: still treat it as a blocked hit so i-frames kick in
-            // and the same physics frame can't burn through additional shields.
             if (finalDamage <= 0 && damageAmount > 0)
             {
                 OnDamageBlocked?.Invoke(damageAmount);
             }
 
-            // Apply remaining damage to health
             if (finalDamage > 0)
             {
                 _defaultCurrentHealth -= finalDamage;

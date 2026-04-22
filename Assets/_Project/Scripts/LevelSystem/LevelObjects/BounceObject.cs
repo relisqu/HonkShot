@@ -16,27 +16,29 @@ namespace Scripts.LevelSystem.LevelObjects
 
         public Action OnBounce;
 
-        public void OnCollisionEnter2D(Collision2D other)
+        public virtual void OnCollisionEnter2D(Collision2D other)
         {
-            if(gameObject.scene != SceneManager.GetActiveScene()){ return;}
-            if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _))
+            if (!other.enabled) return;
+            
+            if (gameObject.scene != SceneManager.GetActiveScene())
             {
                 return;
             }
-            else
-            {
-                OnBounce?.Invoke();
 
-                if (other.gameObject.TryGetComponent(out BouncingObject bO))
-                {
-                    Debug.Log(other.gameObject.name+" "+gameObject.name+" Bouncing");
-                    AudioManager.Instance.PlayOneShot(SoundChanelType.LevelObjects, "gooseCollision");
-                    if (_hasBounceAnimation)
-                    {
-                        _bounceAnimation.ShowPunchAnimation();
-                    }
-                }
+
+            if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _)) return;
+            
+            OnBounce?.Invoke();
+
+            if (!other.gameObject.TryGetComponent(out BouncingObject _)) return;
+            
+            Debug.Log(other.gameObject.name + " " + gameObject.name + " Bouncing");
+            AudioManager.Instance.PlayOneShot(SoundChanelType.LevelObjects, "gooseCollision");
+            if (_hasBounceAnimation)
+            {
+                _bounceAnimation.ShowPunchAnimation();
             }
+
         }
     }
 }

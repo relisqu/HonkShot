@@ -7,12 +7,13 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Custom_BouncerWall
+  m_Name: StandardBouncerWall
   m_Shader: {fileID: 4800000, guid: cbd40047b43499446a3009f1105ae78d, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _BOUNCERTEXSTRETCH_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -23,6 +24,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _BouncerTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -37,15 +42,20 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BouncerTexRotation: 1
+    - _BouncerTexStretch: 1
+    - _BrokenAmount: 0
     - _HighlightPixelCount: 1
     - _PixelCount: 5
     - _ShadowPixelCount: 6
     m_Colors:
     - _BouncerColor: {r: 0.7490196, g: 0.34509805, b: 0.18431373, a: 1}
+    - _BrokenShadowColor: {r: 0, g: 0, b: 0, a: 0.4}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _HighlightColor: {r: 0.9960785, g: 0.9607844, b: 0.60784316, a: 1}
-    - _HighlightDirection: {r: 4.5, g: 17.59, b: 0, a: 0}
+    - _HighlightDirection: {r: 1.8, g: 9.3, b: 0, a: 0}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShadowColor: {r: 0, g: 0, b: 0, a: 0.4}
+    - _SpriteUVBounds: {r: 0, g: 0, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

@@ -140,6 +140,7 @@ GameObject:
   - component: {fileID: 2403281483393435881}
   - component: {fileID: 7612789391415748098}
   - component: {fileID: 4694782233750422631}
+  - component: {fileID: 4586868033526110613}
   m_Layer: 12
   m_Name: Boss
   m_TagString: Untagged
@@ -183,6 +184,7 @@ MonoBehaviour:
   _shootingModule: {fileID: 2403281483393435881}
   _shieldController: {fileID: 2357702564277749848}
   _rigidbody2D: {fileID: 6917758335651533037}
+  _vfxController: {fileID: 0}
   _bossHealth: {fileID: 6903777600374435259}
   _minionsParentTransform: {fileID: 1925938593352480356}
   _minionPrefab: {fileID: 6609783001741788759, guid: 80fbdc37f141eba4884a7656579a9680, type: 3}
@@ -383,3 +385,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.EnemyHealth
   _healthController: {fileID: 0}
   _baseEnemy: {fileID: 0}
+--- !u!114 &4586868033526110613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6801337584361558935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f53505ab8aeb104ea957030a0402c20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.EnemyDamagePunchEffect
+  _healthController: {fileID: 0}
+  _punchStrength: {x: 0.4, y: 0.4, z: 0.4}
+  _punchDuration: 0.2

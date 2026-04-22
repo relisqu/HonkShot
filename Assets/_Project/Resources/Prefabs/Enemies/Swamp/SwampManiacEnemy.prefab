@@ -5009,6 +5009,7 @@ GameObject:
   - component: {fileID: 7812700396887971410}
   - component: {fileID: 1731359153433115098}
   - component: {fileID: 7866371162801278498}
+  - component: {fileID: 7453791051239895073}
   m_Layer: 9
   m_Name: SwampManiacEnemy
   m_TagString: Untagged
@@ -5085,7 +5086,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxHealth: 100
   _defaultHealth: 100
-  _shieldController: {fileID: 0}
+  _shieldController: {fileID: 7866371162801278498}
   _reviveSystem: {fileID: 0}
 --- !u!114 &1224283076133262025
 MonoBehaviour:
@@ -5129,6 +5130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bf89c3bb7714f6ea8c83ef7d9d0ff9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _healthController: {fileID: 3973049025086701871}
   _iFrameDuration: 0.1
 --- !u!114 &6423365219278790227
 MonoBehaviour:
@@ -5323,6 +5325,21 @@ MonoBehaviour:
   _defaultShields: 2
   _maxShields: 2
   _shieldDamageThreshold: 5
+--- !u!114 &7453791051239895073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 925966557304150825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f53505ab8aeb104ea957030a0402c20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.EnemyDamagePunchEffect
+  _healthController: {fileID: 3973049025086701871}
+  _punchStrength: {x: 0.4, y: 0.4, z: 0.4}
+  _punchDuration: 0.2
 --- !u!1 &1502729556395884222
 GameObject:
   m_ObjectHideFlags: 0

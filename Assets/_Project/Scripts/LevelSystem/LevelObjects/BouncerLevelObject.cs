@@ -15,6 +15,7 @@ namespace Scripts.LevelSystem.LevelObjects
 
         private void OnDestroy()
         {
+            if(!_bounceObject) return;
             _bounceObject.OnBounce -= BounceObject_Bounce;
         }
 

@@ -261,6 +261,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8924671554657805165, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2023355443170360911}
+    - targetCorrespondingSourceObject: {fileID: 8924671554657805165, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6068522140740405483}
   m_SourcePrefab: {fileID: 100100000, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
 --- !u!1 &178915168279438361 stripped
 GameObject:
@@ -357,6 +360,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.Swamp.EnemyTweenController
   _visualTransform: {fileID: 0}
+  _animator: {fileID: 0}
+--- !u!114 &6068522140740405483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 178915168279438361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83aa9c2be32ed9b45b3806f9678dcf85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.Swamp.SwampEnemyDamagePunchEffect
+  _healthController: {fileID: 0}
+  _tweenController: {fileID: 0}
+  _stateMachine: {fileID: 0}
+  _punchStrength: {x: 0.4, y: 0.4, z: 0.4}
+  _punchDuration: 0.2
 --- !u!114 &258924940781378123 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8806382007955463487, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
