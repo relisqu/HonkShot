@@ -1,3 +1,4 @@
+using System.Collections;
 using Scripts.Items.PlayerItemManager;
 using Scripts.Player;
 using Scripts.Enemies;
@@ -8,21 +9,31 @@ using UnityEngine;
 
 namespace Scripts.Items.PermanentItems.CustomItems
 {
-    public class FireAbilityRegen : Item
+    public class FireAbilityRegenItem : Item
     {
+        
+        [SerializeField] private float _cooldownSeconds = 1f;
         
         private GooseFireSystem _fireSystem;
         private PlayerDashController _playerDashController;
-        void Start()
+        private bool _isOnCooldown;
+        private Coroutine _cooldownCoroutine;
+        private void OnEnable()
         {
-            _fireSystem = GooseFireSystem.Instance;
             if (_fireSystem)
                 _fireSystem.UltimateStarted += GooseFireSystem_UltimateStarted;
         }
-        private void OnDestroy()
+
+        private void OnDisable()
         {
             if (_fireSystem)
                 _fireSystem.UltimateStarted -= GooseFireSystem_UltimateStarted;
+
+            if (_cooldownCoroutine != null)
+                StopCoroutine(_cooldownCoroutine);
+
+            _cooldownCoroutine = null;
+            _isOnCooldown = false;
         }
         public override void InitItem(PlayerItemSO playerItemSO)
         {
@@ -34,6 +45,13 @@ namespace Scripts.Items.PermanentItems.CustomItems
             //recharge all abilities
             _playerDashController.ResetDashes();
             
+        }
+        private IEnumerator CooldownRoutine()
+        {
+            _isOnCooldown = true;
+            yield return new WaitForSeconds(_cooldownSeconds);
+            _isOnCooldown = false;
+            _cooldownCoroutine = null;
         }
     }
 }
