@@ -59,6 +59,24 @@ namespace Scripts.Health
             }
         }
 
+        public void AddIndestructibleShield(int count = 1)
+        {
+            if (_shields.Count >= GetMaxShields())
+            {
+                Debug.Log($"Nowhere to put shields!");
+                return;
+            }
+
+            for (int i = 0; i < count; ++i)
+            {
+                var newShield = new Shield(Mathf.Infinity);
+                _shields.Add(newShield);
+                OnShieldAdded?.Invoke(newShield); // should we have a visual thing
+                                                  // to tell player they have a
+                                                  // mega shield?
+            }
+        }
+
         public void RemoveShield(Shield shield)
         {
             if (_shields.Remove(shield))
