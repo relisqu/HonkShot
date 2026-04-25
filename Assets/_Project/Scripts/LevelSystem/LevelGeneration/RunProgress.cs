@@ -7,11 +7,25 @@ namespace Scripts.LevelSystem.LevelGeneration
         public int CurrentFloorIndex { get; private set; }
         public int FloorsCompleted { get; private set; }
         public int TotalRoomsCompleted { get; private set; }
+        public int RunSeed { get; private set; }
 
         public event Action<int> FloorStarted;
         public event Action<int> FloorCompleted;
         public event Action BossDefeated;
         public event Action RunCompleted;
+
+        public RunProgress()
+        {
+            RunSeed = Environment.TickCount;
+        }
+
+        public void StartRun(int? seed = null)
+        {
+            Reset();
+            RunSeed = seed ?? Environment.TickCount;
+        }
+
+        public int GetFloorSeed() => RunSeed ^ CurrentFloorIndex;
 
         public void OnFloorStarted()
         {

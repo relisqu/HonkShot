@@ -10,5 +10,6 @@ namespace Scripts.LevelSystem.LevelGeneration
         public float SpawnChance;
         public bool isEmptyRoom;
         public Room RoomPrefab;
+        [Range(-5, 10)] public int DifficultyValue = 1;
     }
 }

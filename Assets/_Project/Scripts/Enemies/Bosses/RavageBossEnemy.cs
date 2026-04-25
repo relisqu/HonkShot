@@ -119,6 +119,7 @@ namespace Scripts.Enemies.Bosses
 
         private void BossHealth_Died()
         {
+            Debug.Log($"[RavageBossEnemy] BossHealth_Died fired on '{gameObject.name}'. Destroying.");
             Destroy(gameObject);
         }
 
@@ -127,6 +128,7 @@ namespace Scripts.Enemies.Bosses
         private void Minion_Died()
         {
             _firstPhaseHealth--;
+            Debug.Log($"[RavageBossEnemy] Minion died. Remaining minions: {_firstPhaseHealth}");
 
             if (_firstPhaseHealth > 0)
             {
@@ -236,6 +238,7 @@ namespace Scripts.Enemies.Bosses
 
         private void GoToSecondPhase()
         {
+            Debug.Log($"[RavageBossEnemy] -> Phase 2 (vulnerable, {_firstPhaseShieldCount} shields)");
             _bossHealth.SetInvincible(0, false);
             _currentPhase = 1;
             _shieldController.AddShield(_firstPhaseShieldCount);
@@ -255,6 +258,7 @@ namespace Scripts.Enemies.Bosses
         {
             if (_currentPhase == 2) return;
 
+            Debug.Log($"[RavageBossEnemy] -> Phase 3 (dashing, {_thirdPhaseShieldsCount} shields)");
             _currentPhase = 2;
             _shieldController.AddShield(_thirdPhaseShieldsCount);
 

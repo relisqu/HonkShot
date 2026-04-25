@@ -26,8 +26,9 @@ namespace Scripts.UI
         [SerializeField] private ItemManager _itemManager;
         [SerializeField] private PlayerInventory _playerInventory;
 
-        [Header("Reroll Settings")]
-        [SerializeField] private Button _rerollButton;
+        [Header("Reroll Settings")] [SerializeField]
+        private Button _rerollButton;
+
         [SerializeField] private TMP_Text _rerollCountText;
 
         [Inject]
@@ -121,8 +122,10 @@ namespace Scripts.UI
 
         private void ClearTexts()
         {
-            _itemDescriptionText.text = null;
-            _itemNameText.text = null;
+            if (_itemDescriptionText)
+                _itemDescriptionText.text = null;
+            if (_itemNameText)
+                _itemNameText.text = null;
         }
 
         private void ItemSlot_FinishedHover(ItemSelectionSlotUI slotUI)

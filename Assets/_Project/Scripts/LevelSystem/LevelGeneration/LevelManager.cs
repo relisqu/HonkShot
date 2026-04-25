@@ -66,16 +66,16 @@ namespace Scripts.LevelSystem.LevelGeneration
                     floorConfig = _runConfig.GetFloorConfig(_runProgress.CurrentFloorIndex);
                     if (floorConfig)
                     {
-                        _currentFloor = _levelGenerator.GenerateFloor(floorConfig);
+                        _currentFloor = _levelGenerator.GenerateFloor(floorConfig, _runProgress.GetFloorSeed());
                     }
                     else
                     {
-                        _currentFloor = _levelGenerator.GenerateFloor();
+                        _currentFloor = _levelGenerator.GenerateFloor(_runProgress.GetFloorSeed());
                     }
                 }
                 else
                 {
-                    _currentFloor = _levelGenerator.GenerateFloor();
+                    _currentFloor = _levelGenerator.GenerateFloor(_runProgress.GetFloorSeed());
                 }
 
                 _runProgress.OnFloorStarted();

@@ -43,21 +43,24 @@ namespace Scripts.LevelSystem.LevelGeneration
         {
             var enemies = GetComponentsInChildren<EnemyHealth>();
             _enemyHealths = enemies.ToList();
+            Debug.Log($"[Room {gameObject.name}] UpdateEnemyInfo found {_enemyHealths.Count} EnemyHealth components.");
             foreach (var enemyHealth in _enemyHealths)
             {
-                Debug.Log("ENEMY " + enemyHealth.IsAlive());
+                Debug.Log($"[Room {gameObject.name}] tracking ENEMY '{enemyHealth.gameObject.name}' alive={enemyHealth.IsAlive()}");
                 enemyHealth.HealthController.OnDied += EnemyHealthController_Died;
             }
 
             if (IsCleared())
             {
-                Debug.Log("UNLOCKED");
+                Debug.Log($"[Room {gameObject.name}] UNLOCKED on Awake (no enemies present).");
                 UnlockRoom();
             }
         }
 
         private void EnemyHealthController_Died()
         {
+            int aliveCount = _enemyHealths.Count(eh => eh && eh.IsAlive());
+            Debug.Log($"[Room {gameObject.name}] EnemyHealthController_Died fired. Alive remaining: {aliveCount}/{_enemyHealths.Count}");
             if (IsCleared())
             {
                 UnlockRoom();
