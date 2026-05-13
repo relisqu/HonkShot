@@ -1,27 +1,33 @@
 using System.Collections.Generic;
-using Scripts.Items.PlayerItemManager;
-using Scripts.LevelSystem.LevelGeneration;
 using Scripts.Enemies;
 using Scripts.Health;
+using Scripts.Items.PlayerItemManager;
+using Scripts.LevelSystem.LevelGeneration;
 using Scripts.Player.Dash;
 using UnityEngine;
 
 namespace Scripts.Items.PermanentItems.CustomItems
 {
-    public class GetMegaShieldOnKillItem : Item
+    public class RegenDashesOnKillItem : Item
     {
-        private ShieldController _shieldController;
+        public int dashCount;
+
+        //private HealthController _health;
         private List<HealthController> _subscribedEnemies = new List<HealthController>();
+
+        private PlayerDashController _playerDashController;
+
         void Start()
         {
-            _shieldController = GetComponent<ShieldController>();
+            _playerDashController = GetComponentInParent<PlayerDashController>();
             if (LevelManager.Instance)
             {
                 LevelManager.Instance.EnteredRoom += OnRoomEntered;
                 OnRoomEntered();
             }
         }
-        void OnDisable()
+
+        void OnDestroy()
         {
             if (LevelManager.Instance)
             {
@@ -30,6 +36,7 @@ namespace Scripts.Items.PermanentItems.CustomItems
 
             UnsubscribeAll();
         }
+
         private void OnRoomEntered()
         {
             UnsubscribeAll();
@@ -38,24 +45,24 @@ namespace Scripts.Items.PermanentItems.CustomItems
             var enemyHealths = room.GetComponentsInChildren<EnemyHealth>();
             foreach (var enemyHealth in enemyHealths)
             {
-                enemyHealth.HealthController.OnDied += OnEnemyKilled;
+                enemyHealth.HealthController.OnDied += () => OnEnemyKilled(enemyHealth.HealthController);
                 _subscribedEnemies.Add(enemyHealth.HealthController);
             }
         }
+
         private void UnsubscribeAll()
         {
-            foreach (var enemyHealth in _subscribedEnemies)
-            {
-                enemyHealth.OnDied -= OnEnemyKilled;
-            }
             _subscribedEnemies.Clear();
         }
 
-        private void OnEnemyKilled()
+        private void OnEnemyKilled(HealthController enemy)
         {
-            _shieldController.AddIndestructibleShield();
+                for (int i = 0; i < dashCount; i++)
+                {
+                    _playerDashController.AddDash();
+                }
         }
-        
+
         public override void InitItem(PlayerItemSO playerItemSO)
         {
         }

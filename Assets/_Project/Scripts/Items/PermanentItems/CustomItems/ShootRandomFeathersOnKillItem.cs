@@ -4,29 +4,26 @@ using Scripts.Health;
 using Scripts.Items.PlayerItemManager;
 using Scripts.LevelSystem.LevelGeneration;
 using Scripts.Player.Dash;
+using Scripts.Player.Shooting;
 using UnityEngine;
 
-namespace Scripts.Items.PermanentItems
+namespace Scripts.Items.PermanentItems.CustomItems
 {
-    public class RegenDashesOnKillItem : Item
+    public class ShootRandomFeathersOnKillItem : Item
     {
-        public int dashCount; // 5% of max health per kill
-
-        private HealthController _health;
+        private int _featherQuantity = 5;
         private List<HealthController> _subscribedEnemies = new List<HealthController>();
-
-        private PlayerDashController _playerDashController;
+        private PlayerFeatherShooter _playerFeatherShooter;
 
         void Start()
         {
-            _playerDashController = GetComponentInParent<PlayerDashController>();
+            _playerFeatherShooter = GetComponent<PlayerFeatherShooter>();
             if (LevelManager.Instance)
             {
                 LevelManager.Instance.EnteredRoom += OnRoomEntered;
                 OnRoomEntered();
             }
         }
-
         void OnDestroy()
         {
             if (LevelManager.Instance)
@@ -36,7 +33,6 @@ namespace Scripts.Items.PermanentItems
 
             UnsubscribeAll();
         }
-
         private void OnRoomEntered()
         {
             UnsubscribeAll();
@@ -49,23 +45,31 @@ namespace Scripts.Items.PermanentItems
                 _subscribedEnemies.Add(enemyHealth.HealthController);
             }
         }
-
         private void UnsubscribeAll()
         {
             _subscribedEnemies.Clear();
         }
-
         private void OnEnemyKilled(HealthController enemy)
         {
-            if (_health)
-            {
-                for (int i = 0; i < dashCount; i++)
-                {
-                    _playerDashController.AddDash();
-                }
-            }
+            ShootRandomFeathers();
         }
 
+        void ShootRandomFeathers()
+        {
+            if (!_playerFeatherShooter) return;
+
+            for (int i = 0; i < _featherQuantity; i++)
+            {
+                float randomAngle = Random.Range(0f, 360f);
+                
+                Vector2 randomDirection = new Vector2(
+                    Mathf.Cos(randomAngle * Mathf.Deg2Rad),
+                    Mathf.Sin(randomAngle * Mathf.Deg2Rad)
+                );
+                
+                _playerFeatherShooter.Shoot(randomDirection);
+            }
+        }
         public override void InitItem(PlayerItemSO playerItemSO)
         {
         }
