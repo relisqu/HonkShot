@@ -1,9 +1,13 @@
-using Scripts.Enemies.Bullets;
+using System.Collections.Generic;
+using Scripts.Enemies;
+using Scripts.Health;
+using Scripts.Items.PlayerItemManager;
 using Scripts.Items.StatSystems;
-using Scripts.Player;
+using Scripts.LevelSystem.LevelGeneration;
+using Scripts.Player.Dash;
+using Scripts.Player.Shooting;
 using Scripts.Services.Pooling;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Scripts.Player.Shooting
 {
@@ -59,5 +63,6 @@ namespace Scripts.Player.Shooting
             Vector2 direction = targetPosition - (Vector2)transform.position;
             Shoot(direction);
         }
+        
     }
 }
