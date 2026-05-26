@@ -65,7 +65,7 @@ namespace Scripts.Enemies
         {
             while (true)
             {
-                if (!_isAttacking && _target != null)
+                if (!_isAttacking && _target)
                 {
                     Vector2 desiredDirection = (_target.position - transform.position).normalized;
                     Vector2 avoidance = GetAvoidanceVector(desiredDirection);
@@ -133,19 +133,19 @@ namespace Scripts.Enemies
 
         private void FixedUpdate()
         {
-            if (_isAttacking || _target == null) return;
+            if (_isAttacking || !_target) return;
 
             float distanceToTarget = Vector2.Distance(transform.position, _target.position);
             if (distanceToTarget > _attackRange)
             {
                 _rb.linearVelocity = _currentDirection * _movementSpeed;
-                _animator.SetBool("IsWalking", true);
             }
             else
             {
                 _rb.linearVelocity = Vector2.zero;
-                _animator.SetBool("IsWalking", false);
             }
+            _animator.SetBool("IsWalking", _rb.linearVelocity.magnitude > 0.01f);
+            
         }
 
         private IEnumerator AttackRoutine()
@@ -160,7 +160,7 @@ namespace Scripts.Enemies
                 {
                     _isAttacking = true;
                     _rb.linearVelocity = Vector2.zero;
-                    _animator.SetBool("IsWalking", false);
+                    _animator.SetBool("IsWalking", _rb.linearVelocity.magnitude > 0.01f);
                     _animator.SetTrigger("Attack");
 
                     yield return new WaitForSeconds(_attackWarningTime);
@@ -184,7 +184,6 @@ namespace Scripts.Enemies
 
         public void FinishAnimation()
         {
-            _animator.SetBool("IsWalking", true);
             _isAttacking = false;
         }
 
