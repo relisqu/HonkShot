@@ -9,6 +9,16 @@ namespace Scripts.Player.Shooting
     public class PlayerFeather : BaseBullet, IPoolable<PlayerFeather>
     {
         [SerializeField] protected float _size = 1f;
+
+        public float Size
+        {
+            get => _size;
+            set
+            {
+                _size = value; 
+                _baseTransform.localScale = new Vector3(_size, _size, 1f); 
+            }
+        }
         private ComponentPool<PlayerFeather> _pool; //блятьблятьблять
         private Coroutine _lifetimeCoroutine;
         public void SetPool(ComponentPool<PlayerFeather> pool)
@@ -19,7 +29,8 @@ namespace Scripts.Player.Shooting
         {
             // overload not override
             SetParameters(bulletSpeed, bulletDamage);
-            _size = size;
+            Size = size;
+            
             _baseTransform = this.transform;
         }
 
