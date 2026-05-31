@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using DG.Tweening;
+using Scripts.Health;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -43,7 +44,7 @@ namespace Scripts.Enemies
                 _hideCoroutine = StartCoroutine(HideAfterDelay());
             }
 
-            private void HideHealthBar()
+            private void HideHealthBar(HealthController controller = null)
             {
                 _canvasGroup.DOFade(0f, 0.1f);
             }

@@ -20,7 +20,7 @@ namespace Scripts.Enemies.Bullets
                 _baseTransform = transform;
         }
 
-        protected void Start()
+        protected virtual void Start()
         {
             Destroy(gameObject, _maxLifetime);
         }
@@ -41,5 +41,6 @@ namespace Scripts.Enemies.Bullets
             _speed = bulletSpeed;
             _damage = bulletDamage;
         }
+        
     }
 }

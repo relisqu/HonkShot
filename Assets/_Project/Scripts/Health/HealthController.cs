@@ -20,7 +20,7 @@ namespace Scripts.Health
         public Action OnTakeDamageTriggered;
         public Action<float> OnDamageBlocked;
         public Action<float> OnDamageReceived;
-        public Action OnDied;
+        public Action<HealthController> OnDied;
         public Action<float> OnNonLethalDamageReceived;
         public Action OnRevived;
 
@@ -98,7 +98,7 @@ namespace Scripts.Health
                     }
                     else
                     {
-                        OnDied?.Invoke();
+                        OnDied?.Invoke(this);
                     }
                 }
                 else

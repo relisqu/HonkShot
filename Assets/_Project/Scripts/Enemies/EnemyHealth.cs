@@ -26,7 +26,7 @@ namespace Scripts.Enemies
                 _baseEnemy = GetComponent<BaseEnemy>();
         }
 
-        private void HealthController_Died()
+        private void HealthController_Died(HealthController controller)
         {
             if (ScoreManager.Instance && _baseEnemy)
             {

@@ -117,14 +117,14 @@ namespace Scripts.Enemies.Bosses
         {
         }
 
-        private void BossHealth_Died()
+        private void BossHealth_Died(HealthController controller = null)
         {
             Destroy(gameObject);
         }
 
         private int _firstPhaseHealth;
 
-        private void Minion_Died()
+        private void Minion_Died(HealthController controller = null)
         {
             _firstPhaseHealth--;
 

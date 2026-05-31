@@ -17,8 +17,7 @@ namespace Scripts.Items.PermanentItems.CustomItems
 
         void Start()
         {
-            Debug.Log("I AM");
-            _playerFeatherShooter = GetComponent<PlayerFeatherShooter>();
+            _playerFeatherShooter = GetComponentInParent<PlayerFeatherShooter>();
             if (LevelManager.Instance)
             {
                 LevelManager.Instance.EnteredRoom += OnRoomEntered;
@@ -40,24 +39,32 @@ namespace Scripts.Items.PermanentItems.CustomItems
             var room = LevelManager.Instance.CurrentRoom;
             if (!room) return;
             var enemyHealths = room.GetComponentsInChildren<EnemyHealth>();
-            foreach (var enemyHealth in enemyHealths)
-            {
-                enemyHealth.HealthController.OnDied += () => OnEnemyKilled(enemyHealth.HealthController);
-                _subscribedEnemies.Add(enemyHealth.HealthController);
+            foreach (var enemyHealth in enemyHealths) 
+            { 
+                var controller = enemyHealth.HealthController;
+                controller.OnDied += OnEnemyKilled;
+                _subscribedEnemies.Add(controller); 
             }
         }
         private void UnsubscribeAll()
         {
             _subscribedEnemies.Clear();
         }
-        private void OnEnemyKilled(HealthController enemy)
+        private void OnEnemyKilled(HealthController controller)
         {
             ShootRandomFeathers();
+            
+            controller.OnDied -= OnEnemyKilled;
+            _subscribedEnemies.Remove(controller);
         }
+
 
         void ShootRandomFeathers()
         {
-            if (!_playerFeatherShooter) return;
+            if (!_playerFeatherShooter)
+            {
+                Debug.LogError("PlayerFeatherShooter is not assigned");
+            }
 
             for (int i = 0; i < _featherQuantity; i++)
             {
@@ -70,7 +77,6 @@ namespace Scripts.Items.PermanentItems.CustomItems
                 
                 _playerFeatherShooter.Shoot(randomDirection);
             }
-            Debug.LogError("HERE");
         }
         public override void InitItem(PlayerItemSO playerItemSO)
         {

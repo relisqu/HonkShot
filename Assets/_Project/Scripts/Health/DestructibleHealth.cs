@@ -27,7 +27,7 @@ namespace Scripts.Health
             _healthController.OnDied -= HealthController_Died;
         }
 
-        private void HealthController_Died()
+        private void HealthController_Died(HealthController controller = null)
         {
             Destroy(gameObject);
         }

@@ -91,6 +91,8 @@ namespace Scripts.Services.Pooling
             var obj = Object.Instantiate(_prefab, _parent);
             obj.gameObject.SetActive(false);
             _allObjects.Add(obj);
+            if (obj is IPoolable<T> poolable)
+                poolable.SetPool(this);
             _inactivePool.Enqueue(obj);
             return obj;
         }
@@ -98,5 +100,9 @@ namespace Scripts.Services.Pooling
         public int ActiveCount => _allObjects.Count - _inactivePool.Count;
         public int InactiveCount => _inactivePool.Count;
         public int TotalCount => _allObjects.Count;
+    }
+    public interface IPoolable<T> where T : Component // уметь времени нет, надо программировать
+    {
+        void SetPool(ComponentPool<T> pool);
     }
 }

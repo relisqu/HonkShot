@@ -14,7 +14,7 @@ namespace Scripts.Items.PermanentItems.CustomItems
         private List<HealthController> _subscribedEnemies = new List<HealthController>();
         void Start()
         {
-            _shieldController = GetComponent<ShieldController>();
+            _shieldController = GetComponentInParent<ShieldController>();
             if (LevelManager.Instance)
             {
                 LevelManager.Instance.EnteredRoom += OnRoomEntered;
@@ -51,9 +51,11 @@ namespace Scripts.Items.PermanentItems.CustomItems
             _subscribedEnemies.Clear();
         }
 
-        private void OnEnemyKilled()
+        private void OnEnemyKilled(HealthController controller)
         {
             _shieldController.AddIndestructibleShield();
+            controller.OnDied -= OnEnemyKilled;
+            _subscribedEnemies.Remove(controller);
         }
         
         public override void InitItem(PlayerItemSO playerItemSO)

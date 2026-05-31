@@ -32,7 +32,7 @@ namespace Scripts.LevelSystem.LevelObjects
             _healthController.OnDied -= HealthController_Died;
         }
 
-        private void HealthController_Died()
+        private void HealthController_Died(HealthController controller)
         {
             Destroy(gameObject);
         }

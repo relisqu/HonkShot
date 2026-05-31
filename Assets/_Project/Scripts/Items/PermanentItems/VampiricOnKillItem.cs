@@ -46,7 +46,7 @@ namespace Scripts.Items.PermanentItems
             var enemyHealths = room.GetComponentsInChildren<EnemyHealth>();
             foreach (var enemyHealth in enemyHealths)
             {
-                enemyHealth.HealthController.OnDied += () => OnEnemyKilled(enemyHealth.HealthController);
+                enemyHealth.HealthController.OnDied += OnEnemyKilled;
                 _subscribedEnemies.Add(enemyHealth.HealthController);
             }
         }
@@ -56,13 +56,15 @@ namespace Scripts.Items.PermanentItems
             _subscribedEnemies.Clear();
         }
 
-        private void OnEnemyKilled(HealthController enemy)
+        private void OnEnemyKilled(HealthController controller)
         {
             if (_health)
             {
                 float healAmount = _health.GetMaxHealth() * _healedHpPercent + _healedHpAmount;
                 _health.AddHealth(healAmount);
             }
+            controller.OnDied -= OnEnemyKilled;
+            _subscribedEnemies.Remove(controller);
         }
 
         public override void InitItem(PlayerItemSO playerItemSO)

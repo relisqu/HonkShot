@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.LevelCreator;
 using Scripts.Enemies;
+using Scripts.Health;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.U2D;
@@ -56,7 +57,7 @@ namespace Scripts.LevelSystem.LevelGeneration
             }
         }
 
-        private void EnemyHealthController_Died()
+        private void EnemyHealthController_Died(HealthController controller = null)
         {
             if (IsCleared())
             {
