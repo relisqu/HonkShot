@@ -11,7 +11,7 @@ namespace Scripts.Services.Pooling
         private readonly List<T> _allObjects = new(); // code readability though
 
         [SerializeField] private int _maxPoolSize = 100; // we need the limit
-
+        
         public ComponentPool(T prefab, int initialSize = 10, Transform parent = null, int maxSize = 100)
         {
             _prefab = prefab;
@@ -26,6 +26,10 @@ namespace Scripts.Services.Pooling
             {
                 AddNewObject();
             }
+        }
+        public void Initialize(int initialSize = 10)
+        {
+            Prewarm(initialSize);
         }
 
         public T Get(Vector3 position, Quaternion rotation)

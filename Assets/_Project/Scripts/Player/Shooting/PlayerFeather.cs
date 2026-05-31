@@ -12,7 +12,7 @@ namespace Scripts.Player.Shooting
             // overload not override
             SetParameters(bulletSpeed, bulletDamage);
             _size = size;
-            
+            _baseTransform = this.transform;
         }
 
         public override void DamagePlayer(PlayerHealth health)
@@ -24,6 +24,17 @@ namespace Scripts.Player.Shooting
         {
             enemyHealth.HealthController.TakeDamage(_damage);
             Destroy(gameObject);
+        }
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other.gameObject.TryGetComponent(out EnemyHealth health))
+            {
+                DamageEnemy(health);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

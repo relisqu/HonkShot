@@ -37,6 +37,7 @@ GameObject:
   - component: {fileID: 7210995127067110868}
   - component: {fileID: 8588473697873562762}
   - component: {fileID: 1234567890123456789}
+  - component: {fileID: 6829354694396117980}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -334,6 +335,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bf89c3bb7714f6ea8c83ef7d9d0ff9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _healthController: {fileID: 0}
   _iFrameDuration: 0.5
 --- !u!114 &2937765415697391777
 MonoBehaviour:
@@ -629,6 +631,24 @@ MonoBehaviour:
   _shieldController: {fileID: 3323263315137026221}
   _shieldVisualPrefab: {fileID: -3084956236828285870, guid: 577ccbc1fed154f449f75f67eeb6da40, type: 3}
   _shieldVisualParent: {fileID: 3112019895012964704}
+--- !u!114 &6829354694396117980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 225159964537138388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6353714e80356684ea4f9495e70430c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Player.Shooting.PlayerFeatherShooter
+  _featherPrefab: {fileID: -6030278855513041625, guid: 84317ea1652562d46866400b2689b78f, type: 3}
+  _poolSize: 20
+  _poolParent: {fileID: 0}
+  _featherSize: 1
+  _featherSpeed: 12
+  _featherDamage: 8
 --- !u!1 &334979677366588079
 GameObject:
   m_ObjectHideFlags: 0

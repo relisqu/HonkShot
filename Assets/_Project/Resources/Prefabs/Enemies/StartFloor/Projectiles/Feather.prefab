@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2020496104858978512}
   - component: {fileID: 8348808659537527595}
   - component: {fileID: 7492290615645246103}
-  - component: {fileID: 298464849852063327}
+  - component: {fileID: -6030278855513041625}
   m_Layer: 10
   m_Name: Feather
   m_TagString: Untagged
@@ -128,7 +128,7 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0.004875462}
   m_Radius: 0.16377483
---- !u!114 &298464849852063327
+--- !u!114 &-6030278855513041625
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -137,10 +137,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 7323370896169588259}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4415b80ce15846a1b08ead3675f2e119, type: 3}
+  m_Script: {fileID: 11500000, guid: 107c63c578d26e048ae40e23bffd8e7d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  _speed: 12
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Player.Shooting.PlayerFeather
+  _speed: 5
   _maxLifetime: 3
-  _damage: 5
+  _damage: 3
   _baseTransform: {fileID: 0}
+  _size: 1

@@ -17,6 +17,7 @@ namespace Scripts.Items.PermanentItems.CustomItems
 
         void Start()
         {
+            Debug.Log("I AM");
             _playerFeatherShooter = GetComponent<PlayerFeatherShooter>();
             if (LevelManager.Instance)
             {
@@ -69,6 +70,7 @@ namespace Scripts.Items.PermanentItems.CustomItems
                 
                 _playerFeatherShooter.Shoot(randomDirection);
             }
+            Debug.LogError("HERE");
         }
         public override void InitItem(PlayerItemSO playerItemSO)
         {

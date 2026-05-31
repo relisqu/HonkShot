@@ -41,7 +41,17 @@ namespace Scripts.Player.Shooting
         public float ModFeatherDamage => DamageModifierSystem.Calculate(_featherDamage);
         public float ModFeatherSpeed => SpeedModifierSystem.Calculate(_featherSpeed);
         #endregion
-        
+        private void Start()
+        {
+            if (!_poolParent)
+            {
+                GameObject poolContainer = new GameObject($"featherPool");
+                _poolParent = poolContainer.transform;
+            }
+
+            _featherPool = new ComponentPool<PlayerFeather>(_featherPrefab, _poolSize, _poolParent);
+            _featherPool.Initialize(_poolSize);
+        }
         //method - shoot 
         public void Shoot(Vector2 direction)
         {
@@ -54,6 +64,7 @@ namespace Scripts.Player.Shooting
 
             var feather = _featherPool.Get(transform.position, rotation);
             feather.SetParameters(ModFeatherSpeed, ModFeatherDamage, ModFeatherSize);
+            Debug.Log("SHOOOT");
         }
         //method - shoot at
         public void ShootAt(Vector2 targetPosition)
