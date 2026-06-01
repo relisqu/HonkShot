@@ -54,6 +54,9 @@ namespace Scripts.LevelSystem.LevelObjects
         [Tooltip("When true, rebuilds walls/helper/trees whenever the inner spline changes in the editor.")]
         [SerializeField] private bool _autoRefreshInEditor = true;
 
+        [Tooltip("When true, the wall is locked: it will NOT auto-rebuild on Start, on editor spline changes, or on floor enter. Manual [Button] calls still work.")]
+        [SerializeField] private bool _locked = false;
+
         private int _cachedSplineHash;
         private SpriteShapeRenderer _innerRenderer;
 
@@ -61,7 +64,8 @@ namespace Scripts.LevelSystem.LevelObjects
         {
             if (!Application.isPlaying) return;
 
-            RebuildAll();
+            if (!_locked)
+                RebuildAll();
 
             if (_bindFloorColor)
                 ApplyFloorColor(_defaultInnerColor);
@@ -84,6 +88,7 @@ namespace Scripts.LevelSystem.LevelObjects
         private void Update()
         {
             if (Application.isPlaying) return;
+            if (_locked) return;
             if (!_autoRefreshInEditor) return;
             if (!_innerShape) return;
 
@@ -101,6 +106,8 @@ namespace Scripts.LevelSystem.LevelObjects
 
             if (_bindFloorColor)
                 ApplyFloorColor(floorConfig.BackgroundColor);
+
+            if (_locked) return;
 
             if (floorConfig.Decorations)
             {

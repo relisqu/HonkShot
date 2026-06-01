@@ -16,13 +16,20 @@ namespace Scripts.LevelSystem.LevelObjects
         {
             if (_animationTween != null && _animationTween.IsPlaying()) return;
 
-            if(_spriteRenderer == null) return;
-            var previousMaterial = _spriteRenderer.material;
-            _spriteRenderer.material = _blinkColorMaterial;
-            _animationTween = _spriteRenderer.transform.DOPunchScale(_punchScale * Vector3.one, 0.2f, _punchVibrato, 0f).OnComplete(() =>
+            Material previousMaterial = null;
+            if (_spriteRenderer)
             {
-                _spriteRenderer.material = previousMaterial;
-            });
+                previousMaterial = _spriteRenderer.material;
+                _spriteRenderer.material = _blinkColorMaterial;
+            }
+
+            var jumpTransform  = _spriteRenderer ? _spriteRenderer.transform : transform.GetChild(0);
+            _animationTween = jumpTransform.DOPunchScale(_punchScale * Vector3.one, 0.2f, _punchVibrato, 0f)
+                .OnComplete(() =>
+                {
+                    if (_spriteRenderer)
+                        _spriteRenderer.material = previousMaterial;
+                });
         }
     }
 }

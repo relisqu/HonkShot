@@ -14,17 +14,22 @@ namespace Scripts.LevelSystem.LevelObjects
         [SerializeField] private SpriteShapeController _backgroundLevelField;
         [SerializeField] private Vector3 _fieldOffset;
 
+        [Tooltip("When true, the wall is locked and will NOT auto-regenerate on Start or in the Update loop. Manual [Button] calls still work.")]
+        [SerializeField] private bool _locked = false;
+
         private void Start()
         {
+            if (_locked) return;
             //GenerateWalls();
             CopySpriteShapeSpline();
-            
+
         }
 
         private int nextUpdate = 1;
 
         private void Update()
         {
+            if (_locked) return;
             if (Time.time < nextUpdate) return;
 
             nextUpdate = Mathf.FloorToInt(Time.time) + 1;

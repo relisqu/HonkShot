@@ -294,12 +294,17 @@ namespace Scripts.Player
         /// <summary>
         /// Disables all MonoBehaviour components on the ghost clone so that AI, audio, and damage scripts do not
         /// affect gameplay, while keeping colliders & rigidbodies active for physics‑only simulation.
+        /// Also disables Canvas components so ghost HP bars don't render alongside the real ones.
         /// </summary>
         private static void DisableBehavioursRecursive(Transform root)
         {
-            foreach (var mb in root.GetComponentsInChildren<MonoBehaviour>(false))
+            foreach (var mb in root.GetComponentsInChildren<MonoBehaviour>(true))
             {
                 mb.enabled = false;
+            }
+            foreach (var canvas in root.GetComponentsInChildren<Canvas>(true))
+            {
+                canvas.enabled = false;
             }
         }
 

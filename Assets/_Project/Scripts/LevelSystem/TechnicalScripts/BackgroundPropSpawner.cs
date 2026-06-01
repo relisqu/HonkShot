@@ -1,4 +1,5 @@
 ﻿using Scripts.LevelSystem.LevelGeneration;
+using Scripts.LevelSystem.LevelObjects;
 using Sirenix.OdinInspector;
 using System.Collections.Generic;
 using UnityEngine;
@@ -161,6 +162,9 @@ namespace Scripts.LevelSystem.TechnicalScripts
         private readonly List<Vector2> _cachedLevelPolygon = new List<Vector2>();
         private bool _cachedPolygonValid = false;
 
+        // Additional polygons (small islands created by InnerWallGeneration) that props must also avoid.
+        private readonly List<List<Vector2>> _cachedIslandPolygons = new List<List<Vector2>>();
+
         private void Awake()
         {
             if (_autoGenerateOnAwake)
@@ -268,6 +272,16 @@ namespace Scripts.LevelSystem.TechnicalScripts
                     Vector2 pW = _levelField.transform.TransformPoint(pL);
                     _cachedLevelPolygon.Add(pW);
                 }
+            }
+
+            // Cache any small-island polygons so props can be culled against them too.
+            _cachedIslandPolygons.Clear();
+            foreach (var island in SmallIsland.ActiveInstances)
+            {
+                if (!island) continue;
+                var poly = island.BuildWorldPolygon();
+                if (poly != null && poly.Count >= 3)
+                    _cachedIslandPolygons.Add(poly);
             }
 
             // Find "center" for flipping props (lean toward center)
@@ -607,6 +621,21 @@ namespace Scripts.LevelSystem.TechnicalScripts
             bool overlapsFieldBottom = _cachedPolygonValid && IsPointInsidePolygon(bottomCheckPoint, _cachedLevelPolygon);
 
             bool overlapsField = overlapsFieldTop || overlapsFieldMid || overlapsFieldBottom;
+
+            if (!overlapsField && _cachedIslandPolygons.Count > 0)
+            {
+                for (int i = 0; i < _cachedIslandPolygons.Count; i++)
+                {
+                    var island = _cachedIslandPolygons[i];
+                    if (IsPointInsidePolygon(topCheckPoint, island)
+                        || IsPointInsidePolygon(midCheckPoint, island)
+                        || IsPointInsidePolygon(bottomCheckPoint, island))
+                    {
+                        overlapsField = true;
+                        break;
+                    }
+                }
+            }
 
             if (overlapsField)
             {
