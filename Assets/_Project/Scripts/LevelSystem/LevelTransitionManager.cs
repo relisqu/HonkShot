@@ -71,7 +71,7 @@ namespace Scripts.LevelSystem
 
         public void PrepareRoom(Room room)
         {
-            _backgroundPropSpawner.SetLevel(room.SpriteShapeController);
+            _backgroundPropSpawner.SetLevel(room.SpriteShapeController, room.transform);
         }
 
         public IEnumerator SpawnEnterPortal(Room room)

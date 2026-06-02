@@ -24,13 +24,6 @@ namespace Scripts.LevelSystem.LevelObjects
         [SerializeField] private PolygonCollider2D _polygonCollider;
         [SerializeField] private Renderer _boundsFallback;
 
-        private void Awake()
-        {
-            if (!_spriteShape) _spriteShape = GetComponentInChildren<SpriteShapeController>();
-            if (!_polygonCollider) _polygonCollider = GetComponentInChildren<PolygonCollider2D>();
-            if (!_boundsFallback) _boundsFallback = GetComponentInChildren<Renderer>();
-        }
-
         private void OnEnable()
         {
             ActiveInstances.Add(this);
@@ -41,8 +34,17 @@ namespace Scripts.LevelSystem.LevelObjects
             ActiveInstances.Remove(this);
         }
 
+        private void EnsureBoundsSource()
+        {
+            if (!_spriteShape) _spriteShape = GetComponentInChildren<SpriteShapeController>(true);
+            if (!_polygonCollider) _polygonCollider = GetComponentInChildren<PolygonCollider2D>(true);
+            if (!_boundsFallback) _boundsFallback = GetComponentInChildren<Renderer>(true);
+        }
+
         public List<Vector2> BuildWorldPolygon()
         {
+            EnsureBoundsSource();
+
             if (_spriteShape)
             {
                 var spline = _spriteShape.spline;

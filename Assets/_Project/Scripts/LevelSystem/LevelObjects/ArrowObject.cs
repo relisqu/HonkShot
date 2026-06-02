@@ -10,6 +10,9 @@ namespace Scripts.LevelSystem.LevelObjects
         [SerializeField] SpriteRenderer _arrowSpriteRenderer;
         [SerializeField] Color _touchedColor;
 
+        [Tooltip("Sorting order applied to the arrow's SpriteRenderer in Start so it renders in front of the trail background.")]
+        [SerializeField] int _sortingOrder = 1;
+
         private Color _defaultColor;
 
         private void TouchableObject_Touched(int _)
@@ -28,6 +31,7 @@ namespace Scripts.LevelSystem.LevelObjects
             _touchableObject.Touched += TouchableObject_Touched;
             _touchableObject.Resetted += TouchableObject_Resetted;
             _defaultColor = _arrowSpriteRenderer.color;
+            _arrowSpriteRenderer.sortingOrder = _sortingOrder;
         }
 
         private void OnDestroy()

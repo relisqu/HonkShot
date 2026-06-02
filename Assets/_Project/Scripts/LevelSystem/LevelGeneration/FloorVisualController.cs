@@ -23,6 +23,8 @@ namespace Scripts.LevelSystem
         private void Start()
         {
             LevelManager.Instance.FloorEntered += LevelManager_FloorEntered;
+            if (LevelManager.Instance.CurrentFloorConfig)
+                LevelManager_FloorEntered(LevelManager.Instance.CurrentFloorConfig);
         }
 
         private void OnDestroy()

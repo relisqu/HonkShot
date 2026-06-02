@@ -36,6 +36,10 @@ namespace Scripts.LevelSystem.LevelGeneration
         public Action CompletedRoom;
         public Action<FloorConfigSO> FloorEntered;
 
+        // Last floor config that was entered (or null if none yet). Lets late-subscribing listeners
+        // catch up to the current floor in their Start without missing the initial FloorEntered event.
+        public FloorConfigSO CurrentFloorConfig { get; private set; }
+
         public RunProgress RunProgress => _runProgress;
         public Room CurrentRoom => _currentFloor?.VisitedRooms[^1];
 
@@ -79,6 +83,7 @@ namespace Scripts.LevelSystem.LevelGeneration
                 }
 
                 _runProgress.OnFloorStarted();
+                CurrentFloorConfig = floorConfig;
                 FloorEntered?.Invoke(floorConfig);
                 EnterRoom(_currentFloor.Rooms[0]);
             }
@@ -86,6 +91,11 @@ namespace Scripts.LevelSystem.LevelGeneration
             {
                 var rooms = FindObjectsOfType<Room>();
                 _currentFloor = _levelGenerator.GenerateFloor(rooms);
+                // Fire FloorEntered in this branch too so subscribers (colors, decorations) work
+                // even when running without DebugMode.GeneratingLevels.
+                var floorConfig = _runConfig ? _runConfig.GetFloorConfig(_runProgress.CurrentFloorIndex) : null;
+                CurrentFloorConfig = floorConfig;
+                FloorEntered?.Invoke(floorConfig);
                 EnterRoom(_currentFloor.Rooms[0]);
             }
         }

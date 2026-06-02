@@ -175,7 +175,11 @@ namespace Scripts.LevelSystem.TechnicalScripts
         {
             if (!Application.isPlaying) return;
             if (LevelManager.Instance)
+            {
                 LevelManager.Instance.FloorEntered += LevelManager_FloorEntered;
+                if (LevelManager.Instance.CurrentFloorConfig)
+                    LevelManager_FloorEntered(LevelManager.Instance.CurrentFloorConfig);
+            }
         }
 
         private void OnDestroy()
@@ -205,9 +209,20 @@ namespace Scripts.LevelSystem.TechnicalScripts
         }
 #endif
 
+        // Transient: the room whose hierarchy we should scan for SmallIsland components.
+        // Set by SetLevel; consulted by GenerateProps so islands are found even when the room
+        // is still inactive (SmallIsland.OnEnable hasn't fired yet, so the static registry is empty).
+        private Transform _activeRoomRoot;
+
         public void SetLevel(SpriteShapeController spriteField)
         {
+            SetLevel(spriteField, spriteField ? spriteField.transform : null);
+        }
+
+        public void SetLevel(SpriteShapeController spriteField, Transform roomRoot)
+        {
             _levelField = spriteField;
+            _activeRoomRoot = roomRoot;
             GenerateProps();
         }
 
@@ -275,10 +290,26 @@ namespace Scripts.LevelSystem.TechnicalScripts
             }
 
             // Cache any small-island polygons so props can be culled against them too.
+            // Source priority:
+            //   1. Active room hierarchy via GetComponentsInChildren(true) — works on inactive rooms.
+            //   2. Static SmallIsland.ActiveInstances — fallback when no room is set.
             _cachedIslandPolygons.Clear();
+            var seen = new HashSet<SmallIsland>();
+            if (_activeRoomRoot)
+            {
+                var roomIslands = _activeRoomRoot.GetComponentsInChildren<SmallIsland>(true);
+                for (int i = 0; i < roomIslands.Length; i++)
+                {
+                    var island = roomIslands[i];
+                    if (!island || !seen.Add(island)) continue;
+                    var poly = island.BuildWorldPolygon();
+                    if (poly != null && poly.Count >= 3)
+                        _cachedIslandPolygons.Add(poly);
+                }
+            }
             foreach (var island in SmallIsland.ActiveInstances)
             {
-                if (!island) continue;
+                if (!island || !seen.Add(island)) continue;
                 var poly = island.BuildWorldPolygon();
                 if (poly != null && poly.Count >= 3)
                     _cachedIslandPolygons.Add(poly);
