@@ -92,7 +92,7 @@ namespace Scripts.Health
 
                 if (_defaultCurrentHealth == 0)
                 {
-                    if (ReviveSystem.Instance && ReviveSystem.Instance.TryRevive(this))
+                    if (_reviveSystem&&  _reviveSystem.TryRevive(this))
                     {
                         OnRevived?.Invoke();
                     }

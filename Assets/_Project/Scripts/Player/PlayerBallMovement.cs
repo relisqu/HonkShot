@@ -157,6 +157,27 @@ namespace Scripts.Player
             _rigidbody2D.linearVelocity = Vector2.zero;
         }
 
-        
+        private RigidbodyType2D _preFreezeBodyType;
+        private bool _isPhysicsFrozen;
+        public bool IsPhysicsFrozen => _isPhysicsFrozen;
+
+        public void FreezePhysics()
+        {
+            if (_isPhysicsFrozen) return;
+            _isPhysicsFrozen = true;
+            _preFreezeBodyType = _rigidbody2D.bodyType;
+            _rigidbody2D.linearVelocity = Vector2.zero;
+            _rigidbody2D.angularVelocity = 0f;
+            _rigidbody2D.bodyType = RigidbodyType2D.Kinematic;
+        }
+
+        public void UnfreezePhysics()
+        {
+            if (!_isPhysicsFrozen) return;
+            _isPhysicsFrozen = false;
+            _rigidbody2D.bodyType = _preFreezeBodyType;
+            _rigidbody2D.linearVelocity = Vector2.zero;
+            _rigidbody2D.angularVelocity = 0f;
+        }
     }
 }

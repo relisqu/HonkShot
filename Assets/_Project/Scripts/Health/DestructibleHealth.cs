@@ -10,7 +10,12 @@ namespace Scripts.Health
         public HealthController HealthController => _healthController;
         public bool IsDamagedByTrigger;
         public bool IsDamagedByCollision;
-
+[Space]
+        [SerializeField] private ParticleSystem _damageParticles;
+        [SerializeField] private Vector2 _damageParticlesRange;
+        [SerializeField] private float _damageCoefficient;
+        [SerializeField] private Transform _visualTransform;
+        [SerializeField] private Collider2D _solidCollider;
         private void Awake()
         {
             if (!_healthController)
@@ -29,7 +34,10 @@ namespace Scripts.Health
 
         private void HealthController_Died()
         {
-            Destroy(gameObject);
+            _visualTransform.gameObject.SetActive(false);
+            Destroy(gameObject,5);
+            _solidCollider.enabled = false;
+            _damageParticles.Emit((int)_damageParticlesRange.y);
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -78,6 +86,12 @@ namespace Scripts.Health
             playerAttackController.Damage(gameObject);
             playerAttackController.OnDamaged?.Invoke(finalDamage);
             Debug.Log("Final damage: " + finalDamage);
+            
+            
+            var particlesAmount = (int)Mathf.Clamp(finalDamage * _damageCoefficient, _damageParticlesRange.x,
+                _damageParticlesRange.y);
+            Debug.Log("emited" +particlesAmount);
+            _damageParticles.Emit(particlesAmount);
         }
     }
 }

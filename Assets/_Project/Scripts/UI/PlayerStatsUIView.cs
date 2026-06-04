@@ -17,7 +17,8 @@ namespace Scripts.UI
         [SerializeField] private Transform _dashViewsTransform;
         [SerializeField] private Vector3 _startPosition;
         [SerializeField] private Vector3 _dashViewsOffset;
-        [SerializeField] private List<Image> _dashViews = new List<Image>();
+        
+        private List<Image> _dashViews = new List<Image>();
 
         [SerializeField] private PlayerDashController _playerDashController;
         private HealthController _playerHealthController;

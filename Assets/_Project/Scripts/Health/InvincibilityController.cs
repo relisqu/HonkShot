@@ -35,7 +35,7 @@ namespace Scripts.Health
 
         private void Awake()
         {
-            if(_healthController == null)
+            if(!_healthController)
             _healthController = GetComponent<HealthController>();
             _healthController.OnNonLethalDamageReceived += HealthController_OnNonLethalDamageReceived;
             _healthController.OnDamageBlocked += HealthController_OnDamageBlocked;

@@ -156,7 +156,7 @@ namespace Scripts.LevelSystem.LevelGeneration
                _levelTransitionManager.LevelTransitionStarted?.Invoke();
                 //_projection.DestroySimulation();
             };
-            exitPortal.OnPortalClosed += () => portalClosed = true;
+            exitPortal.OnPlayerEnter += () => portalClosed = true;
             while (!portalClosed)
                 yield return null;
 

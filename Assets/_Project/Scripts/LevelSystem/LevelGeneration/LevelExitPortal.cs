@@ -54,14 +54,14 @@ namespace Scripts.LevelSystem.LevelGeneration
                 if (_isSucking) return;
                 if (_inputHandler) _inputHandler.SetInputEnabled(InputLayer.LevelChange, false);
                 _isSucking = true;
-                player.StopMovement();
+                player.FreezePhysics();
                 Sequence swirlSequence = DOTween.Sequence();
                 var playerTransform = player.transform;
                 swirlSequence.Append(playerTransform.DOScale(swirlScale, swirlDuration)
                     .SetEase(Ease.InCirc).SetUpdate(true));
                 swirlSequence.Join(playerTransform.DORotate(new Vector3(0, 0, 720f), swirlDuration,
                     RotateMode.FastBeyond360).SetUpdate(true));
-                swirlSequence.Join(player.transform.DOMove(transform.position, swirlDuration * 0.8f)
+                swirlSequence.Join(player.transform.DOMove(transform.position, swirlDuration)
                     .SetEase(Ease.Linear).SetUpdate(true));
                 swirlSequence.SetUpdate(true);
                 swirlSequence.OnComplete(() =>

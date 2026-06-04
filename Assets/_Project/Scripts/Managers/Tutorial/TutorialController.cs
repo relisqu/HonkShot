@@ -103,7 +103,7 @@ namespace Scripts.Managers.Tutorial
             {
                 _levelTransitionManager.LevelTransitionStarted?.Invoke();
             };
-            exitPortal.OnPortalClosed += () => portalClosed = true;
+            exitPortal.OnPlayerEnter += () => portalClosed = true;
             while (!portalClosed)
                 yield return null;
 

@@ -1,3 +1,4 @@
+using System.Collections;
 using Scripts.Health;
 using Scripts.Items.PlayerItemManager;
 using Scripts.Player.Dash;
@@ -9,6 +10,7 @@ namespace Scripts.Items.PermanentItems.CustomItems
     {
         [SerializeField] private int _priority = 0;
         [SerializeField] private float _healthRestorePercent = 0.5f;
+        [SerializeField] private float _invincibilityDuration = 0.6f;
 
         private PlayerDashController _dashController;
         private bool _hasBeenUsed;
@@ -48,8 +50,18 @@ namespace Scripts.Items.PermanentItems.CustomItems
                 _dashController.ResetDashes();
             }
 
+            StartCoroutine(GrantReviveInvincibility(healthController));
+
             Debug.Log($"[SecondChanceItem] Revived with {_healthRestorePercent * 100}% health and full dashes!");
             return true;
+        }
+
+        private IEnumerator GrantReviveInvincibility(HealthController healthController)
+        {
+            healthController.SetInvincible((int)InvincibilityEnum.Revive, true);
+            yield return new WaitForSeconds(_invincibilityDuration);
+            if (healthController)
+                healthController.SetInvincible((int)InvincibilityEnum.Revive, false);
         }
 
         public override void InitItem(PlayerItemSO playerItemSO)

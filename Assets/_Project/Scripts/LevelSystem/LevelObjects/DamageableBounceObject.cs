@@ -11,6 +11,9 @@ namespace Scripts.LevelSystem.LevelObjects
     {
         [SerializeField] private HealthController _healthController;
         [SerializeField] private Collider2D _solidCollider;
+        [SerializeField] private ParticleSystem _particleSystem;
+        [SerializeField] private Transform _visualTransform;
+
 
         private bool _solidDisabledForLethal;
 
@@ -34,10 +37,12 @@ namespace Scripts.LevelSystem.LevelObjects
 
         private void HealthController_Died()
         {
-            Destroy(gameObject);
+            _solidCollider.enabled = false;
+            _visualTransform?.gameObject.SetActive(false);
+            _particleSystem.Emit(80);
+            Destroy(gameObject,5);
         }
 
-        
 
         // Trigger (bigger) - early detection of approaching player
         private void OnTriggerEnter2D(Collider2D other)
@@ -54,9 +59,9 @@ namespace Scripts.LevelSystem.LevelObjects
                 var velocity = rb.linearVelocity;
                 if (velocity.sqrMagnitude < 0.01f) return;
 
-              //  var rayDistance = velocity.magnitude * Time.fixedDeltaTime * 5f;
+                //  var rayDistance = velocity.magnitude * Time.fixedDeltaTime * 5f;
                 //var hit = Physics2D.Raycast(rb.position, velocity.normalized, rayDistance);
-             //   if (!hit.collider || hit.collider != _solidCollider) return;
+                //   if (!hit.collider || hit.collider != _solidCollider) return;
 //
                 var damage = attackController.GetDamage();
                 var modifiedDamage = _healthController.CalculateDamageTaken(damage);

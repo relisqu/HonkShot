@@ -6,5 +6,6 @@
         HonkMode = -100,
         Cannon = 40,
         Hiding = 50,
+        Revive = -50,
     }
 }

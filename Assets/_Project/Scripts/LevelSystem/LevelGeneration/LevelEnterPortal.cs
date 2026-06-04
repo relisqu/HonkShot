@@ -60,7 +60,9 @@ namespace Scripts.LevelSystem.LevelGeneration
             jumpOutSequence.OnComplete(() =>
             {
                 _finishedAnimation = true;
-                
+
+                var playerBallMovement = player.GetComponentInChildren<PlayerBallMovement>(true);
+                if (playerBallMovement) playerBallMovement.UnfreezePhysics();
                 if (_inputHandler) _inputHandler.SetInputEnabled(InputLayer.LevelChange,true);
                 PlayHide();
             });
