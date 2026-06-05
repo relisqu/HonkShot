@@ -27,25 +27,26 @@ namespace Scripts.Enemies.Bosses
         [SerializeField] private TrailRenderer _trailRenderer;
 
         [Header("Damage Flash")]
+        [SerializeField] private Material _hitFlashMaterial;
         [SerializeField] private float _flashDuration = 0.1f;
 
-        private Color _originalColor;
         private Coroutine _flashCoroutine;
         private Vector3 _originalScale;
+        private Material _originalMaterial;
 
         private void Start()
         {
-            if (_spriteRenderer)
-                _originalColor = _spriteRenderer.color;
-
             if (_visualTransform)
                 _originalScale = _visualTransform.localScale;
+
+            if (_spriteRenderer)
+                _originalMaterial = _spriteRenderer.sharedMaterial;
 
             if (_trailRenderer)
                 _trailRenderer.emitting = false;
 
             if (_healthController)
-                _healthController.OnNonLethalDamageReceived += HealthController_OnDamaged;
+                _healthController.OnTakeDamageTriggered += HealthController_OnTakeDamageTriggered;
 
             if (_shootingModule)
                 _shootingModule.OnShot += ShootingModule_OnShot;
@@ -54,7 +55,7 @@ namespace Scripts.Enemies.Bosses
         private void OnDestroy()
         {
             if (_healthController)
-                _healthController.OnNonLethalDamageReceived -= HealthController_OnDamaged;
+                _healthController.OnTakeDamageTriggered -= HealthController_OnTakeDamageTriggered;
 
             if (_shootingModule)
                 _shootingModule.OnShot -= ShootingModule_OnShot;
@@ -87,20 +88,25 @@ namespace Scripts.Enemies.Bosses
                 _trailRenderer.emitting = active;
         }
 
-        private void HealthController_OnDamaged(float damage)
+        private void HealthController_OnTakeDamageTriggered()
+        {
+            PlayHitFlash();
+        }
+
+        public void PlayHitFlash()
         {
             if (_flashCoroutine != null)
                 StopCoroutine(_flashCoroutine);
-            _flashCoroutine = StartCoroutine(FlashBlack());
+            _flashCoroutine = StartCoroutine(FlashHit());
         }
 
-        private IEnumerator FlashBlack()
+        private IEnumerator FlashHit()
         {
-            if (!_spriteRenderer) yield break;
+            if (!_spriteRenderer || !_hitFlashMaterial) yield break;
 
-            _spriteRenderer.color = Color.black;
+            _spriteRenderer.sharedMaterial = _hitFlashMaterial;
             yield return new WaitForSeconds(_flashDuration);
-            _spriteRenderer.color = _originalColor;
+            _spriteRenderer.sharedMaterial = _originalMaterial;
             _flashCoroutine = null;
         }
     }

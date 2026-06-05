@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using Scripts.Health;
 using Scripts.Player;
 using Scripts.PointSystem;
@@ -21,8 +22,16 @@ namespace Scripts.Enemies.Bosses
         [SerializeField] private ShieldController _shieldController;
         [SerializeField] private Rigidbody2D _rigidbody2D;
         [SerializeField] private BossVFXController _vfxController;
+        [SerializeField] private BossAnimationController _animationController;
 
         [SerializeField] private HealthController _bossHealth;
+
+        [Header("Phase Transition")]
+        [SerializeField] private float _phaseTransitionDuration = 1f;
+        [SerializeField] private float _phaseTransitionShakeStrength = 0.3f;
+        [SerializeField] private int _phaseTransitionShakeVibrato = 20;
+
+        private bool _isPaused;
         [Space]
         [Header("Minions in first phase")]
         [SerializeField] private Transform _minionsParentTransform;
@@ -84,6 +93,7 @@ namespace Scripts.Enemies.Bosses
                 var minionHealth = Instantiate(_minionPrefab, _minionsParentTransform);
                 _minions.Add(minionHealth);
                 minionHealth.HealthController.OnDied += Minion_Died;
+                minionHealth.HealthController.OnTakeDamageTriggered += Minion_OnTakeDamageTriggered;
             }
 
             StartCoroutine(RotateMinions());
@@ -111,10 +121,22 @@ namespace Scripts.Enemies.Bosses
             _bossHealth.OnNonLethalDamageReceived -= BossHealth_OnNonLethalDamageReceived;
             _bossHealth.OnDied -= BossHealth_Died;
             if (_bossIntro) _bossIntro.IntroFinished -= StartBossAI;
+
+            foreach (var minion in _minions)
+            {
+                if (!minion) continue;
+                minion.HealthController.OnDied -= Minion_Died;
+                minion.HealthController.OnTakeDamageTriggered -= Minion_OnTakeDamageTriggered;
+            }
         }
 
         private void BossHealth_OnNonLethalDamageReceived(float damage)
         {
+        }
+
+        private void Minion_OnTakeDamageTriggered()
+        {
+            if (_vfxController) _vfxController.PlayHitFlash();
         }
 
         private void BossHealth_Died()
@@ -136,8 +158,28 @@ namespace Scripts.Enemies.Bosses
             }
             else
             {
-                GoToSecondPhase();
+                StartCoroutine(PhaseTransitionRoutine(GoToSecondPhase));
             }
+        }
+
+        private IEnumerator PhaseTransitionRoutine(Action onComplete)
+        {
+            _isPaused = true;
+            _rigidbody2D.linearVelocity = Vector2.zero;
+            _bossHealth.SetInvincible(0, true);
+
+            if (_animationController)
+                _animationController.PlayPhaseChange();
+
+            transform.DOShakePosition(
+                _phaseTransitionDuration,
+                _phaseTransitionShakeStrength,
+                _phaseTransitionShakeVibrato);
+
+            yield return new WaitForSeconds(_phaseTransitionDuration);
+
+            _isPaused = false;
+            onComplete?.Invoke();
         }
 
         private int _currentPhase = 0;
@@ -157,6 +199,12 @@ namespace Scripts.Enemies.Bosses
         {
             while (_currentPhase < 2)
             {
+                if (_isPaused)
+                {
+                    yield return null;
+                    continue;
+                }
+
                 if (Vector2.Distance(transform.position, _playerTransform.position) > _minSpaceBetweenPlayerAndBoss)
                 {
                     var follow = _playerTransform.position - transform.position;
@@ -177,6 +225,7 @@ namespace Scripts.Enemies.Bosses
             while (_currentPhase < 2)
             {
                 yield return new WaitForSeconds(_shootingCooldown);
+                if (_isPaused) continue;
                 _shootingModule.TryShoot(() => { });
             }
         }
@@ -385,9 +434,11 @@ namespace Scripts.Enemies.Bosses
                         dashPoint = Random.Range(0, _thirdPhasePointsList.Count);
 
                     if (_vfxController) _vfxController.SetDashTrailActive(true);
+                    if (_animationController) _animationController.SetDashing(true);
                     yield return MoveToPoint(_thirdPhasePointsList[dashPoint], _thirdPhaseDashSpeed);
                     _rigidbody2D.position = _thirdPhasePointsList[dashPoint].position;
                     _rigidbody2D.linearVelocity = Vector2.zero;
+                    if (_animationController) _animationController.SetDashing(false);
 
                     yield return new WaitForSeconds(1.5f);
                     if (_vfxController) _vfxController.SetDashTrailActive(false);

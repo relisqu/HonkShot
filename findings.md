@@ -71,3 +71,35 @@ Items stored at `Assets/_Project/Resources/Data/Items/` — loaded via `Resource
 - Always encapsulate fields: private `_camelCase` backing field + public `PascalCase` property
 - Never expose raw fields as public when a property will do
 - Example: `private List<T> _allItems;` + `public List<T> AllItems => _allItems;`
+
+## Boss Animation System (2026-06-05)
+
+### Boss Phase Code Map
+- `RavageBossEnemy._currentPhase == 0` — minions rotating, boss invincible, follows player, shoots single
+- `_currentPhase == 1` (set by `GoToSecondPhase`) — minions dead, shields up, boss vulnerable, still follows and shoots
+- `_currentPhase == 2` (set by `GoToThirdPhase`) — shields broken, bezier waypoint movement, dashing, single/spread pattern
+- User-facing naming is 1-indexed: their "phase 1" = code phase 0, their "phase 2" = code phase 1
+
+### Boss Visual Architecture
+- `Boss.prefab` hierarchy: `EnemyTransform` → `Visual` → `Circle`
+- `BossVFXController._visualTransform` points at `Visual` — used for procedural DOTween scale (shot squash/stretch)
+- `BossVFXController._spriteRenderer` points at `Circle`'s SpriteRenderer — used for the damage flash
+- Existing damage flash uses `_spriteRenderer.color = Color.black` for `_flashDuration` then restores `_originalColor`
+- No Animator exists on the prefab currently; all visual feedback is procedural
+
+### Material Swap Pattern (reused)
+- `Assets/_Project/Scripts/LevelSystem/LevelObjects/PunchObjectAnimation.cs` is the reference implementation:
+  1. Cache `previousMaterial = _spriteRenderer.material`
+  2. `_spriteRenderer.material = _blinkColorMaterial`
+  3. Run animation (DOTween)
+  4. On complete: restore `previousMaterial`
+- Same pattern is being applied to `BossVFXController.FlashHit`
+- The actual blink material asset reference: TBD — locate the one the bouncer prefab uses, reuse it for the boss
+
+### Boss Coroutine Gating
+- `FollowPlayerCoroutine` and `ShootingCoroutine` both loop on `while (_currentPhase < 2)` — they write velocity / fire shots every frame
+- To pause them mid-phase (e.g., during phase-transition shake), need a separate `_isPaused` flag; stopping/restarting the coroutines would lose state and is unnecessary
+- `RotateMinions` loops on `_currentPhase == 0` — naturally stops when `GoToSecondPhase` flips the phase, so no special handling needed during transition pause (minions are already dead by then anyway)
+
+### Spec Location
+- `docs/superpowers/specs/2026-06-05-boss-animation-system-design.md`
