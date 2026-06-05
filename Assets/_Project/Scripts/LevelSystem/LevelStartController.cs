@@ -51,6 +51,12 @@ namespace Scripts.LevelSystem
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
+
+            if (Input.GetKeyDown(KeyCode.RightBracket))
+            {
+                _progressSaver.ResetTutorial();
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
         }
     }
 }

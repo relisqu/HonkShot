@@ -35,6 +35,12 @@ namespace Scripts.Progress
             SaveProgress();
         }
 
+        public void ResetTutorial()
+        {
+            _progressData.TutorialCompletedStatus = ProgressData.TutorialStatus.NotStarted;
+            SaveProgress();
+        }
+
         public void AddRunScore(long runScore)
         {
             _progressData.ScoreData.TotalScore += runScore;
