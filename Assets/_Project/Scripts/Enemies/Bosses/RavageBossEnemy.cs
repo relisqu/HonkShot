@@ -147,7 +147,7 @@ namespace Scripts.Enemies.Bosses
 
         private int _firstPhaseHealth;
 
-        private void Minion_Died()
+        private void Minion_Died(HealthController controller = null)
         {
             _firstPhaseHealth--;
             Debug.Log($"[RavageBossEnemy] Minion died. Remaining minions: {_firstPhaseHealth}");

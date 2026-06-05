@@ -35,7 +35,7 @@ namespace Scripts.LevelSystem.LevelObjects
             _healthController.OnDied -= HealthController_Died;
         }
 
-        private void HealthController_Died()
+        private void HealthController_Died(HealthController controller)
         {
             _solidCollider.enabled = false;
             _visualTransform?.gameObject.SetActive(false);

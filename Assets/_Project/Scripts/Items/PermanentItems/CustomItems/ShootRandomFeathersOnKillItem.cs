@@ -3,31 +3,27 @@ using Scripts.Enemies;
 using Scripts.Health;
 using Scripts.Items.PlayerItemManager;
 using Scripts.LevelSystem.LevelGeneration;
+using Scripts.Player.Dash;
+using Scripts.Player.Shooting;
 using UnityEngine;
 
-namespace Scripts.Items.PermanentItems
+namespace Scripts.Items.PermanentItems.CustomItems
 {
-    public class VampiricOnKillItem : Item
+    public class ShootRandomFeathersOnKillItem : Item
     {
-        [Tooltip("The percentage of the health of healed before adding healing amount")]
-        [SerializeField] private float _healedHpPercent = 0f; // 5% of max health per kill
-
-        [SerializeField] private int _healedHpAmount = 1;
-
-        private HealthController _health;
+        private int _featherQuantity = 5;
         private List<HealthController> _subscribedEnemies = new List<HealthController>();
-        public GameObject GameObject => gameObject;
+        private PlayerFeatherShooter _playerFeatherShooter;
 
         void Start()
         {
-            _health = GetComponentInParent<HealthController>();
+            _playerFeatherShooter = GetComponentInParent<PlayerFeatherShooter>();
             if (LevelManager.Instance)
             {
                 LevelManager.Instance.EnteredRoom += OnRoomEntered;
                 OnRoomEntered();
             }
         }
-
         void OnDestroy()
         {
             if (LevelManager.Instance)
@@ -37,39 +33,53 @@ namespace Scripts.Items.PermanentItems
 
             UnsubscribeAll();
         }
-
         private void OnRoomEntered()
         {
             UnsubscribeAll();
             var room = LevelManager.Instance.CurrentRoom;
             if (!room) return;
             var enemyHealths = room.GetComponentsInChildren<EnemyHealth>();
-            foreach (var enemyHealth in enemyHealths)
-            {
-                enemyHealth.HealthController.OnDied += OnEnemyKilled;
-                _subscribedEnemies.Add(enemyHealth.HealthController);
+            foreach (var enemyHealth in enemyHealths) 
+            { 
+                var controller = enemyHealth.HealthController;
+                controller.OnDied += OnEnemyKilled;
+                _subscribedEnemies.Add(controller); 
             }
         }
-
         private void UnsubscribeAll()
         {
             _subscribedEnemies.Clear();
         }
-
         private void OnEnemyKilled(HealthController controller)
         {
-            if (_health)
-            {
-                float healAmount = _health.GetMaxHealth() * _healedHpPercent + _healedHpAmount;
-                _health.AddHealth(healAmount);
-            }
+            ShootRandomFeathers();
+            
             controller.OnDied -= OnEnemyKilled;
             _subscribedEnemies.Remove(controller);
         }
 
+
+        void ShootRandomFeathers()
+        {
+            if (!_playerFeatherShooter)
+            {
+                Debug.LogError("PlayerFeatherShooter is not assigned");
+            }
+
+            for (int i = 0; i < _featherQuantity; i++)
+            {
+                float randomAngle = Random.Range(0f, 360f);
+                
+                Vector2 randomDirection = new Vector2(
+                    Mathf.Cos(randomAngle * Mathf.Deg2Rad),
+                    Mathf.Sin(randomAngle * Mathf.Deg2Rad)
+                );
+                
+                _playerFeatherShooter.Shoot(randomDirection);
+            }
+        }
         public override void InitItem(PlayerItemSO playerItemSO)
         {
-            Debug.Log("[VampiricOnKillItem] Inited VampiricOnKillItem");
         }
     }
 }

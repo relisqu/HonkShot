@@ -3,24 +3,23 @@ using Scripts.Enemies;
 using Scripts.Health;
 using Scripts.Items.PlayerItemManager;
 using Scripts.LevelSystem.LevelGeneration;
+using Scripts.Player.Dash;
 using UnityEngine;
 
-namespace Scripts.Items.PermanentItems
+namespace Scripts.Items.PermanentItems.CustomItems
 {
-    public class VampiricOnKillItem : Item
+    public class RegenDashesOnKillItem : Item
     {
-        [Tooltip("The percentage of the health of healed before adding healing amount")]
-        [SerializeField] private float _healedHpPercent = 0f; // 5% of max health per kill
+        public int dashCount;
 
-        [SerializeField] private int _healedHpAmount = 1;
-
-        private HealthController _health;
+        //private HealthController _health;
         private List<HealthController> _subscribedEnemies = new List<HealthController>();
-        public GameObject GameObject => gameObject;
+
+        private PlayerDashController _playerDashController;
 
         void Start()
         {
-            _health = GetComponentInParent<HealthController>();
+            _playerDashController = GetComponentInParent<PlayerDashController>();
             if (LevelManager.Instance)
             {
                 LevelManager.Instance.EnteredRoom += OnRoomEntered;
@@ -58,18 +57,16 @@ namespace Scripts.Items.PermanentItems
 
         private void OnEnemyKilled(HealthController controller)
         {
-            if (_health)
-            {
-                float healAmount = _health.GetMaxHealth() * _healedHpPercent + _healedHpAmount;
-                _health.AddHealth(healAmount);
-            }
-            controller.OnDied -= OnEnemyKilled;
-            _subscribedEnemies.Remove(controller);
+                for (int i = 0; i < dashCount; i++)
+                {
+                    _playerDashController.AddDash();
+                }
+                controller.OnDied -= OnEnemyKilled;
+                _subscribedEnemies.Remove(controller);
         }
 
         public override void InitItem(PlayerItemSO playerItemSO)
         {
-            Debug.Log("[VampiricOnKillItem] Inited VampiricOnKillItem");
         }
     }
 }

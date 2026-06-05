@@ -32,7 +32,7 @@ namespace Scripts.Enemies
             _tutorialController = tutorialController;
         }
 
-        private void HealthController_Died()
+        private void HealthController_Died(HealthController controller)
         {
             StartCoroutine(DeathSequence());
         }

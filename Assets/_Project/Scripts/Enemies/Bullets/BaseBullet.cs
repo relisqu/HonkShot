@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Scripts.Enemies.Bullets
@@ -7,24 +8,24 @@ namespace Scripts.Enemies.Bullets
 
     public class BaseBullet : MonoBehaviour
     {
-        [SerializeField] private float _speed = 5f;
+        [SerializeField] protected float _speed = 5f;
         [SerializeField] protected float _maxLifetime = 3f;
         [SerializeField] protected float _damage = 3f;
         [SerializeField] protected Transform _baseTransform;
         public Action OnReady;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             if (_baseTransform == null)
                 _baseTransform = transform;
         }
 
-        private void Start()
+        protected virtual void Start()
         {
             Destroy(gameObject, _maxLifetime);
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             _baseTransform.position += _baseTransform.up * (_speed * Time.deltaTime);
         }
@@ -40,5 +41,6 @@ namespace Scripts.Enemies.Bullets
             _speed = bulletSpeed;
             _damage = bulletDamage;
         }
+        
     }
 }
