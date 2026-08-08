@@ -139,7 +139,7 @@ namespace Scripts.Enemies.Bosses
             if (_vfxController) _vfxController.PlayHitFlash();
         }
 
-        private void BossHealth_Died()
+        private void BossHealth_Died(HealthController _)
         {
             Debug.Log($"[RavageBossEnemy] BossHealth_Died fired on '{gameObject.name}'. Destroying.");
             Destroy(gameObject);
