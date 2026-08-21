@@ -165,7 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07848764a75e458c81bd7fbce915c2bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bounciness: 0.5
+  _bounciness: 1.02
   _hasBounceAnimation: 0
   _bounceAnimation: {fileID: 0}
 --- !u!114 &5230859606893262657
@@ -181,8 +181,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackPointsObjectType: 0
-  _pointsPerTouchCount: 8
-  PointsPerStayCount: 0
+  _interactionType: 0
+  _difficultyLevel: 0
+  _interactionCooldown: 0
 --- !u!50 &8411584314873287065
 Rigidbody2D:
   serializedVersion: 5

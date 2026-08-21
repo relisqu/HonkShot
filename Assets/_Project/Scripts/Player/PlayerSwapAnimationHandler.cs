@@ -2,7 +2,6 @@
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
-using Unity.Cinemachine;
 using Scripts.Camera;
 using Scripts.Player.InputHandling;
 using UnityEngine;
@@ -28,19 +27,12 @@ namespace Scripts.Player
         [SerializeField] private InputHandler _inputHandler;
         [SerializeField] private ParticleSystem _playerSweatParticleSystem;
 
-        [Header("Settings")] [SerializeField] private float _minSize;
-        [SerializeField] private float _shakeForce;
-        [SerializeField] private float _maxZoomOut = 1f;
-        [SerializeField] private float _maxZoomAddOut = 1f;
-        [SerializeField] private float _zoomDuration = 0.1f;
+        [Header("Settings")] [SerializeField] private float _shakeForce;
 
-        private CinemachineCamera _virtualCamera;
-        private float _originalSize;
         private float _lastHorizontalVelocity = 0f;
 
         private Tweener _dragShakeTweener;
         private TweenerCore<float, float, FloatOptions> _slowdownTween;
-        private Tweener _zoomTween;
 
         private Coroutine _sweatEmitRoutine;
         private bool _isEmittingSweat = false;
@@ -48,8 +40,6 @@ namespace Scripts.Player
         private void Start()
         {
             _playerStatus.AnimationStateMachine().SetAnimator(_playerAnimator);
-            _virtualCamera = CameraShakeHandler.Instance._virtualCamera;
-            _originalSize = _virtualCamera.Lens.OrthographicSize;
         }
 
         private void OnEnable()
@@ -87,7 +77,10 @@ namespace Scripts.Player
             if (_playerStatus.PlayerState != PlayerState.Swapping) return;
 
             HandleCharacterScaling();
-            HandleCameraZoom();
+
+            var drag = _inputHandler.GetCurrentDrag();
+            var forceScale = Mathf.Clamp01(drag.magnitude / _playerBallMovement.MaxForceMagnitude);
+            AimCameraController.Instance.UpdateAim(drag, forceScale);
         }
 
         private void HandleCharacterScaling()
@@ -107,32 +100,13 @@ namespace Scripts.Player
             _playerStatus.CurrentGameObject.transform.localScale = new Vector3(currentScale, currentYScale, 1f);
         }
 
-        private void HandleCameraZoom()
-        {
-            var dragForce = _inputHandler.GetCurrentDrag().magnitude;
-            var forceScale = Mathf.Clamp01(dragForce / _playerBallMovement.MaxForceMagnitude);
-            float targetSize = _originalSize + forceScale * _maxZoomOut;
-
-            if (_zoomTween != null && _zoomTween.IsActive())
-            {
-                _zoomTween.Kill();
-            }
-
-            _zoomTween = DOTween.To(
-                () => _virtualCamera.Lens.OrthographicSize,
-                x => _virtualCamera.Lens.OrthographicSize = x,
-                targetSize,
-                _zoomDuration
-            ).SetEase(Ease.OutQuad);
-        }
-
         #endregion
 
         #region Event Handlers
 
         private void PlayerMovement_DragStarted()
         {
-            _originalSize = _virtualCamera.Lens.OrthographicSize;
+            AimCameraController.Instance.BeginAim();
             _playerAnimator.SetTrigger(DragStart);
             SlowDownGame();
             StartSweatEmission();
@@ -140,7 +114,7 @@ namespace Scripts.Player
 
         private void PlayerMovement_DragFinished(Vector2 _)
         {
-            ResetCameraZoom();
+            AimCameraController.Instance.ReleaseAim(punchy: true);
             ResetCharacterScale();
             ResetTimeScale();
             StopSweatEmission();
@@ -148,7 +122,7 @@ namespace Scripts.Player
 
         private void PlayerMovement_InputCancelled()
         {
-            ResetCameraZoom();
+            AimCameraController.Instance.ReleaseAim(punchy: false);
             ResetCharacterScale();
             ResetTimeScale();
             StopSweatEmission();
@@ -156,22 +130,6 @@ namespace Scripts.Player
         #endregion
 
         #region Reset Functions
-
-        private void ResetCameraZoom()
-        {
-            if (_zoomTween != null && _zoomTween.IsActive())
-            {
-                _zoomTween.Kill();
-            }
-
-            _zoomTween = DOTween.To(
-                () => _virtualCamera.Lens.OrthographicSize,
-                x => _virtualCamera.Lens.OrthographicSize = x,
-                _originalSize,
-                _zoomDuration
-            ).SetEase(Ease.OutQuad);
-
-        }
 
         private void ResetCharacterScale()
         {

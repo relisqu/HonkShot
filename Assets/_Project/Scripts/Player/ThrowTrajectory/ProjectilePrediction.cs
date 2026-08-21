@@ -25,7 +25,12 @@ namespace Scripts.Player
         [SerializeField] private int _maxPhysicsFrameIterations = 100; // renderer vertices (upper‑bound)
         [SerializeField] private int _maxBounces = 2; // stop simulation after N bounces
         [SerializeField] private Vector3 _lineOffset;
-        [SerializeField] private int _simSubSteps = 4;
+        [SerializeField] private int _simSubSteps = 4; // with adaptive stepping this only sets the covered flight LENGTH (maxIter * fixedDt / subSteps), not the step resolution
+
+        [Header("Adaptive stepping")]
+        [SerializeField] private int _flightSubSteps = 1;    // coarse steps during open flight (cheap)
+        [SerializeField] private int _bounceSubSteps = 8;    // fine steps near walls (accurate bounces)
+        [SerializeField] private float _wallProximityMargin = 0.75f; // world units; switch to fine steps within this range of a wall
 
         [Header("References")] [SerializeField]
         private InputHandler _inputHandler;
@@ -50,7 +55,7 @@ namespace Scripts.Player
         private const float _dragChangeThreshold = 0.1f;
 
         [SerializeField]
-        private float _simulationRefreshInterval = 0.05f; // seconds (unscaled) between trajectory refreshes
+        private float _simulationRefreshInterval = 0.033f; // seconds (unscaled) between trajectory refreshes (~30Hz cap)
 
         private float _nextSimTime;
         private float _nextFlightSimTime;
@@ -59,6 +64,11 @@ namespace Scripts.Player
         // Pooled projectile
         private PlayerGhostProjectile _pooledGhostProjectile;
         private CircleCollider2D _ghostCollider;
+
+        // Adaptive-stepping look-ahead
+        private readonly RaycastHit2D[] _castBuf = new RaycastHit2D[4];
+        private ContactFilter2D _castFilter;
+        private bool _castFilterReady;
 
         private Room _currentRoom;
 
@@ -130,6 +140,7 @@ namespace Scripts.Player
         {
             _isDragging = true;
             _needsRecalculation = true;
+            _nextSimTime = 0f; // force an immediate first simulation on the next Update
             TryCreateSimulationSceneIfNeeded();
         }
 
@@ -202,7 +213,26 @@ namespace Scripts.Player
             TryCreateSimulationSceneIfNeeded();
             if (!_currentRoom || !_simulationScene.isLoaded) return;
 
-            // Sync ghosts → originals
+            if (!_isDragging) return;
+
+            // Track the latest aim every frame (cheap). The heavy work — ghost sync + physics simulation —
+            // is throttled to _simulationRefreshInterval, so fast aim/camera movement no longer re-runs the
+            // full simulation every frame (that was the FPS drop). First sim after drag start is immediate
+            // because OnDragStarted resets _nextSimTime to 0.
+            _lastDragDirection = _inputHandler.GetCurrentDrag();
+
+            if (Time.unscaledTime >= _nextSimTime)
+            {
+                SyncGhosts();
+                SimulateTrajectory();
+                _nextSimTime = Time.unscaledTime + _simulationRefreshInterval;
+            }
+        }
+
+        // Mirror live obstacles onto their simulation ghosts. Only needed right before a simulation, so it
+        // runs at the throttled recalc rate rather than every frame.
+        private void SyncGhosts()
+        {
             foreach (var pair in _spawnedObjects)
             {
                 if (!pair.Key)
@@ -212,22 +242,6 @@ namespace Scripts.Player
                 else if (pair.Value)
                 {
                     CopyTransformRecursive(pair.Key, pair.Value);
-                }
-            }
-
-            if (_isDragging)
-            {
-                Vector2 currentDrag = _inputHandler.GetCurrentDrag();
-                if (Vector2.Distance(currentDrag, _lastDragDirection) > _dragChangeThreshold)
-                {
-                    _lastDragDirection = currentDrag;
-                    _needsRecalculation = true;
-                }
-
-                if (_needsRecalculation || Time.unscaledTime >= _nextSimTime)
-                {
-                    SimulateTrajectory();
-                    _nextSimTime = Time.unscaledTime + _simulationRefreshInterval;
                 }
             }
         }
@@ -339,18 +353,53 @@ namespace Scripts.Player
             proj.BouncingObject.ClearDebugData();
 
 
-            // simulation variables
-            float simDt = Time.fixedUnscaledDeltaTime / _simSubSteps;
+            // Adaptive stepping: big cheap steps in open flight, fine steps only when a wall is within
+            // reach — bounces stay as accurate as small fixed steps but open flight costs a fraction.
+            // Total covered flight time is kept equal to the old fixed-step length so the line is the
+            // same length as before (maxIter * fixedDt / simSubSteps).
+            if (!_castFilterReady)
+            {
+                _castFilter = new ContactFilter2D { useTriggers = false };
+                _castFilter.SetLayerMask(1 << _simulationGhostLayer);
+                _castFilterReady = true;
+            }
+
+            float fixedDt = Time.fixedUnscaledDeltaTime;
+            float coarseDt = fixedDt / Mathf.Max(1, _flightSubSteps);
+            float fineDt = fixedDt / Mathf.Max(1, _bounceSubSteps);
+            float maxFlightTime = _maxPhysicsFrameIterations * (fixedDt / Mathf.Max(1, _simSubSteps));
+            float worldRadius = _ghostCollider.radius * Mathf.Abs(proj.transform.lossyScale.x);
+
             int idx = 0;
             int bounceCount = 0;
+            float simTime = 0f;
             Vector2 prevVelocity = rb.linearVelocity;
 
             _line.positionCount = _maxPhysicsFrameIterations;
             _line.SetPosition(idx++, proj.transform.position + _lineOffset);
 
-            while (idx < _maxPhysicsFrameIterations && bounceCount <= _maxBounces)
+            while (idx < _maxPhysicsFrameIterations && bounceCount <= _maxBounces && simTime < maxFlightTime)
             {
-                _physicsScene.Simulate(simDt);
+                Vector2 pos = proj.transform.position;
+                Vector2 vel = rb.linearVelocity;
+                float speed = vel.magnitude;
+                if (speed < 0.0001f) break;
+                Vector2 dir = vel / speed;
+
+                // Look ahead one coarse step (+margin); if a wall is that close, step finely through it.
+                float lookDist = coarseDt * speed + _wallProximityMargin;
+                bool wallAhead = false;
+                int hits = _physicsScene.CircleCast(pos, worldRadius, dir, lookDist, _castFilter, _castBuf);
+                for (int i = 0; i < hits; i++)
+                {
+                    var hitCol = _castBuf[i].collider;
+                    if (hitCol && hitCol != _ghostCollider) { wallAhead = true; break; }
+                }
+
+                float dt = wallAhead ? fineDt : coarseDt;
+                _physicsScene.Simulate(dt);
+                simTime += dt;
+
                 proj.BouncingObject.SetCurrentVelocity(rb.linearVelocity);
                 _line.SetPosition(idx++, proj.transform.position + _lineOffset);
 

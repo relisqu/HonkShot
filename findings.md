@@ -103,3 +103,28 @@ Items stored at `Assets/_Project/Resources/Data/Items/` — loaded via `Resource
 
 ### Spec Location
 - `docs/superpowers/specs/2026-06-05-boss-animation-system-design.md`
+
+## Aim-Zoom vs Pixel-Perfect Conflict (2026-08-08) — ROOT CAUSE
+
+Aim-zoom overshoot had "no effect". Root cause is NOT the tween code — it's pixel-perfect quantization.
+
+Scene camera setup:
+- `Virtual Camera` GO (instanceID 57948) has `Unity.Cinemachine.CinemachinePixelPerfect` extension (enabled).
+- `Main Camera` has URP `PixelPerfectCamera` (enabled): assetsPPU=26, refResolution=960x540,
+  gridSnapping=**UpscaleRenderTexture**, upscaleRT=true, pixelRatio=4.
+
+Mechanism:
+- In UpscaleRenderTexture mode the scene renders to a fixed-resolution RT, then integer-upscales to screen.
+- `CinemachinePixelPerfect` snaps the vcam `Lens.OrthographicSize` to discrete integer-ratio zoom levels
+  every frame (Finalize pipeline stage), overriding any tween.
+- Current camera size = 10.38461 = 540/(2*26) = the reference pixel-perfect size → pinned to base level.
+- => Any sub-step lens change (the fractional overshoot) is invisible. The existing aim zoom-OUT is
+  quantized/overridden too.
+
+Implication: smooth continuous ortho zoom is fundamentally incompatible with this strict pixel-perfect config.
+Fix options (need user decision — architecture-level, see task_plan.md):
+  1. Deliver the "punch" via a channel pixel-perfect doesn't quantize: camera impulse/shake kick on release
+     (CameraShakeHandler.ShakeCamera already exists) instead of ortho overshoot.
+  2. Temporarily disable CinemachinePixelPerfect (+maybe PixelPerfectCamera) during aim+snap, re-enable on
+     settle — smooth zoom but brief non-pixel-perfect rendering / possible pop.
+  3. Accept that ortho-zoom feel can't work here; drop the overshoot.
