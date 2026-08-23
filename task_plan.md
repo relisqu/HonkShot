@@ -1,73 +1,83 @@
-# Task Plan: Aim-Zoom Feature (punchy overshoot on throw release)
+# Task Plan — Room prefab regeneration button (FloorConfigSO)
 
 ## Goal
-Finish the "goose aim-zoom" camera feel. Live zoom-out while aiming already exists.
-Remaining gap = punchy overshoot snap-back on real throw release; keep clean ease on cancel.
+`FloorConfigSO` needs a working "Refresh Rooms" button that rebuilds the generated walls and
+corner decorations inside every room **prefab** of that floor, so a change to `Wall.prefab`
+does not require opening each room and clicking "update level" by hand.
 
-## Key Discovery (2026-08-08)
-The live aim-zoom is ALREADY IMPLEMENTED in `PlayerSwapAnimationHandler.cs`, not missing:
-- `HandleCameraZoom()` (line 110): while Swapping, reads live drag, normalizes vs
-  `PlayerBallMovement.MaxForceMagnitude`, `targetSize = _originalSize + forceScale * _maxZoomOut`,
-  tweens `Lens.OrthographicSize` with `Ease.OutQuad`, `_zoomDuration = 0.1f`.
-- `PlayerMovement_DragStarted()` captures `_originalSize`.
-- `PlayerMovement_DragFinished` (throw) AND `PlayerMovement_InputCancelled` (cancel)
-  BOTH call the same `ResetCameraZoom()` → plain `Ease.OutQuad` back to `_originalSize`. NO overshoot,
-  and no differentiation between throw and cancel.
+Reported symptoms: the existing button "creates a lot of garbage in the scene and still does
+not spawn objects".
 
-=> Building the separate `CameraAimZoom` component (old plan) would DUPLICATE and fight this over the
-   same `Lens.OrthographicSize`. Correct approach: extend `PlayerSwapAnimationHandler` instead.
+## Root Cause (confirmed)
+`RefreshRooms()` called the generators **directly on the prefab asset**
+(`roomModel.RoomPrefab.GetComponent<...>()`).
+- `CornerGenerator.Generate()` does `new GameObject(...)` + `SetParent(spawnParent)`.
+- Unity forbids parenting a transform into a Prefab Asset, so every spawned object was created
+  and then left **loose in the currently open scene** → the "garbage", and nothing landed in the prefab.
+- Nothing called `SetDirty` / `SaveAsPrefabAsset` either, so even the spline edits from
+  `CopySpriteShapeSpline()` were not persisted.
 
-## Remaining Design Gap (from settled design)
-- On real throw release: **punchy overshoot** snap back to base size (Ease.OutBack / punch).
-- On cancel: clean ease back, no overshoot (current behavior — keep).
-
-## Current Phase
-FINAL approach: bypass pixel-perfect during aim → real smooth zoom + punchy overshoot. Compiles clean.
-Needs USER playtest (MCP play sessions don't tick frames, so no automated runtime verification possible).
-
-## Final Implementation (bypass pixel-perfect during aim)
-Root cause proven: URP PixelPerfectCamera (UpscaleRenderTexture) hard-locks rendered ortho to 10.38461;
-Cinemachine lens is ignored. Direct Camera.orthographicSize writes hold only when BOTH the URP
-PixelPerfectCamera AND the CinemachineBrain are disabled.
-- On DragStarted: disable brain + urp-pixel-perfect + cm-pixel-perfect, capture crisp base.
-- During aim: drive `_outputCamera.orthographicSize` directly (zoom-out scales with drag power).
-- On throw: OutBack overshoot snap back (the punch); on cancel: clean OutQuad. Re-enable all on complete.
-- Tweens SetUpdate(true); Update() safety-net prevents stuck-disabled state.
-- Refs `_urpPixelPerfect`(Main Camera)+`_cmPixelPerfect`(vcam) wired via MCP; scene saved+restored.
-- Tradeoff (user-accepted): pixel-perfect momentarily OFF + camera position frozen during the brief aim.
+Secondary cause of the original pain: `WallGeneration.GenerateWalls()` used plain `Instantiate`,
+so walls were disconnected copies — Wall prefab edits could never propagate.
 
 ## Phases
 
-### Phase 1: Confirm approach
-- [x] Confirmed by user: extend `PlayerSwapAnimationHandler`, no new component
+### Phase 0: Commit pending work to dev
+- [x] Staged everything, committed as `9fa0347` "Extract aim camera logic and tune throw trajectory"
+- [x] NOT pushed (user manages pushes)
 - **Status:** complete
 
-### Phase 2: Ortho overshoot (ABANDONED)
-- [x] Implemented OutBack overshoot on throw release
-- [x] User reported "no effect". Root cause: URP PixelPerfectCamera + CinemachinePixelPerfect
-      (UpscaleRenderTexture, pixelRatio=4) quantize the lens ortho size; a sub-unit overshoot near
-      base doesn't cross a snap step → invisible. (Zoom-OUT still reads smooth because it spans many
-      fine steps.) Serialized field values were verified correct, so not a defaults bug.
-- **Status:** abandoned (see findings.md)
-
-### Phase 3: Shake punch on throw (IMPLEMENTED)
-- [x] Reverted overshoot; `ResetCameraZoom()` back to single clean OutQuad for throw + cancel
-- [x] Added serialized `_throwShakeDuration=0.15`, `_throwShakeStrength=3` ("Throw Release Punch")
-- [x] `PlayerMovement_DragFinished` calls `CameraShakeHandler.Instance.ShakeCameraOutsideOfQueue(...)`
-      (throw only; cancel gets no punch)
-- [x] Recompiled, 0 console errors; instance fields verified 0.15 / 3
+### Phase 1: Route the button through the Editor assembly
+- [x] `FloorConfigSO.RefreshRoomsRequested` static Action (mirrors the existing `PreviewRequested`
+      pattern used by `FloorPreviewer`) — runtime assembly cannot reference `UnityEditor`
+- [x] `FloorConfigSO.AllRoomPrefabs()` — distinct rooms from RoomModels + micropools + boss rooms
+- [x] Button guards Play Mode and a missing subscriber
 - **Status:** complete
 
-### Phase 4: Tuning (user-side)
-- [ ] Play-mode confirm the punch reads well; tune `_throwShakeStrength` / `_throwShakeDuration` on player
-- **Status:** pending (designer tuning only)
+### Phase 2: Editor-side regeneration
+- [x] New `Assets/_Project/Scripts/Editor/RoomPrefabRefresher.cs` (`[InitializeOnLoad]`)
+- [x] Per room: `PrefabUtility.LoadPrefabContents` → run `CopySpriteShapeSpline` + `GenerateWalls`
+      on every `WallGeneration`, `Generate()` on every `CornerGenerator` (GetComponentsInChildren,
+      includeInactive) → `SaveAsPrefabAsset` → `UnloadPrefabContents` in `finally`
+- [x] Cancelable progress bar, per-room try/catch so one bad room does not abort the run,
+      summary log with refreshed/skipped counts
+- **Status:** complete
+
+### Phase 3: Make walls real prefab instances
+- [x] `WallGeneration.SpawnWall()` — `PrefabUtility.InstantiatePrefab` in edit mode,
+      plain `Instantiate` at runtime (and as fallback if the reference is not a prefab asset)
+- [x] Moved the null-reference guard above the first `_levelField.spline` use (it was dead code
+      after an NRE); added the same guard to `CopySpriteShapeSpline`
+- **Status:** complete
+
+### Phase 4: Verification
+- [x] Compiled `Assembly-CSharp` and `Assembly-CSharp-Editor` with Unity's bundled Roslyn using
+      the project's own Bee .rsp files → 0 errors
+- [x] User ran it on FloorConfig_01: no scene garbage, objects placed correctly
+- [x] Verified in YAML that all 18 FloorConfig_01 rooms now hold nested Wall.prefab instances
+      (0 plain wall GameObjects left)
+- **Status:** complete
+
+### Phase 5: Reach rooms no config references
+- [x] Found that 24 of 30 `Rooms/SecondFloor/*` prefabs are in no FloorConfig, so the config button
+      cannot reach them
+- [x] Added `Assets/Rooms/Refresh Selected Room Prefabs` menu item (selection + folder expansion,
+      confirm dialog, skips prefabs without generators)
+- [x] Compiles clean; Unity console clean after forced refresh
+- [ ] User: select `Rooms/SecondFloor` (and FloorConfig_02's rooms) and run the menu item
+- **Status:** awaiting user run
 
 ## Decisions Made
 | Decision | Rationale |
 |----------|-----------|
-| Extend existing handler, no new component | Avoids two systems fighting over Lens.OrthographicSize |
+| Static Action + `[InitializeOnLoad]` listener | No asmdefs in `_Project`, so the runtime assembly cannot call `UnityEditor`; matches the existing `PreviewRequested`/`FloorPreviewer` pattern |
+| `LoadPrefabContents` instead of editing the asset in place | Only supported way to add/remove GameObjects inside a prefab asset from script |
+| Walls spawned via `PrefabUtility.InstantiatePrefab` | Keeps the prefab link, so future Wall prefab edits propagate with no regeneration at all |
+| Refresh boss + micropool rooms too, deduped | "Every room of this floor" is the user's intent |
+| Dropped `Start/StopAssetEditing` batching | Batched imports around `LoadPrefabContents`/`SaveAsPrefabAsset` risks stale reads for little gain |
 
 ## Errors Encountered
 | Error | Attempt | Resolution |
 |-------|---------|------------|
-| (none) | — | — |
+| `dotnet build` — no .NET SDK installed | 1 | Used Unity's bundled `NetCoreRuntime/dotnet.exe` + `DotNetSdkRoslyn/csc.dll` with the project's Bee `.rsp` files |
+| Editor assembly would link against a stale `Assembly-CSharp.ref.dll` | 1 | Rewrote the `-r:` line in the copied .rsp to point at the freshly built ref assembly |

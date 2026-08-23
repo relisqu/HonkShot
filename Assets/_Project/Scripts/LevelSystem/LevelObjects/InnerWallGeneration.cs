@@ -57,6 +57,8 @@ namespace Scripts.LevelSystem.LevelObjects
         [Tooltip("When true, the wall is locked: it will NOT auto-rebuild on Start, on editor spline changes, or on floor enter. Manual [Button] calls still work.")]
         [SerializeField] private bool _locked = false;
 
+        public bool IsLocked => _locked;
+
         private int _cachedSplineHash;
         private SpriteShapeRenderer _innerRenderer;
 
@@ -276,12 +278,10 @@ namespace Scripts.LevelSystem.LevelObjects
                 if (isTopEdge)
                     spawnPos += (Vector3)(midToCenter * _topWallInwardOffset);
 
-                GameObject wall = Instantiate(
-                    _wallPrefab,
-                    spawnPos,
-                    Quaternion.Euler(0f, 0f, rotationZ),
-                    _wallsContainer
-                );
+                GameObject wall = SpawnWall();
+                if (!wall) continue;
+
+                wall.transform.SetPositionAndRotation(spawnPos, Quaternion.Euler(0f, 0f, rotationZ));
 
                 Vector3 baseScale = wall.transform.localScale;
                 float widthScale = isTopEdge ? baseScale.x * _topWallThicknessMultiplier : baseScale.x;
@@ -291,6 +291,20 @@ namespace Scripts.LevelSystem.LevelObjects
                     1f
                 );
             }
+        }
+
+        // In edit mode walls are spawned as prefab instances, so later edits to the inner wall prefab
+        // propagate into every island without regenerating.
+        private GameObject SpawnWall()
+        {
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                var linked = UnityEditor.PrefabUtility.InstantiatePrefab(_wallPrefab, _wallsContainer) as GameObject;
+                if (linked) return linked;
+            }
+#endif
+            return Instantiate(_wallPrefab, _wallsContainer);
         }
 
         [Button]

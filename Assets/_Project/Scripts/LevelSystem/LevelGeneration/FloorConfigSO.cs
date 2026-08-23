@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Scripts.LevelSystem.LevelObjects;
-using Scripts.LevelSystem.TechnicalScripts;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -50,14 +48,63 @@ namespace Scripts.LevelSystem.LevelGeneration
         [ShowInInspector, ReadOnly, ShowIf(nameof(_useAdvancedGeneration))]
         public int MicropoolTotalSlots => _micropools?.Sum(p => p?.Count ?? 0) ?? 0;
 
-        [Button]
+        // Handled by RoomPrefabRefresher in the Editor assembly, which is the only place allowed to
+        // write into prefab assets. Nothing subscribes at runtime.
+        public static System.Action<FloorConfigSO> RefreshRoomsRequested;
+
+        public IEnumerable<Room> AllRoomPrefabs()
+        {
+            var seen = new HashSet<Room>();
+
+            if (RoomModels != null)
+            {
+                foreach (var model in RoomModels)
+                {
+                    var prefab = model?.RoomPrefab;
+                    if (prefab && seen.Add(prefab)) yield return prefab;
+                }
+            }
+
+            if (_micropools != null)
+            {
+                foreach (var pool in _micropools)
+                {
+                    if (pool?.RoomModels == null) continue;
+                    foreach (var model in pool.RoomModels)
+                    {
+                        var prefab = model?.RoomPrefab;
+                        if (prefab && seen.Add(prefab)) yield return prefab;
+                    }
+                }
+            }
+
+            if (_bossRoomPrefabs != null)
+            {
+                foreach (var prefab in _bossRoomPrefabs)
+                {
+                    if (prefab && seen.Add(prefab)) yield return prefab;
+                }
+            }
+        }
+
+        [Button(ButtonSizes.Large), PropertyOrder(-1)]
+        [InfoBox("Rebuilds walls and corner decorations inside every room prefab of this floor and saves them. " +
+                 "Run this after changing the Wall prefab or a room's spline.")]
         public void RefreshRooms()
         {
-            foreach (var roomModel in RoomModels)
+            if (Application.isPlaying)
             {
-                roomModel.RoomPrefab.GetComponent<WallGeneration>().CopySpriteShapeSpline();
-                roomModel.RoomPrefab.GetComponent<CornerGenerator>().Generate();
+                Debug.LogWarning("[FloorConfigSO] RefreshRooms only works in Edit Mode — prefab assets cannot be written during Play Mode.");
+                return;
             }
+
+            if (RefreshRoomsRequested == null)
+            {
+                Debug.LogError("[FloorConfigSO] RoomPrefabRefresher is not loaded — is Assets/_Project/Scripts/Editor/RoomPrefabRefresher.cs compiling?");
+                return;
+            }
+
+            RefreshRoomsRequested.Invoke(this);
         }
 
         public static System.Action<FloorConfigSO> PreviewRequested;

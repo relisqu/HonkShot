@@ -70,6 +70,7 @@ namespace Scripts.LevelSystem.LevelGeneration
                     PlayHide();
                     OnPlayerEnter?.Invoke();
                 });
+                
             }
         }
     }

@@ -356,3 +356,61 @@
   Files: `Assets/_Project/Scripts/Player/ThrowTrajectory/ProjectilePrediction.cs`
 - Leftover cleanup (optional): after FIX 1, `_needsRecalculation` and `_dragChangeThreshold` in Projection are
   now unused/write-only. Also `SimulateFromCurrentState` was already dead. User offered removal; not done yet.
+
+---
+
+## Session 2026-08-21 — commit + FloorConfig "Refresh Rooms"
+
+- **Commit `9fa0347`** on `dev`: "Extract aim camera logic and tune throw trajectory" — all pending
+  edits (AimCameraController, ProjectilePrediction adaptive stepping, Wall.prefab, GameplayScene,
+  package manifests, planning files, `Assets/_Recovery/0 (5).unity`). Not pushed.
+
+- **Fixed `FloorConfigSO.RefreshRooms()`.** Root cause: generators were run straight on the prefab
+  asset, so `CornerGenerator`'s `new GameObject` + `SetParent` landed in the open scene (the garbage)
+  and nothing was written to the prefab; no save call either. See findings.md.
+  - `FloorConfigSO`: added `RefreshRoomsRequested` static Action + `AllRoomPrefabs()` (default rooms,
+    micropool rooms, boss rooms, deduped). Button now guards Play Mode / missing subscriber.
+  - New `Assets/_Project/Scripts/Editor/RoomPrefabRefresher.cs`: `LoadPrefabContents` →
+    `CopySpriteShapeSpline` + `GenerateWalls` on every `WallGeneration`, `Generate()` on every
+    `CornerGenerator` → `SaveAsPrefabAsset` → `UnloadPrefabContents`. Cancelable progress bar,
+    per-room try/catch, summary log.
+  - `WallGeneration`: walls now spawn via `PrefabUtility.InstantiatePrefab` in edit mode (new
+    `SpawnWall()`), so Wall.prefab edits propagate after one refresh. Null guards moved/added.
+  Files: `FloorConfigSO.cs`, `Editor/RoomPrefabRefresher.cs`, `LevelObjects/WallGeneration.cs`
+
+- **Verified:** Assembly-CSharp and Assembly-CSharp-Editor both compile with 0 errors using Unity's
+  bundled Roslyn against the project's Bee .rsp files (Unity MCP was not connected this session).
+- **PENDING (user):** let Unity recompile, hit "Refresh Rooms" on a FloorConfig, confirm no scene
+  garbage and that room prefabs now hold Wall prefab instances. First run replaces the old
+  disconnected wall copies — any hand-made tweaks on individual wall objects will be lost.
+
+### Follow-up (same session): "walls still not prefabs"
+- **Not a bug — it worked.** Verified against the YAML: before the run `Rectangle.prefab` had 4 plain
+  GameObjects named `Wall`; it now has 4 nested `Wall.prefab` instances (guid
+  `c8cca5adb4a3b194fb097120b92ae134`) and 0 plain ones. All 18 FloorConfig_01 rooms + the boss room
+  variant converted (4–20 wall instances each, 0 plain).
+- **Real gap found:** only `FloorConfig_01` was refreshed. `FloorConfig_02` rooms (`Rooms/SecondFloor/*`)
+  still have plain walls, and only **6 of the 30** SecondFloor room prefabs are referenced by any floor
+  config at all — the config button can never reach the other 24.
+- **Added** `Assets/Rooms/Refresh Selected Room Prefabs` menu item to `RoomPrefabRefresher`: works on
+  Project-window selection, expands selected folders via `FindAssets("t:Prefab", folders)`, confirmation
+  dialog, and skips prefabs with no `WallGeneration`/`CornerGenerator` without saving them. Config
+  refresh and selection refresh now share `RefreshPaths()`; counts are reported as
+  refreshed / without-generators / failed.
+- Verified: Assembly-CSharp-Editor compiles (Unity Roslyn, exit 0) and Unity's console is clean after
+  a forced refresh+compile via MCP.
+
+### Follow-up 2: RunConfig button + InnerWallGeneration
+- `RunConfigSO`: added `RefreshRoomsRequested` static Action and a `RefreshAllRooms()` Odin button
+  that walks every floor in the run, dedupes room paths and refreshes them in one pass.
+- `InnerWallGeneration`: added `SpawnWall()` using `PrefabUtility.InstantiatePrefab` in edit mode
+  (islands' inner walls now stay linked to `InnerWall.prefab`), plus `IsLocked` accessor.
+- `WallGeneration`: added `IsLocked` accessor.
+- `RoomPrefabRefresher`: now also drives `InnerWallGeneration` (`CopySpriteShapeSplineToHelper` +
+  `GenerateWalls`, **not** `GenerateTrees` — see findings.md), respects `_locked` on both generator
+  types and reports locked/no-generator/failed counts separately. Three entry points share
+  `RefreshPaths()`: RunConfig button, FloorConfig button, Project-window menu item.
+- Verified: both assemblies compile with Unity Roslyn (exit 0); Unity console clean after forced
+  refresh+compile over MCP. **Not yet run in the Editor** — inner walls become added-GameObject
+  overrides that are themselves prefab instances on a nested island instance; that is supported but
+  worth eyeballing on the first run (Room_2_31 has the most, 2 islands / 16 inner walls).

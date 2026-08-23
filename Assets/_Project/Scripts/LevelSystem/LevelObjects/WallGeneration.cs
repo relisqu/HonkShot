@@ -17,6 +17,8 @@ namespace Scripts.LevelSystem.LevelObjects
         [Tooltip("When true, the wall is locked and will NOT auto-regenerate on Start or in the Update loop. Manual [Button] calls still work.")]
         [SerializeField] private bool _locked = false;
 
+        public bool IsLocked => _locked;
+
         private void Start()
         {
             if (_locked) return;
@@ -39,6 +41,12 @@ namespace Scripts.LevelSystem.LevelObjects
         [Button]
         public void CopySpriteShapeSpline()
         {
+            if (!_levelField || !_backgroundLevelField)
+            {
+                Debug.LogError($"[WallGeneration] '{name}': assign level field and background level field.", this);
+                return;
+            }
+
             var srcSpline = _levelField.spline;
             var dstSpline = _backgroundLevelField.spline;
             _backgroundLevelField.transform.position = _levelField.transform.position + _fieldOffset;
@@ -152,6 +160,12 @@ namespace Scripts.LevelSystem.LevelObjects
         [Button]
         public void GenerateWalls()
         {
+            if (!_wallPrefab || !_wallsContainer || !_levelField)
+            {
+                Debug.LogError($"[WallGeneration] '{name}': assign wall prefab, walls container and level field.", this);
+                return;
+            }
+
             Spline levelSprite = _levelField.spline;
 
             for (int i = 0; i < levelSprite.GetPointCount(); i++)
@@ -165,11 +179,6 @@ namespace Scripts.LevelSystem.LevelObjects
 
             // Update the SpriteShape after modifications
             _levelField.RefreshSpriteShape();
-            if (_wallPrefab == null || _wallsContainer == null || _levelField == null)
-            {
-                Debug.LogError("Please assign all required references.");
-                return;
-            }
 
             ClearContainer();
             Spline spline = _levelField.spline;
@@ -189,13 +198,29 @@ namespace Scripts.LevelSystem.LevelObjects
                 Vector3 direction = worldNextPoint - worldCurrentPoint;
                 float rotationZ = 90 + Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-                GameObject wall = Instantiate(_wallPrefab, midpoint, Quaternion.Euler(0, 0, rotationZ),
-                    _wallsContainer);
+                GameObject wall = SpawnWall();
+                if (!wall) continue;
+
+                wall.transform.SetPositionAndRotation(midpoint, Quaternion.Euler(0, 0, rotationZ));
 
                 float wallLength = direction.magnitude;
                 wall.transform.localScale =
                     new Vector3(wall.transform.localScale.x, wallLength + 0.2f, 1);
             }
+        }
+
+        // In edit mode walls are spawned as prefab instances, so later edits to the wall prefab
+        // propagate into every room without regenerating.
+        private GameObject SpawnWall()
+        {
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                var linked = UnityEditor.PrefabUtility.InstantiatePrefab(_wallPrefab, _wallsContainer) as GameObject;
+                if (linked) return linked;
+            }
+#endif
+            return Instantiate(_wallPrefab, _wallsContainer);
         }
 
         private void ClearContainer()
