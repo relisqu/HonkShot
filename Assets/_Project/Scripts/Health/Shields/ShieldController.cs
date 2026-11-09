@@ -19,7 +19,13 @@ namespace Scripts.Health
         private NumericStatModifierSystem _maxShieldsModifierSystem = new();
 
         public event Action<Shield> OnShieldDestroyed;
+
+        /// <summary>Raised when a hit was heavy enough to break a shield. The hit is still absorbed.</summary>
         public event Action<Shield> OnShieldDamaged;
+
+        /// <summary>Raised when a shield stopped a hit and stayed up.</summary>
+        public event Action<Shield> OnShieldBlocked;
+
         public event Action<Shield> OnShieldAdded;
 
         public List<Shield> Shields => _shields;
@@ -86,29 +92,35 @@ namespace Scripts.Health
             }
         }
 
+        /// <summary>
+        /// Runs an incoming hit through the shield stack, newest shield first, and returns whatever
+        /// damage is left for health to take. A single hit is handled by a single shield: it is
+        /// absorbed either way, and the shield survives only if the hit was within its threshold.
+        /// </summary>
         public float ProcessDamageThroughShields(float incomingDamage)
         {
-            float remainingDamage = incomingDamage;
+            if (incomingDamage <= 0)
+                return incomingDamage;
 
             for (int i = _shields.Count - 1; i >= 0; i--)
             {
                 var shield = _shields[i];
+                if (!shield.IsActive) continue;
 
-                float absorbedDamage = shield.AbsorbDamage(remainingDamage);
-                remainingDamage -= absorbedDamage;
-
-                if (absorbedDamage > 0)
+                if (shield.CanBlockDamage(incomingDamage))
                 {
-                    OnShieldDamaged?.Invoke(shield);
-                    RemoveShield(shield);
-                    return 0;
+                    OnShieldBlocked?.Invoke(shield);
+                    return 0f;
                 }
 
-                if (remainingDamage <= 0)
-                    break;
+                // Heavier than this shield can hold. It still eats the hit, but breaks doing so.
+                shield.Break();
+                OnShieldDamaged?.Invoke(shield);
+                RemoveShield(shield);
+                return 0f;
             }
 
-            return remainingDamage;
+            return incomingDamage;
         }
 
         public void ClearAllShields()

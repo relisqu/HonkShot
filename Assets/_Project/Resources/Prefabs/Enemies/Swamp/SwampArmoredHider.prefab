@@ -479,6 +479,7 @@ GameObject:
   - component: {fileID: 7374634182011730924}
   - component: {fileID: 6687970866312755902}
   - component: {fileID: 6338014013982557919}
+  - component: {fileID: 58136155264881775}
   m_Layer: 9
   m_Name: SwampArmoredHider
   m_TagString: Untagged
@@ -618,6 +619,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Scripts.LevelSystem.LevelObjects.BounceObject
   _bounciness: 1
+  _surface: 0
   _hasBounceAnimation: 0
   _bounceAnimation: {fileID: 0}
 --- !u!114 &4605073259087093468
@@ -716,6 +718,22 @@ CapsuleCollider2D:
   m_Offset: {x: 0.008974756, y: 0.20028171}
   m_Size: {x: 0.7666657, y: 0.5320371}
   m_Direction: 1
+--- !u!114 &58136155264881775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5852712469276863939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d35b25ada1d40c478e9e686b60521a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Health.ShieldSoundController
+  _shieldController: {fileID: 7374634182011730924}
+  _channel: 1
+  _blockedSound: shieldBlocked
+  _brokenSound: shieldBroken
 --- !u!1 &8237379269041146114
 GameObject:
   m_ObjectHideFlags: 0

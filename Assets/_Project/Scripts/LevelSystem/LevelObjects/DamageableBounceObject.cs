@@ -19,8 +19,10 @@ namespace Scripts.LevelSystem.LevelObjects
 
         public HealthController HealthController => _healthController;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             if (!_healthController)
                 _healthController = GetComponent<HealthController>();
         }

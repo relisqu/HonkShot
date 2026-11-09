@@ -14,20 +14,19 @@ namespace Scripts.Health
             IsActive = true;
         }
 
+        /// <summary>
+        /// A shield stops any single hit up to its threshold and survives doing so. Anything heavier
+        /// overwhelms it - see <see cref="ShieldController.ProcessDamageThroughShields"/>, which still
+        /// swallows the hit but consumes the shield.
+        /// </summary>
         public bool CanBlockDamage(float damage)
         {
             return IsActive && damage <= DamageThreshold;
         }
 
-        public float AbsorbDamage(float damage)
+        public void Break()
         {
-            if (!CanBlockDamage(damage))
-            {
-                IsActive = false;
-                return damage;
-            }
-
-            return 0f;
+            IsActive = false;
         }
     }
 }

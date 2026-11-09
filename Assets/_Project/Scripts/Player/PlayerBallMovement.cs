@@ -1,5 +1,4 @@
-﻿using System;
-using Scripts.Audio;
+using System;
 using Scripts.Items;
 using Scripts.Items.StatSystems;
 using Scripts.LevelSystem;
@@ -141,14 +140,8 @@ namespace Scripts.Player
         {
             if (_playerStatus.PlayerState != PlayerState.Ball) return;
 
-            if (other.gameObject.TryGetComponent(out LevelSolidObject _))
-            {
-                var force = _rigidbody2D.linearVelocity.magnitude / _forceModifier;
-                force = Mathf.Clamp(force, 0, 1);
-
-                AudioManager.Instance.PlayOneShot(SoundChanelType.Player, "gooseCollision", force);
-            }
-
+            // Bounce audio lives on the PlayerBounceSoundEmitter alongside this component: it is the
+            // one place that knows the impact, the damage dealt and which surface was hit.
             OnBounced?.Invoke(other);
         }
 
@@ -158,6 +151,7 @@ namespace Scripts.Player
         }
 
         private RigidbodyType2D _preFreezeBodyType;
+        private bool _preFreezeSimulated;
         private bool _isPhysicsFrozen;
         public bool IsPhysicsFrozen => _isPhysicsFrozen;
 
@@ -166,9 +160,15 @@ namespace Scripts.Player
             if (_isPhysicsFrozen) return;
             _isPhysicsFrozen = true;
             _preFreezeBodyType = _rigidbody2D.bodyType;
+            _preFreezeSimulated = _rigidbody2D.simulated;
             _rigidbody2D.linearVelocity = Vector2.zero;
             _rigidbody2D.angularVelocity = 0f;
             _rigidbody2D.bodyType = RigidbodyType2D.Kinematic;
+
+            // Kinematic on its own is not a freeze: the body still receives collision callbacks, and
+            // BouncingObject assigns linearVelocity straight onto it — which a kinematic body honours.
+            // That drift then fights the portal tween. Leaving the simulation stops every such writer.
+            _rigidbody2D.simulated = false;
         }
 
         public void UnfreezePhysics()
@@ -176,8 +176,14 @@ namespace Scripts.Player
             if (!_isPhysicsFrozen) return;
             _isPhysicsFrozen = false;
             _rigidbody2D.bodyType = _preFreezeBodyType;
+            _rigidbody2D.simulated = _preFreezeSimulated;
             _rigidbody2D.linearVelocity = Vector2.zero;
             _rigidbody2D.angularVelocity = 0f;
+
+            // Enter the new level at rest: the bounce tracker keeps the last non-zero speed, and a
+            // bounce on arrival would otherwise launch the player at their pre-teleport speed.
+            if (_bouncingObject)
+                _bouncingObject.ResetVelocityTracking();
         }
     }
 }

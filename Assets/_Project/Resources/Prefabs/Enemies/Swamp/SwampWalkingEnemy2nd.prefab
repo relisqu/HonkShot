@@ -191,6 +191,8 @@ GameObject:
   - component: {fileID: 3507950810443964485}
   - component: {fileID: 6085152881686635503}
   - component: {fileID: 2883064844672997363}
+  - component: {fileID: 7889487439758411554}
+  - component: {fileID: -4999520064065869862}
   m_Layer: 9
   m_Name: SwampWalkingEnemy2nd
   m_TagString: Untagged
@@ -306,6 +308,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _bounciness: 0.8
+  _surface: 0
   _hasBounceAnimation: 0
   _bounceAnimation: {fileID: 0}
 --- !u!114 &6735800167666508798
@@ -521,6 +524,65 @@ MonoBehaviour:
   _healthController: {fileID: 0}
   _punchStrength: {x: 0.4, y: 0.4, z: 0.4}
   _punchDuration: 0.2
+--- !u!114 &7889487439758411554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2489550034644669959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76529243374628145b6019cf7ebc7fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Audio.BounceSoundEmitter
+  _channel: 1
+  _obstacleBounceSound: enemyBounceObstacle
+  _enemyBounceSound: enemyBounceEnemy
+  _minImpactSpeed: 1.5
+  _maxImpactSpeed: 20
+  _volumeRange: {x: 0.25, y: 1}
+  _response:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _retriggerCooldown: 0.05
+--- !u!114 &-4999520064065869862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2489550034644669959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d35b25ada1d40c478e9e686b60521a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Health.ShieldSoundController
+  _shieldController: {fileID: 6085152881686635503}
+  _channel: 1
+  _blockedSound: shieldBlocked
+  _brokenSound: shieldBroken
 --- !u!1 &2759541325536828974
 GameObject:
   m_ObjectHideFlags: 0

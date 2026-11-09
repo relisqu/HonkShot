@@ -414,3 +414,54 @@
   refresh+compile over MCP. **Not yet run in the Editor** — inner walls become added-GameObject
   overrides that are themselves prefab instances on a nested island instance; that is supported but
   worth eyeballing on the first run (Room_2_31 has the most, 2 islands / 16 inner walls).
+
+---
+
+## Session 2026-08-26 — cannon: stuck slow-mo + invisibility
+
+Systematic debugging; two independent root causes, both confirmed by reading the call chain (see
+findings.md).
+
+- **Fix 1** `Assets/_Project/Scripts/Player/PlayerMovement.cs:39` — `-=` → `+=` on
+  `_inputHandler.OnInputCancelled`. Restores every cancel consumer: time scale reset, character
+  scale reset, aim camera release, sweat particles, and both trajectory lines.
+- **Fix 2** `Assets/_Project/Scripts/LevelSystem/LevelObjects/CannonObject.cs` — recapture guard:
+  `_lastShotObject` + `_lastShotTime` + serialized `_recaptureCooldown = 0.3f`, cleared in a new
+  `OnTriggerExit2D`. Stops the cannon swallowing the player on the physics step right after the shot.
+- **Fix 3** (same file) `OnDisable` releases a still-contained interactable. `HandleCannon` owns the
+  player's visibility, invincibility and input; if the cannon's room is deactivated mid-cycle the
+  coroutine dies and the player would stay invisible, invincible and input-locked forever.
+- Also removed a leftover per-shot `Debug.Log(shootDirection)`.
+- Verified: Assembly-CSharp compiles (Unity Roslyn, exit 0); Unity console clean after forced
+  compile over MCP. **Not playtested** — no test assemblies exist in the project, so the behaviour
+  check is manual: drag → enter cannon → confirm timescale returns to 1 immediately, aim line and
+  camera reset, and the player is visible and stays out after the shot.
+
+### Follow-up: cancel restores the pre-aim state
+- `PlayerMovement.InputHandler_InputCancelled` now calls `_playerStatus.ResetSwapState()` instead of
+  hard `SetPlayerState(PlayerState.Idle)`, so cancelling a mid-air aim leaves the player a ball.
+  `AnimationStateMachine` already has the `SwappingToBall` / `SwappingToIdle` transitions, and
+  `SetPlayerState(Ball)` fires `OnSwapToBall` → `PlaySwapToBallAnimation()`, so the visual swap is
+  driven correctly either way.
+- Guarded by `if (_isDragging)`: a press that never became an aim (`_playerDashController.CanDash`
+  false, so `DragStarted` was never accepted) must not transform the player. The input handler still
+  reports `IsDragging` on such a press, so without this guard cancel would restore a stale state.
+- `PlayerStatus.SetPlayerState` no longer records `Swapping` as `_preSwapState` when it is already
+  Swapping — otherwise a repeated `SetPlayerState(Swapping)` would make `ResetSwapState()` a no-op
+  and strand the player mid-aim. (`ResetSwapState` had been dead code, so this latent bug never fired.)
+- Note `PlayerState.Ball == 0`, so `_preSwapState` defaults to Ball before the first aim; harmless
+  because cancel only restores when a Swapping transition actually happened.
+- Verified: Assembly-CSharp compiles (exit 0), Unity console clean. Not playtested.
+
+### Portal teleport drift
+- Root cause: `PlayerBallMovement.FreezePhysics()` used Kinematic-only, which still lets
+  `BouncingObject.OnCollisionEnter2D` assign `linearVelocity` — and kinematic bodies move when you
+  assign velocity. Wall bounce during the swirl → shrunk player drifts against the `DOMove` tween.
+- Fix: `FreezePhysics()` sets `simulated = false`; `UnfreezePhysics()` restores it from
+  `_preFreezeSimulated` before re-zeroing velocities. Files: `PlayerBallMovement.cs`.
+- Verified: Assembly-CSharp compiles (exit 0), Unity console clean. Not playtested — repro is
+  "enter the exit portal while bouncing off a wall, watch the trail".
+- Follow-up: player now genuinely enters a new level at rest. `BouncingObject.ResetVelocityTracking()`
+  added and called from `UnfreezePhysics()` — the rigidbody was already zeroed, but the bounce
+  tracker's `_currentVelocity` survived the teleport and would have been reused as `speed` by the
+  first bounce in the new room. Compiles clean, Unity console clean.

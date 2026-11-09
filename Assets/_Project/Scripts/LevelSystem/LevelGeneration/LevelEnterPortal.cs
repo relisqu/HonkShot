@@ -1,5 +1,6 @@
 using System;
 using DG.Tweening;
+using Scripts.Audio;
 using Scripts.Player;
 using Scripts.Player.InputHandling;
 using UnityEngine;
@@ -18,6 +19,9 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         [SerializeField] private float swirlDuration = 1f;
         [SerializeField] private float swirlScale = 0.1f;
+
+        [Tooltip("Played the moment the player is spat out into the new level.")]
+        [SerializeField] private string _enterLevelSound = "levelEnter";
 
         private bool _finishedAnimation;
 
@@ -46,6 +50,9 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         public void PlayJumpOut(Transform player)
         {
+            if (AudioManager.Instance)
+                AudioManager.Instance.PlayOneShot(SoundChanelType.Environment, _enterLevelSound);
+
             var transform = player.transform;
             Vector3 startScale = Vector3.one * swirlScale;
             Vector3 endScale = Vector3.one;

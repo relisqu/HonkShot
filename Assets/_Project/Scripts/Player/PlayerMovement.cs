@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Scripts.Audio;
 using Scripts.Camera;
 using Scripts.LevelSystem;
@@ -23,6 +23,9 @@ namespace Scripts.Player
         public Action<Vector2> DragFinished;
         public Action InputCancelled;
 
+        /// <summary>Raised when the player tried to aim a dash with no dash charges left.</summary>
+        public Action DashFailed;
+
         private bool _isDragging;
         private float _prevSpeed;
 
@@ -36,7 +39,7 @@ namespace Scripts.Player
         {
             _inputHandler.OnDragStarted += InputHandler_OnDragStarted;
             _inputHandler.OnDragFinished += InputHandler_OnDragFinished;
-            _inputHandler.OnInputCancelled -= InputHandler_InputCancelled;
+            _inputHandler.OnInputCancelled += InputHandler_InputCancelled;
         }
 
         private void InputHandler_OnDragFinished(Vector2 obj)
@@ -57,9 +60,15 @@ namespace Scripts.Player
 
         private void InputHandler_InputCancelled()
         {
+            // Invoke first: listeners reset the scale of whatever CurrentGameObject is right now.
             InputCancelled?.Invoke();
+
+            // Only revert when this drag actually moved the player into Swapping. A press that never
+            // became an aim (no dash charge) must not transform the player.
+            if (_isDragging)
+                _playerStatus.ResetSwapState();
+
             _isDragging = false;
-            _playerStatus.SetPlayerState(PlayerState.Idle);
         }
 
         private void InputHandler_OnDragStarted()
@@ -69,7 +78,10 @@ namespace Scripts.Player
                 _isDragging = true;
                 _playerStatus.SetPlayerState(PlayerState.Swapping);
                 DragStarted?.Invoke();
+                return;
             }
+
+            DashFailed?.Invoke();
         }
 
         private void FixedUpdate()

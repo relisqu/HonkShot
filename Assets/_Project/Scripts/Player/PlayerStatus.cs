@@ -54,7 +54,9 @@ namespace Scripts.Player
 
         public void SetPlayerState(PlayerState playerState)
         {
-            if (playerState == PlayerState.Swapping)
+            // Guard against re-entering Swapping: recording Swapping as the pre-swap state would make
+            // ResetSwapState a no-op and strand the player mid-aim.
+            if (playerState == PlayerState.Swapping && _playerState != PlayerState.Swapping)
             {
                 _preSwapState = _playerState;
             }

@@ -31,6 +31,13 @@ namespace Scripts.LevelSystem.LevelObjects
             _currentVelocity = velocity;
         }
 
+        // SetCurrentVelocity deliberately ignores near-zero values, so clearing needs its own entry
+        // point. Used when the object is teleported and must not carry its old speed over.
+        public void ResetVelocityTracking()
+        {
+            _currentVelocity = Vector2.zero;
+        }
+
         private void FixedUpdate()
         {
             if (_rigidbody2D.linearVelocity.magnitude < 0.001f) return;

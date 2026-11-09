@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -78,16 +78,27 @@ namespace Scripts.Audio
 
         public void PlayOneShot(SoundChanelType soundChanelType, SoundEffectSO soundEffect, float volumeScale = 1F)
         {
-            soundEffect.SetupAudioSource(_audioSources[soundChanelType]);
-            _audioSources[soundChanelType].volume *= volumeScale;
-            _audioSources[soundChanelType].PlayOneShot(soundEffect.GetAudioClip());
+            if (!soundEffect) return;
+
+            // Pull the clip once. Setting the source up and then asking for a second clip would
+            // advance the variation index twice and play a different clip than the one configured.
+            var clip = soundEffect.GetAudioClip();
+            if (!clip) return;
+
+            var audioSource = _audioSources[soundChanelType];
+            soundEffect.ApplyRandomSettings(audioSource);
+            audioSource.volume *= volumeScale;
+            audioSource.PlayOneShot(clip);
         }
 
         public void PlayOneShotWithDelay(SoundChanelType soundChanelType, string soundName, float delay) =>
             PlayOneShotWithDelay(soundChanelType, GetSoundEffectSO(soundName), delay);
 
-        public void PlayOneShotWithDelay(SoundChanelType soundChanelType, SoundEffectSO soundEffect, float delay) =>
+        public void PlayOneShotWithDelay(SoundChanelType soundChanelType, SoundEffectSO soundEffect, float delay)
+        {
+            if (!soundEffect) return;
             StartCoroutine(PlayOneShotWithDelayCoroutine(soundChanelType, soundEffect, delay));
+        }
 
         private IEnumerator PlayOneShotWithDelayCoroutine(SoundChanelType soundChanelType, SoundEffectSO soundEffect,
             float delay)
@@ -102,6 +113,8 @@ namespace Scripts.Audio
         public void Play(SoundChanelType soundChanelType, SoundEffectSO soundEffect, bool loop = false,
             float offset = 0f)
         {
+            if (!soundEffect) return;
+
             soundEffect.SetupAudioSource(_audioSources[soundChanelType]);
             _audioSources[soundChanelType].clip = soundEffect.GetAudioClip();
             _audioSources[soundChanelType].loop = loop;
@@ -114,6 +127,8 @@ namespace Scripts.Audio
 
         public void Play(SoundChanelType soundChanelType, SoundEffectSO soundEffect)
         {
+            if (!soundEffect) return;
+
             soundEffect.SetupAudioSource(_audioSources[soundChanelType]);
             _audioSources[soundChanelType].Play();
         }
@@ -125,7 +140,8 @@ namespace Scripts.Audio
             IsPlaying(soundChanelType, GetSoundEffectSO(audioClipName));
 
         public bool IsPlaying(SoundChanelType soundChanelType, SoundEffectSO soundEffect) =>
-            _audioSources[soundChanelType].isPlaying
+            soundEffect
+            && _audioSources[soundChanelType].isPlaying
             && _audioSources[soundChanelType].clip == soundEffect.GetAudioClip();
 
         public void Stop(SoundChanelType soundChanelType, string soundName = null)
@@ -154,6 +170,8 @@ namespace Scripts.Audio
         public void PlaySmooth(SoundChanelType soundChanelType, SoundEffectSO soundEffect, bool loop = false,
             float offset = 0f)
         {
+            if (!soundEffect) return;
+
             if (_playSmoothCoroutines.ContainsKey(soundChanelType))
             {
                 StopCoroutine(_playSmoothCoroutines[soundChanelType]);

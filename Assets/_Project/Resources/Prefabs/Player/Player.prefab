@@ -38,6 +38,8 @@ GameObject:
   - component: {fileID: 8588473697873562762}
   - component: {fileID: 1234567890123456789}
   - component: {fileID: 6829354694396117980}
+  - component: {fileID: -2115843882568929296}
+  - component: {fileID: -3870262679006619782}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -211,11 +213,7 @@ MonoBehaviour:
   _playerAnimator: {fileID: 5865247646953967656}
   _inputHandler: {fileID: 1987869121514748207}
   _playerSweatParticleSystem: {fileID: 1319847115126375640}
-  _minSize: 0.7
   _shakeForce: 0.02
-  _maxZoomOut: 1
-  _maxZoomAddOut: 1
-  _zoomDuration: 0.1
 --- !u!114 &6818305907836223152
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -228,11 +226,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ec1a6e81241429288595ca2d7b9a1d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerBallMovement: {fileID: 2855041829269072723}
-  _inputHandler: {fileID: 1987869121514748207}
-  _playerStatus: {fileID: 2410884018478326342}
+  _playerMovement: {fileID: 4628585418959965787}
   _teleportableEntity: {fileID: 8887970704425061413}
-  _stretchSoundDragForce: 170
+  _gooseFireSystem: {fileID: 1399843973862884099}
+  _dashStartSound: dashStart
+  _dashFailSound: dashFail
+  _releaseSound: gooseRelease
+  _ultimateStartSound: ultStart
+  _ultimateEndSound: ultEnd
+  _warpSound: warp
+  _stepSound: step
+  _rollSound: roll
+  _stretchSound: stretch
 --- !u!114 &8887970704425061413
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -649,6 +654,68 @@ MonoBehaviour:
   _featherSize: 1
   _featherSpeed: 12
   _featherDamage: 8
+--- !u!114 &-2115843882568929296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 225159964537138388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1c234a9530d7e0468c9a9113ddbedb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Audio.PlayerBounceSoundEmitter
+  _channel: 0
+  _obstacleBounceSound: bounceObstacle
+  _enemyBounceSound: bounceEnemy
+  _minImpactSpeed: 1.5
+  _maxImpactSpeed: 20
+  _volumeRange: {x: 0.05, y: 1}
+  _response:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _retriggerCooldown: 0.05
+  _attackController: {fileID: 344756555288879489}
+  _maxDamage: 40
+  _damageMatchWindow: 0.15
+--- !u!114 &-3870262679006619782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 225159964537138388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d35b25ada1d40c478e9e686b60521a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Health.ShieldSoundController
+  _shieldController: {fileID: 3323263315137026221}
+  _channel: 0
+  _blockedSound: shieldBlocked
+  _brokenSound: shieldBroken
 --- !u!1 &334979677366588079
 GameObject:
   m_ObjectHideFlags: 0

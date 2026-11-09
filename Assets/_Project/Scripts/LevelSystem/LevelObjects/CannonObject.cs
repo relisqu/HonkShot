@@ -21,12 +21,19 @@ namespace Scripts.LevelSystem.LevelObjects
         [SerializeField] private float shootForce = 10f;
         [SerializeField] private AttackPointsObject _attackPointsObject;
 
+        [Tooltip("How long a just-shot object is ignored while it is still leaving the barrel. " +
+                 "Re-enabling its collider inside the trigger raises OnTriggerEnter2D again, which " +
+                 "would immediately recapture it.")]
+        [SerializeField] private float _recaptureCooldown = 0.3f;
+
         private float _startRotation;
         private float _targetRotation;
         private float _rotationTimer;
 
         private bool _rotatingForward = true;
         private CannonInteractable _containedObject;
+        private CannonInteractable _lastShotObject;
+        private float _lastShotTime;
 
         private float _angle = 0f;
         private float _direction = 1f;
@@ -63,13 +70,34 @@ namespace Scripts.LevelSystem.LevelObjects
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (_containedObject != null) return;
+            if (_containedObject) return;
 
-            if (other.TryGetComponent(out CannonInteractable interactable))
-            {
-                _containedObject = interactable;
-                StartCoroutine(HandleCannon(interactable));
-            }
+            if (!other.TryGetComponent(out CannonInteractable interactable)) return;
+
+            // OnExitCannon re-enables the collider while it is still inside this trigger, so Unity
+            // raises another enter on the next physics step. Without this the cannon swallows the
+            // object again the moment it was shot.
+            if (interactable == _lastShotObject && Time.time - _lastShotTime < _recaptureCooldown) return;
+
+            _containedObject = interactable;
+            StartCoroutine(HandleCannon(interactable));
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            // Left the barrel for real, so it may be captured again straight away.
+            if (other.TryGetComponent(out CannonInteractable interactable) && interactable == _lastShotObject)
+                _lastShotObject = null;
+        }
+
+        private void OnDisable()
+        {
+            if (!_containedObject) return;
+
+            // HandleCannon owns the player's visibility, invincibility and input. If this cannon is
+            // disabled mid-cycle the coroutine dies and nothing else would ever give those back.
+            _containedObject.OnExitCannon(Vector2.up, 0f);
+            _containedObject = null;
         }
 
         private IEnumerator HandleCannon(CannonInteractable interactable)
@@ -94,7 +122,8 @@ namespace Scripts.LevelSystem.LevelObjects
 
             Vector2 shootDirection = _rotatingParts[0].up;
 
-            Debug.Log(shootDirection);
+            _lastShotObject = interactable;
+            _lastShotTime = Time.time;
             interactable.OnExitCannon(shootDirection, shootForce);
 
             if (_rotatingParts is { Count: > 0 })

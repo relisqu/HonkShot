@@ -256,6 +256,7 @@ GameObject:
   - component: {fileID: 4586868033526110613}
   - component: {fileID: 7211950600552884246}
   - component: {fileID: 894424578573631571}
+  - component: {fileID: 7118142135419066715}
   m_Layer: 12
   m_Name: Boss
   m_TagString: Untagged
@@ -444,6 +445,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Scripts.LevelSystem.LevelObjects.BounceObject
   _bounciness: 0.7
+  _surface: 0
   _hasBounceAnimation: 0
   _bounceAnimation: {fileID: 0}
 --- !u!114 &372067591849059236
@@ -459,6 +461,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Scripts.LevelSystem.LevelObjects.BounceObject
   _bounciness: 0.7
+  _surface: 0
   _hasBounceAnimation: 0
   _bounceAnimation: {fileID: 0}
 --- !u!114 &2403281483393435881
@@ -562,3 +565,19 @@ MonoBehaviour:
   _animator: {fileID: 1476518377373677531}
   _rigidbody: {fileID: 6917758335651533037}
   _idleThreshold: 0.1
+--- !u!114 &7118142135419066715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6801337584361558935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d35b25ada1d40c478e9e686b60521a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Health.ShieldSoundController
+  _shieldController: {fileID: 2357702564277749848}
+  _channel: 1
+  _blockedSound: shieldBlocked
+  _brokenSound: shieldBroken

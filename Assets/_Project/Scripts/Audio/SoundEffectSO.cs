@@ -1,4 +1,4 @@
-﻿using Sirenix.OdinInspector;
+using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -98,6 +98,10 @@ namespace Scripts.Audio
 
         public AudioClip GetAudioClip()
         {
+            // Assets are routinely created before their clips are dropped in. Returning null lets
+            // callers skip the sound instead of throwing on an empty array.
+            if (clips == null || clips.Length == 0) return null;
+
             var clip = clips[playIndex >= clips.Length ? 0 : playIndex];
 
             switch (playOrder)
@@ -118,18 +122,31 @@ namespace Scripts.Audio
 
         public void SetupAudioSource(AudioSource audioSource)
         {
-            if (clips.Length == 0)
-            {
-                Debug.LogWarning($"Missing sound clips for {name}");
-            }
-
             if (audioSource == null)
             {
                 var _obj = new GameObject("Sound", typeof(AudioSource));
                 audioSource = _obj.GetComponent<AudioSource>();
             }
 
-            audioSource.clip = GetAudioClip();
+            var clip = GetAudioClip();
+            if (clip == null)
+            {
+                Debug.LogWarning($"Missing sound clips for {name}");
+                return;
+            }
+
+            audioSource.clip = clip;
+            ApplyRandomSettings(audioSource);
+        }
+
+        /// <summary>
+        /// Rolls this effect's volume and pitch onto a source without consuming a clip variation.
+        /// Used when the caller already pulled the clip itself, so the index only advances once.
+        /// </summary>
+        public void ApplyRandomSettings(AudioSource audioSource)
+        {
+            if (audioSource == null) return;
+
             audioSource.volume = Random.Range(volume.x, volume.y);
             audioSource.pitch = useSemitones
                 ? Mathf.Pow(SEMITONES_TO_PITCH_CONVERSION_UNIT, Random.Range(semitones.x, semitones.y))

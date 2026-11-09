@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using DG.Tweening;
+using Scripts.Audio;
 using Scripts.Player;
 using Scripts.Player.InputHandling;
 using UnityEngine;
@@ -19,6 +20,9 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         [SerializeField] private float swirlDuration = 1f;
         [SerializeField] private float swirlScale = 0.1f;
+
+        [Tooltip("Played the moment the portal starts pulling the player out of the level.")]
+        [SerializeField] private string _leaveLevelSound = "levelExit";
 
         private bool _isSucking = false;
         private bool _isJumpingOut = false;
@@ -54,6 +58,8 @@ namespace Scripts.LevelSystem.LevelGeneration
                 if (_isSucking) return;
                 if (_inputHandler) _inputHandler.SetInputEnabled(InputLayer.LevelChange, false);
                 _isSucking = true;
+                if (AudioManager.Instance)
+                    AudioManager.Instance.PlayOneShot(SoundChanelType.Environment, _leaveLevelSound);
                 player.FreezePhysics();
                 Sequence swirlSequence = DOTween.Sequence();
                 var playerTransform = player.transform;

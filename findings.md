@@ -188,3 +188,83 @@ harmless source-generator info, not an error.
 - Net: config-driven buttons reach 18 rooms; the other ~24 SecondFloor rooms are only reachable via
   the `Assets/Rooms/Refresh Selected Room Prefabs` menu item.
 - No room prefab currently has `_locked: 1` on any generator.
+
+## Cannon bugs (2026-08-26)
+
+### RC1 — `PlayerMovement.OnEnable` unsubscribed instead of subscribing
+```csharp
+_inputHandler.OnInputCancelled -= InputHandler_InputCancelled;   // was -=, must be +=
+```
+`PlayerMovement.InputCancelled` therefore **never fired**, so every cancel consumer was dead code:
+- `PlayerSwapAnimationHandler.PlayerMovement_InputCancelled` → no `ResetTimeScale()` (timeScale stuck
+  at 0.1), no `ResetCharacterScale()`, no `AimCameraController.ReleaseAim()`, no `StopSweatEmission()`
+- `ProjectilePrediction` / `RaycastTrajectory` → aim lines never cleared on cancel
+- `_isDragging` stayed true and `PlayerState` stayed `Swapping`
+
+Chain for the reported bug: entering the cannon calls `InputHandler.SetInputEnabled(Cannon, false)`,
+which calls `CancelInput()` → `MouseInputHandler.CancelInput()` → `OnCancelInput` → InputHandler
+re-raises `OnInputCancelled` (no `IsInputEnabled` guard, so it does fire) → **nobody listening**.
+Slow-mo persisted until the player released the mouse *after* the shot, at which point
+`InputHandler_OnDragFinished` finally ran `ResetTimeScale()` — matching "0.1 for a long time until
+cannon is shot".
+
+Amplifier: `yield return new WaitForSeconds(pauseTime)` in `Cannon.HandleCannon` is timeScale-scaled,
+so the 0.5 s barrel pause became 5 real seconds at timeScale 0.1. Left as-is on purpose — with RC1
+fixed the timescale is back to 1 before the wait matters, and changing it would alter game feel.
+
+### RC2 — cannon recaptured the player it had just shot
+`PlayerCannonInteractable.OnEnterCannon` sets root `localScale = Vector3.zero` (that is the
+"invisible"), `OnExitCannon` sets it back to `Vector3.one`. `OnExitCannon` also re-enables the
+player's collider **while it is still inside the cannon's trigger**. Unity raises `OnTriggerEnter2D`
+again on the next physics step, and by then `HandleCannon` has already cleared `_containedObject`
+(same frame, synchronously) — so the cannon captured the player again: visible for one frame, then
+scale 0 again. Exactly "shows me for a frame until i am shot again".
+
+The two bugs compound: at timeScale 0.1 the player leaves the trigger 10x slower in real time, so the
+recapture window is wide open — which is why both symptoms show up together when entering mid-drag.
+
+Fix: ignore an interactable for `_recaptureCooldown` (serialized, 0.3 s) after shooting it, and clear
+that ignore in `OnTriggerExit2D` so a genuine re-entry still works. Time-based, so it cannot deadlock
+if the object is already outside the trigger when its collider is re-enabled (no enter/exit fires).
+
+### Notes
+- `PlayerStatus.ResetSwapState()` is dead code; `SetPlayerState(PlayerState.Idle)` in
+  `InputHandler_InputCancelled` is the author's only intended cancel path, so RC1's fix now activates
+  it. Watch whether cancelling a mid-air aim should restore Ball instead of Idle.
+- `Cannon.OnDrawGizmosSelected` has an inverted guard (`if (_rotatingParts is { Count: > 0 }) return;`
+  then dereferences `_rotatingParts[0]`) — editor-only, unrelated, left alone.
+- Project has no test assemblies (`*.asmdef` with nunit/TestAssemblies), so no automated regression
+  test was possible for this.
+
+## Portal teleport: player drifts while shrunk (2026-08-26)
+
+`LevelExitPortal.OnTriggerEnter2D` calls `PlayerBallMovement.FreezePhysics()` and then runs a DOTween
+sequence that scales the player to `swirlScale` (0.1), spins it and `DOMove`s it into the portal.
+
+`FreezePhysics()` only did: zero velocities + `bodyType = Kinematic`. **That is not a freeze.**
+- A kinematic Rigidbody2D still receives collision callbacks.
+- `BouncingObject.OnCollisionEnter2D` assigns `_rigidbody2D.linearVelocity = newDirection * speed *
+  bounciness` with no state guard.
+- A kinematic body ignores forces and collision response but **does honour a velocity you assign to
+  it**, so it starts translating.
+
+So hitting a wall right as the swirl starts gives the shrunk player a velocity that the physics step
+integrates while the `DOMove` tween is also writing `transform.position`. The two fight, and the trail
+renderer makes the drift obvious. `UnfreezePhysics()` zeroes the velocity at the end, which is why it
+"restores properly" once the teleport completes.
+
+Trigger/collision callbacks are dispatched in the same physics step with no guaranteed ordering
+between them, which is why it only happens *sometimes* — the wall bounce has to land after
+`OnTriggerEnter2D` ran.
+
+Fix: `FreezePhysics()` now also sets `_rigidbody2D.simulated = false` (restored from
+`_preFreezeSimulated` in `UnfreezePhysics`). Removing the body from the simulation kills every
+velocity-writing path for the duration of the swirl, not just the bounce one. `FreezePhysics` /
+`UnfreezePhysics` are only called by the two portals, so the blast radius is the teleport itself.
+
+Follow-up (user decision: arrive at rest): `BouncingObject._currentVelocity` used to keep the
+pre-teleport speed across a teleport — `SetCurrentVelocity` refuses near-zero values and `FixedUpdate`
+early-outs while the body is at rest, so nothing ever cleared it. `UnfreezePhysics()` zeroed the
+rigidbody but not the bounce tracker, so a bounce on arrival would reuse the old speed. Added
+`BouncingObject.ResetVelocityTracking()` (an explicit clear, since `SetCurrentVelocity` cannot express
+zero) and called it from `UnfreezePhysics()`.
