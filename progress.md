@@ -465,3 +465,31 @@ findings.md).
   added and called from `UnfreezePhysics()` — the rigidbody was already zeroed, but the bounce
   tracker's `_currentVelocity` survived the teleport and would have been reused as `speed` by the
   first bounce in the new room. Compiles clean, Unity console clean.
+
+---
+
+## Session: 2026-11-09 — Pause menu + Settings
+
+- Committed pre-work state: `b3c70f3` (user request).
+- Unity MCP offline (ECONNREFUSED) — UI/prefab/asset work deferred.
+- User rule: no builds / Play Mode by Claude; only compile check.
+
+### Code written
+- `Resources/Data/PlayerControls.inputactions` — `Pause` action (Esc / Gamepad Start). Unity regenerated `PlayerControls.cs`.
+- `Scripts/Services/Settings/` — `SettingsData`, `SettingsService` (ES3 key "settings", volumes, language), `VolumeCategory`.
+- `Scripts/Services/Localization/LanguagesConfigSO.cs` — loaded from `Resources/Data/Configs/LanguagesConfig` (ASSET NOT CREATED YET, needs MCP).
+- `Scripts/Managers/ProjectMonoInstaller.cs` — binds config + SettingsService, applies saved language (no more hardcoded "Ru").
+- `Scripts/Audio/AudioManager.cs` — music/effect channel volumes (base * channel), UI channel ignores listener pause, injected SettingsService.
+- `Scripts/Managers/TimeManager.cs` — `SetMenuPaused` layer on top of GameState; Slowed now unmutes audio.
+- `Scripts/UI/PauseMenu/` — `PauseMenuView`, `SettingsMenuView`, `VolumeSliderView`, `LanguageSelectorView`.
+- `RU.txt` / `EN.txt` — `PauseMenu.*`, `Settings.*` keys (must also be added to the Google Sheet).
+
+### Compile check
+- 1st Unity compile: CS0246 SettingsService not found — Unity's compile list skipped `SettingsService.cs` (file written during a refresh). Touched the file to force reimport.
+- Fix: deleted SettingsService.cs and recreated it via MCP `create_script` -> compile OK, 0 errors.
+
+### MCP work
+- `Resources/Data/Configs/LanguagesConfig.asset` — RU (Default, Russian/Ukrainian/Belarusian), EN (no SystemLanguages until translated).
+- `Resources/Prefabs/UI/PauseMenu.prefab` — own overlay Canvas (sort 100, 1920x1080 match 1), Dim, MainPanel (Resume/Settings/Restart), SettingsPanel (3 VolumeSliderView rows, LanguageSelector, Back). RulerGold SDF, gold tint on select. Built via execute_code, all refs verified non-null.
+- Instance placed at GameplayScene root; scene saved.
+- Not playtested (user rule).

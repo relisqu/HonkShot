@@ -268,3 +268,17 @@ early-outs while the body is at rest, so nothing ever cleared it. `UnfreezePhysi
 rigidbody but not the bounce tracker, so a bounce on arrival would reuse the old speed. Added
 `BouncingObject.ResetVelocityTracking()` (an explicit clear, since `SetCurrentVelocity` cannot express
 zero) and called it from `UnfreezePhysics()`.
+
+---
+
+# Pause Menu / Settings — Findings (2026-11-09)
+
+- Localization is custom: `Scripts/Services/Localization` — `ILocalizationService` (Get, SetLanguage(key, dict), LanguageChanged), `LocalizedTmpText` component, dictionaries `Resources/Data/RU.txt`, `EN.txt` (format `key ~ value`, downloaded from Google Sheets via Project Tools/Localization — keys added by hand must also go to the sheet).
+- `ProjectMonoInstaller` is NOT a ProjectContext: it lives on `Resources/Prefabs/Settings/__TechnicalComponents__.prefab` (scene SceneContext, also contains AudioManager, GameMonoInstaller, EventSystem). Language was hardcoded `"Ru"` on every scene start.
+- `Language` class (Key, Name, SystemLanguages, Default) + `LocalizationHelper.GetDefaultLanguageKey` existed but were unused at runtime.
+- `TimeManager`: PauseGame (timeScale 0, AudioListener.pause = true), ResumeGame, SlowGame. Awake assigns the backing field, so a scene reload from pause leaves timeScale 0 -> call ResumeGame before reload.
+- Aim slow-mo (`PlayerSwapAnimationHandler`) drives `TimeManager.SlowGame` through DOTween.
+- `InputLayer.PauseMenu` already exists; `InputHandler.SetInputEnabled(layer, bool)` is the input block pattern.
+- `AudioManager`: one AudioSource per `SoundChanelType`; `SoundEffectSO.ApplyRandomSettings` overwrites source.volume on each play -> channel volume must be multiplied after it. `_volumes` dict existed but unused. No AudioMixer.
+- `PopupWindow` is the reference UI pattern (CanvasGroup + DOTween + BlackViewEffect + input layer).
+- Restart pattern in project: `SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex)`.

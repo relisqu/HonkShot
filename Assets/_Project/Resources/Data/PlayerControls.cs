@@ -127,6 +127,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Pause"",
+                    ""type"": ""Button"",
+                    ""id"": ""5b0f3c1e-7a2d-4e8b-9c61-2f4d8a9e6b13"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -294,6 +303,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""ShootGooseMovementDelta"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c3e9a7d2-1f6b-4a85-b0e4-7d2c9f1a3e58"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9a4d6e1b-3c7f-4b29-8e5a-1f0b7c2d6a94"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -334,6 +365,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
         m_Player_ShootGoose = m_Player.FindAction("ShootGoose", throwIfNotFound: true);
         m_Player_ShootGooseMovementDelta = m_Player.FindAction("ShootGooseMovementDelta", throwIfNotFound: true);
+        m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -418,6 +450,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Fire;
     private readonly InputAction m_Player_ShootGoose;
     private readonly InputAction m_Player_ShootGooseMovementDelta;
+    private readonly InputAction m_Player_Pause;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -445,6 +478,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/ShootGooseMovementDelta".
         /// </summary>
         public InputAction @ShootGooseMovementDelta => m_Wrapper.m_Player_ShootGooseMovementDelta;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Pause".
+        /// </summary>
+        public InputAction @Pause => m_Wrapper.m_Player_Pause;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -483,6 +520,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @ShootGooseMovementDelta.started += instance.OnShootGooseMovementDelta;
             @ShootGooseMovementDelta.performed += instance.OnShootGooseMovementDelta;
             @ShootGooseMovementDelta.canceled += instance.OnShootGooseMovementDelta;
+            @Pause.started += instance.OnPause;
+            @Pause.performed += instance.OnPause;
+            @Pause.canceled += instance.OnPause;
         }
 
         /// <summary>
@@ -506,6 +546,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @ShootGooseMovementDelta.started -= instance.OnShootGooseMovementDelta;
             @ShootGooseMovementDelta.performed -= instance.OnShootGooseMovementDelta;
             @ShootGooseMovementDelta.canceled -= instance.OnShootGooseMovementDelta;
+            @Pause.started -= instance.OnPause;
+            @Pause.performed -= instance.OnPause;
+            @Pause.canceled -= instance.OnPause;
         }
 
         /// <summary>
@@ -600,5 +643,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnShootGooseMovementDelta(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Pause" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPause(InputAction.CallbackContext context);
     }
 }

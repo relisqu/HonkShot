@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using Scripts.Services.Settings;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Zenject;
 
 namespace Scripts.Audio
 {
@@ -16,9 +18,31 @@ namespace Scripts.Audio
         [FormerlySerializedAs("_sounds")] [SerializeField]
         private SoundTableSO soundTable;
 
+        [Header("Volume Settings")]
+        [SerializeField] private SoundChanelType[] _musicChannels = { SoundChanelType.Music };
+
+        [SerializeField] private SoundChanelType[] _effectChannels =
+        {
+            SoundChanelType.Player,
+            SoundChanelType.Enemy,
+            SoundChanelType.LevelObjects,
+            SoundChanelType.Environment
+        };
+
+        [Tooltip("Channels that keep playing while the game is paused.")]
+        [SerializeField] private SoundChanelType[] _pauseIgnoringChannels = { SoundChanelType.UI };
+
         private Dictionary<SoundChanelType, AudioSource> _audioSources;
         private Dictionary<SoundChanelType, float> _volumes;
+        private Dictionary<SoundChanelType, float> _baseVolumes;
         private Dictionary<SoundChanelType, Coroutine> _playSmoothCoroutines;
+        private SettingsService _settingsService;
+
+        [Inject]
+        private void Construct(SettingsService settingsService)
+        {
+            _settingsService = settingsService;
+        }
 
         public void Awake()
         {
@@ -28,6 +52,7 @@ namespace Scripts.Audio
 
             _audioSources = new Dictionary<SoundChanelType, AudioSource>();
             _volumes = new Dictionary<SoundChanelType, float>();
+            _baseVolumes = new Dictionary<SoundChanelType, float>();
             _playSmoothCoroutines = new Dictionary<SoundChanelType, Coroutine>();
 
             foreach (SoundChanelType chanelType in Enum.GetValues(typeof(SoundChanelType)))
@@ -35,9 +60,68 @@ namespace Scripts.Audio
                 Debug.Log(chanelType);
                 _audioSources.Add(chanelType, gameObject.AddComponent<AudioSource>());
                 _volumes.Add(chanelType, DefaultVolume);
+                _baseVolumes.Add(chanelType, DefaultVolume);
             }
-            
+
+            foreach (var chanelType in _pauseIgnoringChannels)
+                _audioSources[chanelType].ignoreListenerPause = true;
         }
+
+        private void Start()
+        {
+            if (_settingsService == null) return;
+
+            foreach (VolumeCategory category in Enum.GetValues(typeof(VolumeCategory)))
+                ApplyVolume(category, _settingsService.GetVolume(category));
+
+            _settingsService.VolumeChanged += SettingsService_VolumeChanged;
+        }
+
+        private void OnDestroy()
+        {
+            if (_settingsService != null)
+                _settingsService.VolumeChanged -= SettingsService_VolumeChanged;
+        }
+
+        private void SettingsService_VolumeChanged(VolumeCategory category, float volume) =>
+            ApplyVolume(category, volume);
+
+        private void ApplyVolume(VolumeCategory category, float volume)
+        {
+            switch (category)
+            {
+                case VolumeCategory.Master:
+                    TotalVolume = volume;
+                    break;
+                case VolumeCategory.Music:
+                    SetChannelsVolume(_musicChannels, volume);
+                    break;
+                case VolumeCategory.Effects:
+                    SetChannelsVolume(_effectChannels, volume);
+                    break;
+            }
+        }
+
+        private void SetChannelsVolume(SoundChanelType[] channels, float volume)
+        {
+            foreach (var chanelType in channels)
+                SetChannelVolume(chanelType, volume);
+        }
+
+        public void SetChannelVolume(SoundChanelType soundChanelType, float volume)
+        {
+            _volumes[soundChanelType] = volume;
+            ApplyChannelVolume(soundChanelType);
+        }
+
+        private void CaptureBaseVolume(SoundChanelType soundChanelType)
+        {
+            _baseVolumes[soundChanelType] = _audioSources[soundChanelType].volume;
+            ApplyChannelVolume(soundChanelType);
+        }
+
+        private void ApplyChannelVolume(SoundChanelType soundChanelType) =>
+            _audioSources[soundChanelType].volume = _baseVolumes[soundChanelType] * _volumes[soundChanelType];
 
         public float TotalVolume
         {
@@ -88,6 +172,7 @@ namespace Scripts.Audio
             var audioSource = _audioSources[soundChanelType];
             soundEffect.ApplyRandomSettings(audioSource);
             audioSource.volume *= volumeScale;
+            CaptureBaseVolume(soundChanelType);
             audioSource.PlayOneShot(clip);
         }
 
@@ -119,6 +204,7 @@ namespace Scripts.Audio
             _audioSources[soundChanelType].clip = soundEffect.GetAudioClip();
             _audioSources[soundChanelType].loop = loop;
             _audioSources[soundChanelType].time = offset;
+            CaptureBaseVolume(soundChanelType);
             _audioSources[soundChanelType].Play();
         }
 
@@ -130,6 +216,7 @@ namespace Scripts.Audio
             if (!soundEffect) return;
 
             soundEffect.SetupAudioSource(_audioSources[soundChanelType]);
+            CaptureBaseVolume(soundChanelType);
             _audioSources[soundChanelType].Play();
         }
 
@@ -196,7 +283,7 @@ namespace Scripts.Audio
 
             yield return _audioSources[soundChanelType].DOFade(audioSourceVolume, smoothSpeed).WaitForCompletion();
 
-            //_audioSources[soundChanelType].volume = _volumes[soundChanelType];
+            ApplyChannelVolume(soundChanelType);
 
             _playSmoothCoroutines.Remove(soundChanelType);
         }

@@ -23,12 +23,24 @@ public class TimeManager : MonoBehaviour
     }
 
     private GameState gameState;
+    private bool _isMenuPaused;
+
+    public bool IsMenuPaused => _isMenuPaused;
 
     public GameState GameState
     {
         get { return gameState; }
         private set
         {
+            gameState = value;
+
+            if (_isMenuPaused)
+            {
+                Time.timeScale = 0f;
+                AudioManager.Instance.TotalMute = true;
+                return;
+            }
+
             switch (value)
             {
                 case GameState.Play:
@@ -39,6 +51,7 @@ public class TimeManager : MonoBehaviour
                 case GameState.Slowed:
                     Time.timeScale = TimeSlow;
                     Time.fixedDeltaTime = 0.02F * Time.timeScale;
+                    AudioManager.Instance.TotalMute = false;
                     // If desired, you can slow down the music here.
                     break;
                 case GameState.Pause:
@@ -46,9 +59,15 @@ public class TimeManager : MonoBehaviour
                     AudioManager.Instance.TotalMute = true;
                     break;
             }
-
-            gameState = value;
         }
+    }
+
+    // Menu pause sits on top of the regular state: anything that slows or resumes the game while the
+    // menu is open only updates the remembered state, which is applied once the menu closes.
+    public void SetMenuPaused(bool value)
+    {
+        _isMenuPaused = value;
+        GameState = gameState;
     }
 
     public void SlowGame(float timeSlow = 0.1f)
