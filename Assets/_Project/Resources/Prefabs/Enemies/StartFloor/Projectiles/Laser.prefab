@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3142061623234061147}
   - component: {fileID: 3841593941050783685}
   - component: {fileID: 1061539137582344335}
-  m_Layer: 10
+  m_Layer: 13
   m_Name: EmitParticles (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4842,6 +4842,11 @@ ParticleSystemRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -4863,9 +4868,10 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 11
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -4907,7 +4913,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 764415701463366753}
-  m_Layer: 10
+  m_Layer: 13
   m_Name: Laser
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4941,7 +4947,7 @@ GameObject:
   - component: {fileID: 5272295524132268310}
   - component: {fileID: 8187650334842029396}
   - component: {fileID: 4923190436007986713}
-  m_Layer: 10
+  m_Layer: 13
   m_Name: EmitParticles (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9772,6 +9778,11 @@ ParticleSystemRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -9793,9 +9804,10 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 11
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -9840,7 +9852,7 @@ GameObject:
   - component: {fileID: 3516833994099342431}
   - component: {fileID: 7219050031458756272}
   - component: {fileID: 972673779292864663}
-  m_Layer: 10
+  m_Layer: 13
   m_Name: LaserObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9881,6 +9893,11 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -9902,9 +9919,10 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -9924,6 +9942,7 @@ BoxCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5905293567653771796}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -9947,7 +9966,8 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 1
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -9958,7 +9978,6 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!114 &972673779292864663
@@ -9975,9 +9994,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 0
   _maxLifetime: 1
-  _damage: 20
+  _damage: 15
   _baseTransform: {fileID: 764415701463366753}
   _spriteRenderer: {fileID: 3516833994099342431}
+  _damageCollider: {fileID: 7219050031458756272}
   _obstacleLayer:
     serializedVersion: 2
     m_Bits: 183
@@ -9985,3 +10005,5 @@ MonoBehaviour:
   _fireColor: {r: 0.9150943, g: 0.2460395, b: 0.26549235, a: 1}
   _maxRange: 18.02
   _prefireDuration: 0.1
+  _tickDamage: 4
+  _tickInterval: 0.3

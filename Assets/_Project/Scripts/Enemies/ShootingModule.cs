@@ -27,24 +27,17 @@ namespace Scripts.Enemies
 
         public void TryShoot(Action onShootFinish)
         {
-            Debug.Log("try");
-            if (_player == null)
+            if (!_player)
             {
-                Debug.Log("null");
                 onShootFinish?.Invoke();
+                return;
             }
 
             float distance = Vector2.Distance(transform.position, _player.position);
             if (!_hasMaxDistance || distance <= _shootDistance)
-            {
-                Debug.Log("Shoot");
                 Shoot(onShootFinish);
-            }
             else
-            {
-                Debug.Log("distance <= _shootDistance");
                 onShootFinish?.Invoke();
-            }
         }
 
         protected abstract void Shoot(Action onShootFinish);
