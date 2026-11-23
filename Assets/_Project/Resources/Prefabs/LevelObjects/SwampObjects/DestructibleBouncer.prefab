@@ -290,6 +290,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 416369986994364037, guid: 823ab682ba35d8b46a1952b2e6761939, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4404289781104681540}
+    - targetCorrespondingSourceObject: {fileID: 416369986994364037, guid: 823ab682ba35d8b46a1952b2e6761939, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5491417150394962370}
   m_SourcePrefab: {fileID: 100100000, guid: 823ab682ba35d8b46a1952b2e6761939, type: 3}
 --- !u!4 &2241769783876069467 stripped
 Transform:
@@ -433,7 +436,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Scripts.LevelSystem.LevelObjects.DamageableBounceObject
   _bounciness: 1.1
-  _hasBounceAnimation: 1
+  _surface: 0
+  _hasBounceAnimation: 0
   _bounceAnimation: {fileID: 3630768880624300124}
   _healthController: {fileID: 1701221729310051863}
   _solidCollider: {fileID: 8676911525662179874}
@@ -5280,3 +5284,24 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &5491417150394962370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5531449507694141691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8aa40a79fc0e404e93fa48e160d3075, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.VFX.HitFeedback
+  _healthController: {fileID: 1701221729310051863}
+  _visualTarget: {fileID: 2098292843219514002}
+  _flashRenderers: []
+  _flashMaterial: {fileID: 2100000, guid: 58116ce9808040ef8672a489159d042b, type: 2}
+  _flashDuration: 0.08
+  _punch: {x: 0.35, y: -0.3, z: 0}
+  _punchDuration: 0.3
+  _punchVibrato: 6
+  _punchElasticity: 0.8

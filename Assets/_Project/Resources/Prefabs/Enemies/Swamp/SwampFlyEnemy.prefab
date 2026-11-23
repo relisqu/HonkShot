@@ -384,7 +384,7 @@ PrefabInstance:
       addedObject: {fileID: 9060197394854217218}
     - targetCorrespondingSourceObject: {fileID: 5852712469276863939, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7709214486472533156}
+      addedObject: {fileID: 1215399373022161059}
   m_SourcePrefab: {fileID: 100100000, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
 --- !u!1 &397435779891146254 stripped
 GameObject:
@@ -476,7 +476,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &7709214486472533156
+--- !u!114 &1215399373022161059
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -485,12 +485,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 397435779891146254}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f53505ab8aeb104ea957030a0402c20, type: 3}
+  m_Script: {fileID: 11500000, guid: a8aa40a79fc0e404e93fa48e160d3075, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.EnemyDamagePunchEffect
-  _healthController: {fileID: 0}
-  _punchStrength: {x: 0.4, y: 0.4, z: 0.4}
-  _punchDuration: 0.2
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.VFX.HitFeedback
+  _healthController: {fileID: 4501720666100282376}
+  _visualTarget: {fileID: 6184272500989046865}
+  _flashRenderers: []
+  _flashMaterial: {fileID: 2100000, guid: 58116ce9808040ef8672a489159d042b, type: 2}
+  _flashDuration: 0.08
+  _punch: {x: 0.35, y: -0.3, z: 0}
+  _punchDuration: 0.3
+  _punchVibrato: 6
+  _punchElasticity: 0.8
 --- !u!114 &1848673673691686894 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5556656538779411491, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
@@ -500,6 +506,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: db10873588a04fc9b4428b8fa464850c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4501720666100282376 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7693177714894649285, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
+  m_PrefabInstance: {fileID: 6105468527866414029}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 397435779891146254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6a970c6e1874b059cac451be3c32112, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &6072811678234609247 stripped

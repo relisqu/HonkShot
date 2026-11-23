@@ -38,8 +38,16 @@ namespace Scripts.Enemies
         private Rigidbody2D _rb;
 
         [SerializeField] private Animator _animator;
+        [SerializeField] private HealthController _healthController;
+
+        [Header("Hit Stun")]
+        [Tooltip("How long the enemy stands still after a hit cancels its attack wind-up.")]
+        [SerializeField] private float _hitStunDuration = 0.6f;
+        [SerializeField] private string _idleStateName = "FollowerEnemy_idle";
 
         private bool _isAttacking = false;
+        private bool _isWindingUp;
+        private bool _isStunned;
         private Coroutine _attackRoutine = null;
         private Coroutine _avoidanceRoutine = null;
         private Vector2 _currentDirection;
@@ -59,6 +67,43 @@ namespace Scripts.Enemies
         private void OnDisable()
         {
             StopAllCoroutines();
+            _isStunned = false;
+            _isWindingUp = false;
+        }
+
+        private void Start()
+        {
+            if (!_healthController)
+                _healthController = GetComponent<HealthController>();
+            if (_healthController)
+                _healthController.OnNonLethalDamageReceived += HealthController_NonLethalDamageReceived;
+        }
+
+        private void OnDestroy()
+        {
+            if (_healthController)
+                _healthController.OnNonLethalDamageReceived -= HealthController_NonLethalDamageReceived;
+        }
+
+        private void HealthController_NonLethalDamageReceived(float damage)
+        {
+            if (!_isWindingUp) return;
+
+            if (_attackRoutine != null)
+                StopCoroutine(_attackRoutine);
+            _isWindingUp = false;
+            _isAttacking = false;
+            _isStunned = true;
+            _rb.linearVelocity = Vector2.zero;
+            EnemyAttackInterrupt.ResetAttackVisuals(_animator, _idleStateName, null, _attackParticles);
+            _attackRoutine = StartCoroutine(StunRoutine());
+        }
+
+        private IEnumerator StunRoutine()
+        {
+            yield return new WaitForSeconds(_hitStunDuration);
+            _isStunned = false;
+            _attackRoutine = StartCoroutine(AttackRoutine());
         }
 
         private IEnumerator AvoidanceCheck()
@@ -133,7 +178,7 @@ namespace Scripts.Enemies
 
         private void FixedUpdate()
         {
-            if (_isAttacking || !_target)
+            if (_isAttacking || _isStunned || !_target)
             {
                 _animator.SetBool("IsWalking", false);
                 return;
@@ -159,7 +204,9 @@ namespace Scripts.Enemies
                     _animator.SetBool("IsWalking", false);
                     _animator.SetTrigger("Attack");
 
+                    _isWindingUp = true;
                     yield return new WaitForSeconds(_attackWarningTime);
+                    _isWindingUp = false;
 
                     if (Vector2.Distance(transform.position, _target.position) <= _attackRange &&
                         _target.TryGetComponent(out HealthController playerHealth))

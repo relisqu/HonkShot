@@ -345,7 +345,7 @@ PrefabInstance:
       addedObject: {fileID: 5649851575357022325}
     - targetCorrespondingSourceObject: {fileID: 8924671554657805165, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6777156128585885215}
+      addedObject: {fileID: 5784674135542677806}
     - targetCorrespondingSourceObject: {fileID: 6774123108268076226, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6698418499974911160}
@@ -393,7 +393,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &6777156128585885215
+--- !u!114 &5784674135542677806
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -402,17 +402,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 6068339422518038376}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f53505ab8aeb104ea957030a0402c20, type: 3}
+  m_Script: {fileID: 11500000, guid: a8aa40a79fc0e404e93fa48e160d3075, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.EnemyDamagePunchEffect
-  _healthController: {fileID: 0}
-  _punchStrength: {x: 0.4, y: 0.4, z: 0.4}
-  _punchDuration: 0.2
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.VFX.HitFeedback
+  _healthController: {fileID: 8056297798597858670}
+  _visualTarget: {fileID: 1967110291812935202}
+  _flashRenderers: []
+  _flashMaterial: {fileID: 2100000, guid: 58116ce9808040ef8672a489159d042b, type: 2}
+  _flashDuration: 0.08
+  _punch: {x: 0.35, y: -0.3, z: 0}
+  _punchDuration: 0.3
+  _punchVibrato: 6
+  _punchElasticity: 0.8
 --- !u!4 &6544775870229250246 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8448305441327721667, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
   m_PrefabInstance: {fileID: 3453662727787424773}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8056297798597858670 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4620807404587153771, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
+  m_PrefabInstance: {fileID: 3453662727787424773}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6068339422518038376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6a970c6e1874b059cac451be3c32112, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8209880566570664135 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6774123108268076226, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}

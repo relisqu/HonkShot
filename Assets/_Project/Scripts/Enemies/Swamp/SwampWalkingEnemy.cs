@@ -33,9 +33,15 @@ namespace Scripts.Enemies.Swamp
         [SerializeField] private Animator _animator;
         [SerializeField] private Rigidbody2D _rb;
 
+        [Header("Hit Stun")]
+        [Tooltip("How long the enemy stands still after a hit cancels its attack wind-up.")]
+        [SerializeField] private float _hitStunDuration = 0.6f;
+        [SerializeField] private string _idleStateName = "walkingEnemy_idle";
+
         private int _currentTargetIndex;
         private int _currentDirection = 1;
         private bool _isAttacking;
+        private bool _isWindingUp;
         private float _nextAttackTime;
 
         private void Awake()
@@ -69,8 +75,50 @@ namespace Scripts.Enemies.Swamp
 
             _pathPoints.RemoveAll(point => point == null);
 
+            StartBehaviour();
+        }
+
+        private void OnDisable()
+        {
+            _isWindingUp = false;
+        }
+
+        private void Start()
+        {
+            if (_enemyHealth && _enemyHealth.HealthController)
+                _enemyHealth.HealthController.OnNonLethalDamageReceived += HealthController_NonLethalDamageReceived;
+        }
+
+        private void OnDestroy()
+        {
+            if (_enemyHealth && _enemyHealth.HealthController)
+                _enemyHealth.HealthController.OnNonLethalDamageReceived -= HealthController_NonLethalDamageReceived;
+        }
+
+        private void StartBehaviour()
+        {
             _nextAttackTime = Time.time + _attackInterval;
             StartCoroutine(BehaviourRoutine());
+        }
+
+        private void HealthController_NonLethalDamageReceived(float damage)
+        {
+            if (!_isWindingUp) return;
+
+            StopAllCoroutines();
+            _isWindingUp = false;
+            _isAttacking = false;
+            _rb.linearVelocity = Vector2.zero;
+            EnemyAttackInterrupt.ResetAttackVisuals(_animator, _idleStateName, _prefireSpriteRenderer, _attackWarningEffect);
+            StartCoroutine(StunRoutine());
+        }
+
+        private IEnumerator StunRoutine()
+        {
+            yield return new WaitForSeconds(_hitStunDuration);
+
+            if (_enemyHealth.IsAlive() && isActiveAndEnabled)
+                StartBehaviour();
         }
 
         private IEnumerator BehaviourRoutine()
@@ -168,7 +216,9 @@ namespace Scripts.Enemies.Swamp
 
             if (_animator) _animator.SetTrigger("Attack");
 
+            _isWindingUp = true;
             yield return new WaitForSeconds(_attackWarningTime);
+            _isWindingUp = false;
 
             if (TryFindPlayerHealth(out var playerHealth))
                 playerHealth.TakeDamage(_damage);

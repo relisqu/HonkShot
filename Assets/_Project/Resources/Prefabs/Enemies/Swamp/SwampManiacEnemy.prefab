@@ -5009,8 +5009,8 @@ GameObject:
   - component: {fileID: 7812700396887971410}
   - component: {fileID: 1731359153433115098}
   - component: {fileID: 7866371162801278498}
-  - component: {fileID: 7453791051239895073}
   - component: {fileID: 8024725372226325753}
+  - component: {fileID: 6051771734193891585}
   m_Layer: 9
   m_Name: SwampManiacEnemy
   m_TagString: Untagged
@@ -5103,6 +5103,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _healthController: {fileID: 3973049025086701871}
   _baseEnemy: {fileID: 0}
+  _hitSound: damageEnemy
+  _normalHitDamage: 20
+  _heavyHitDamage: 40
+  _normalHitHealthShare: 0.1
+  _heavyHitHealthShare: 0.35
+  _hitLoudnessRange: {x: 1, y: 1.35}
+  _hitLoudnessResponse:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &4402649378469648599
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5270,6 +5300,8 @@ MonoBehaviour:
   _enemyHealth: {fileID: 1224283076133262025}
   _animator: {fileID: 6950300862890426516}
   _rb: {fileID: 2487992082099074866}
+  _hitStunDuration: 0.6
+  _idleStateName: FollowerEnemy_idle
 --- !u!114 &7812700396887971410
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5327,21 +5359,6 @@ MonoBehaviour:
   _defaultShields: 2
   _maxShields: 2
   _shieldDamageThreshold: 5
---- !u!114 &7453791051239895073
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 925966557304150825}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f53505ab8aeb104ea957030a0402c20, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.EnemyDamagePunchEffect
-  _healthController: {fileID: 3973049025086701871}
-  _punchStrength: {x: 0.4, y: 0.4, z: 0.4}
-  _punchDuration: 0.2
 --- !u!114 &8024725372226325753
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5358,6 +5375,27 @@ MonoBehaviour:
   _channel: 1
   _blockedSound: shieldBlocked
   _brokenSound: shieldBroken
+--- !u!114 &6051771734193891585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 925966557304150825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8aa40a79fc0e404e93fa48e160d3075, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.VFX.HitFeedback
+  _healthController: {fileID: 3973049025086701871}
+  _visualTarget: {fileID: 875388243967853838}
+  _flashRenderers: []
+  _flashMaterial: {fileID: 2100000, guid: 58116ce9808040ef8672a489159d042b, type: 2}
+  _flashDuration: 0.08
+  _punch: {x: 0.35, y: -0.3, z: 0}
+  _punchDuration: 0.3
+  _punchVibrato: 6
+  _punchElasticity: 0.8
 --- !u!1 &1502729556395884222
 GameObject:
   m_ObjectHideFlags: 0

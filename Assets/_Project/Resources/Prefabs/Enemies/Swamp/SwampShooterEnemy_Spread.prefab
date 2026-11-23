@@ -261,6 +261,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8924671554657805165, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1324204531868636178}
+    - targetCorrespondingSourceObject: {fileID: 8924671554657805165, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3589143102786860344}
     - targetCorrespondingSourceObject: {fileID: 6774123108268076226, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6698418499974911160}
@@ -268,6 +271,11 @@ PrefabInstance:
 --- !u!4 &428437049563572025 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3035358846108093244, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
+  m_PrefabInstance: {fileID: 3453662727787424773}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &5542361686629379907 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 7135869381023744838, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
   m_PrefabInstance: {fileID: 3453662727787424773}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &6068339422518038376 stripped
@@ -383,11 +391,44 @@ MonoBehaviour:
   _stateMachine: {fileID: 0}
   _punchStrength: {x: 0.4, y: 0.4, z: 0.4}
   _punchDuration: 0.2
+--- !u!114 &3589143102786860344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6068339422518038376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8aa40a79fc0e404e93fa48e160d3075, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.VFX.HitFeedback
+  _healthController: {fileID: 8056297798597858670}
+  _visualTarget: {fileID: 0}
+  _flashRenderers:
+  - {fileID: 5542361686629379907}
+  _flashMaterial: {fileID: 2100000, guid: 58116ce9808040ef8672a489159d042b, type: 2}
+  _flashDuration: 0.08
+  _punch: {x: 0.35, y: -0.3, z: 0}
+  _punchDuration: 0.3
+  _punchVibrato: 6
+  _punchElasticity: 0.8
 --- !u!4 &6544775870229250246 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8448305441327721667, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
   m_PrefabInstance: {fileID: 3453662727787424773}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8056297798597858670 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4620807404587153771, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
+  m_PrefabInstance: {fileID: 3453662727787424773}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6068339422518038376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6a970c6e1874b059cac451be3c32112, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8209880566570664135 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6774123108268076226, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}

@@ -384,7 +384,7 @@ PrefabInstance:
       addedObject: {fileID: -4904621171976791888}
     - targetCorrespondingSourceObject: {fileID: 5852712469276863939, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6441561649279750494}
+      addedObject: {fileID: 5640127926528817714}
   m_SourcePrefab: {fileID: 100100000, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
 --- !u!114 &585702595512133030 stripped
 MonoBehaviour:
@@ -472,7 +472,7 @@ MonoBehaviour:
   _enemyId: 2
   _enemyName: 
   _difficultyRating: 1
---- !u!114 &6441561649279750494
+--- !u!114 &5640127926528817714
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -481,12 +481,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 1442526534013627462}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f53505ab8aeb104ea957030a0402c20, type: 3}
+  m_Script: {fileID: 11500000, guid: a8aa40a79fc0e404e93fa48e160d3075, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.EnemyDamagePunchEffect
-  _healthController: {fileID: 0}
-  _punchStrength: {x: 0.4, y: 0.4, z: 0.4}
-  _punchDuration: 0.2
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.VFX.HitFeedback
+  _healthController: {fileID: 3458281386563417664}
+  _visualTarget: {fileID: 1967886350065394716}
+  _flashRenderers: []
+  _flashMaterial: {fileID: 2100000, guid: 58116ce9808040ef8672a489159d042b, type: 2}
+  _flashDuration: 0.08
+  _punch: {x: 0.35, y: -0.3, z: 0}
+  _punchDuration: 0.3
+  _punchVibrato: 6
+  _punchElasticity: 0.8
+--- !u!114 &3458281386563417664 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7693177714894649285, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
+  m_PrefabInstance: {fileID: 4989391104031457669}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1442526534013627462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6a970c6e1874b059cac451be3c32112, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &5026559839346656279 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 70946318289896850, guid: 5009313536c6a134c80ac8756244d15a, type: 3}

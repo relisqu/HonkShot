@@ -264,6 +264,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8924671554657805165, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6068522140740405483}
+    - targetCorrespondingSourceObject: {fileID: 8924671554657805165, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3594500960579635812}
   m_SourcePrefab: {fileID: 100100000, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
 --- !u!1 &178915168279438361 stripped
 GameObject:
@@ -378,6 +381,28 @@ MonoBehaviour:
   _stateMachine: {fileID: 0}
   _punchStrength: {x: 0.4, y: 0.4, z: 0.4}
   _punchDuration: 0.2
+--- !u!114 &3594500960579635812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 178915168279438361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8aa40a79fc0e404e93fa48e160d3075, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.VFX.HitFeedback
+  _healthController: {fileID: 4143602759456374303}
+  _visualTarget: {fileID: 0}
+  _flashRenderers:
+  - {fileID: 1920464727827350578}
+  _flashMaterial: {fileID: 2100000, guid: 58116ce9808040ef8672a489159d042b, type: 2}
+  _flashDuration: 0.08
+  _punch: {x: 0.35, y: -0.3, z: 0}
+  _punchDuration: 0.3
+  _punchVibrato: 6
+  _punchElasticity: 0.8
 --- !u!114 &258924940781378123 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8806382007955463487, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
@@ -394,6 +419,22 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8448305441327721667, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
   m_PrefabInstance: {fileID: 8764408514586134388}
   m_PrefabAsset: {fileID: 0}
+--- !u!212 &1920464727827350578 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 7135869381023744838, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
+  m_PrefabInstance: {fileID: 8764408514586134388}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4143602759456374303 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4620807404587153771, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
+  m_PrefabInstance: {fileID: 8764408514586134388}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 178915168279438361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6a970c6e1874b059cac451be3c32112, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &6034451670028258376 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3035358846108093244, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}

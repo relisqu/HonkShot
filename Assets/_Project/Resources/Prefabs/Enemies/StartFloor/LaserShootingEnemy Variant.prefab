@@ -349,7 +349,7 @@ PrefabInstance:
       addedObject: {fileID: 6945404699160994010}
     - targetCorrespondingSourceObject: {fileID: 8924671554657805165, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6537546821159376425}
+      addedObject: {fileID: 4026343344618080023}
     - targetCorrespondingSourceObject: {fileID: 6774123108268076226, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4081470473917213766}
@@ -423,7 +423,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &6537546821159376425
+--- !u!114 &4026343344618080023
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -432,12 +432,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 3756805598485683926}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f53505ab8aeb104ea957030a0402c20, type: 3}
+  m_Script: {fileID: 11500000, guid: a8aa40a79fc0e404e93fa48e160d3075, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.EnemyDamagePunchEffect
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.VFX.HitFeedback
   _healthController: {fileID: 1141786122724050128}
-  _punchStrength: {x: 0.4, y: 0.4, z: 0.4}
-  _punchDuration: 0.2
+  _visualTarget: {fileID: 9193029995312397752}
+  _flashRenderers: []
+  _flashMaterial: {fileID: 2100000, guid: 58116ce9808040ef8672a489159d042b, type: 2}
+  _flashDuration: 0.08
+  _punch: {x: 0.35, y: -0.3, z: 0}
+  _punchDuration: 0.3
+  _punchVibrato: 6
+  _punchElasticity: 0.8
 --- !u!4 &4235211855637762424 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8448305441327721667, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}

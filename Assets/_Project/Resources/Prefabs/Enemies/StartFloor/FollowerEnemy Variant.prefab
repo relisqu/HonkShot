@@ -5195,7 +5195,7 @@ PrefabInstance:
       addedObject: {fileID: 6950300862890426516}
     - targetCorrespondingSourceObject: {fileID: 5852712469276863939, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7822822827064105638}
+      addedObject: {fileID: 6315772696393566350}
   m_SourcePrefab: {fileID: 100100000, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
 --- !u!1 &925966557304150825 stripped
 GameObject:
@@ -5232,6 +5232,9 @@ MonoBehaviour:
   _prefireSpriteColor: {r: 0, g: 0, b: 0, a: 0}
   _rb: {fileID: 2487992082099074866}
   _animator: {fileID: 6950300862890426516}
+  _healthController: {fileID: 0}
+  _hitStunDuration: 0.6
+  _idleStateName: FollowerEnemy_idle
 --- !u!114 &7487574990984273981
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5300,6 +5303,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _bounciness: 1
+  _surface: 0
   _hasBounceAnimation: 0
   _bounceAnimation: {fileID: 0}
 --- !u!95 &6950300862890426516
@@ -5324,7 +5328,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &7822822827064105638
+--- !u!114 &6315772696393566350
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5333,12 +5337,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 925966557304150825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f53505ab8aeb104ea957030a0402c20, type: 3}
+  m_Script: {fileID: 11500000, guid: a8aa40a79fc0e404e93fa48e160d3075, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.EnemyDamagePunchEffect
-  _healthController: {fileID: 0}
-  _punchStrength: {x: 0.4, y: 0.4, z: 0.4}
-  _punchDuration: 0.2
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.VFX.HitFeedback
+  _healthController: {fileID: 3973049025086701871}
+  _visualTarget: {fileID: 875388243967853838}
+  _flashRenderers: []
+  _flashMaterial: {fileID: 2100000, guid: 58116ce9808040ef8672a489159d042b, type: 2}
+  _flashDuration: 0.08
+  _punch: {x: 0.35, y: -0.3, z: 0}
+  _punchDuration: 0.3
+  _punchVibrato: 6
+  _punchElasticity: 0.8
+--- !u!114 &3973049025086701871 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7693177714894649285, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
+  m_PrefabInstance: {fileID: 6764603825979291370}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 925966557304150825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6a970c6e1874b059cac451be3c32112, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &6709446564533039992 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 70946318289896850, guid: 5009313536c6a134c80ac8756244d15a, type: 3}
