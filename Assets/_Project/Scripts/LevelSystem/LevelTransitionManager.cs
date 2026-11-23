@@ -4,6 +4,7 @@ using Scripts.LevelSystem.LevelGeneration;
 using Scripts.LevelSystem.LevelGeneration.Factories;
 using Scripts.LevelSystem.TechnicalScripts;
 using Scripts.Player;
+using Scripts.Services.Seed;
 using Scripts.UI;
 using UnityEngine;
 using Zenject;
@@ -15,6 +16,7 @@ namespace Scripts.LevelSystem
     {
         private PlayerMovement _playerMovement;
         private LevelObjectsFactory _levelObjectsFactory;
+        private RunSeedService _runSeedService;
 
         [Space] [Header(("Item generation"))] [Range(0f, 1f)] [SerializeField]
         private float _itemScreenSpawnChance;
@@ -32,10 +34,12 @@ namespace Scripts.LevelSystem
         public Action LevelTransitionFinished;
 
         [Inject]
-        private void Construct(PlayerMovement playerMovement, LevelObjectsFactory levelObjectsFactory)
+        private void Construct(PlayerMovement playerMovement, LevelObjectsFactory levelObjectsFactory,
+            RunSeedService runSeedService)
         {
             _playerMovement = playerMovement;
             _levelObjectsFactory = levelObjectsFactory;
+            _runSeedService = runSeedService;
         }
 
         private bool ShouldGiveItems(int completedRooms)
@@ -43,7 +47,8 @@ namespace Scripts.LevelSystem
             var shouldTryGenerateRoom = completedRooms % _itemScreenPerRoomRate == 0;
             if (shouldTryGenerateRoom)
             {
-                return Random.value <= _itemScreenSpawnChance;
+                var rng = _runSeedService.CreateRandom(SeedStream.ItemScreenChance, completedRooms);
+                return rng.NextDouble() <= _itemScreenSpawnChance;
             }
 
             return false;

@@ -9,6 +9,8 @@ namespace Scripts.LevelSystem.LevelObjects
         private Vector2 _currentVelocity;
         public Vector2 CurrentVelocity => _currentVelocity;
 
+        private readonly ContactPoint2D[] _touchingContacts = new ContactPoint2D[8];
+
         private Vector2 _lastContactPoint;
         private Vector2 _lastNormal;
         private Vector2 _lastIncoming;
@@ -36,6 +38,33 @@ namespace Scripts.LevelSystem.LevelObjects
         public void ResetVelocityTracking()
         {
             _currentVelocity = Vector2.zero;
+        }
+
+        /// <summary>
+        /// Bounces off every surface the body is already touching and moving into. OnCollisionEnter2D
+        /// only fires when a contact begins, so a launch straight into a wall the body is resting against
+        /// produces no bounce at all: the body just presses into it and friction stops it dead. Call this
+        /// right after giving the body a new velocity.
+        /// </summary>
+        public void BounceOffTouchingSurfaces()
+        {
+            int contactCount = _rigidbody2D.GetContacts(_touchingContacts);
+
+            for (int i = 0; i < contactCount; i++)
+            {
+                var contact = _touchingContacts[i];
+                if (!contact.enabled) continue;
+
+                // For Rigidbody2D.GetContacts, contact.collider is the other body's collider and the normal
+                // points from it towards us.
+                if (!contact.collider.TryGetComponent(out BounceObject bounceObject)) continue;
+
+                var velocity = _rigidbody2D.linearVelocity;
+                if (Vector2.Dot(velocity, contact.normal) >= 0f) continue;
+
+                _rigidbody2D.linearVelocity = Vector2.Reflect(velocity, contact.normal) * bounceObject.Bounciness;
+                _currentVelocity = _rigidbody2D.linearVelocity;
+            }
         }
 
         private void FixedUpdate()

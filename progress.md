@@ -493,3 +493,40 @@ findings.md).
 - `Resources/Prefabs/UI/PauseMenu.prefab` — own overlay Canvas (sort 100, 1920x1080 match 1), Dim, MainPanel (Resume/Settings/Restart), SettingsPanel (3 VolumeSliderView rows, LanguageSelector, Back). RulerGold SDF, gold tint on select. Built via execute_code, all refs verified non-null.
 - Instance placed at GameplayScene root; scene saved.
 - Not playtested (user rule).
+
+
+---
+
+## Session: 2026-11-19 — Run seed
+
+### Code
+- NEW `Scripts/Services/Seed/SeedUtility.cs` (SeedStream enum, Combine/murmur mix, hex Format/TryParse, word seeds via FNV)
+- NEW `Scripts/Services/Seed/RunSeedService.cs` (static pending seed survives scene reload; BeginRun logs seed)
+- NEW `Scripts/Other/SceneRestarter.cs` (shared unpause + reload; PauseMenuView now uses it)
+- NEW `Scripts/UI/PauseMenu/SeedSettingsView.cs`
+- `ProjectMonoInstaller` binds RunSeedService; `LevelManager.Construct` -> `_runProgress.StartRun(BeginRun())`
+- `RunProgress.GetFloorSeed` -> derived stream; `LevelTransitionManager.ShouldGiveItems` seeded
+- `ItemManager.GetRandomItems(count, rng)`, `ExtraPickSystem.CalculateExtraPicks(rng)` (optional rng, fallback Unity Random)
+- `ItemSelectionUI`: screen/refresh/pick counters -> seeded offers, rerolls, extra picks
+- `DebugMode`: F8 + [Button] PrintSeed (copies to clipboard)
+- RU/EN: Settings.Seed / Settings.CopySeed / Settings.PlaySeed (also add to Google Sheet)
+
+### MCP
+- PauseMenu.prefab: SettingsPanel/SeedRow (copy of LanguageRow) with SeedControls(SeedInput TMP_InputField, CopyButton, PlayButton copies of BackButton); SeedSettingsView wired; SettingsMenuView._seedSettings wired. Scene instance picks it up (no overrides).
+
+### Verify
+- Unity compile: 0 errors (only pre-existing UnityEditor.Graphs NRE). SeedUtility sanity via execute_code: Format(-1)=FFFFFFFF, parse round-trip OK, word seeds case-insensitive.
+- Not playtested (user rule).
+
+## Session: 2026-11-22 — Enemy hit sound loudness scaling
+- **Status:** code written, NOT compile-checked (UnityMCP offline), awaiting user playtest
+- AudioManager: new `PlayOneShotWithGain(channel, sound, loudness)` — loudness >1 applied as PlayOneShot gain past the AudioSource volume cap of 1 (HitEnemy SO volume is already >1, so it was capped).
+- HealthController: `DefaultHealth` property.
+- EnemyHealth: hit sound loudness = Lerp(1, 1.35, curve(max(damage 20->40, healthShare 10%->35%))). Default hits unchanged. Kill sound untouched.
+
+### Goose stretch tension sound (2026-11-22)
+- **Status:** code written, NOT compile-checked (UnityMCP offline), awaiting user playtest
+- PlayerSoundManager: dedicated looping AudioSource plays 'stretch' (2.0Tension.wav) from DragStarted; volume (0.3->1) and pitch (0.9->1.3) follow pull = drag/MaxForceMagnitude, unscaled time; fades out 0.08s on DragFinished/InputCancelled. Refs InputHandler/PlayerBallMovement auto-found on same GO. Removed unused PlayStretchSound().
+- AudioManager: GetSoundEffectSO now public, added GetChannelVolume().
+- Noted pre-existing bug: AudioManager.Stop(channel, soundName) checks `name` (GameObject name) instead of soundName -> StopRollSound never stops roll.
+- FIXED: AudioManager.Stop now checks soundName; IsPlaying(sound) checks clip membership via Array.IndexOf instead of GetAudioClip() (which advanced the playlist).

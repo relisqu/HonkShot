@@ -7,6 +7,7 @@ using System.Collections;
 using Scripts.Items;
 using Scripts.LevelSystem.LevelGeneration.Factories;
 using Scripts.LevelSystem.TechnicalScripts;
+using Scripts.Services.Seed;
 using Scripts.UI;
 using UnityEngine.Serialization;
 using Zenject;
@@ -45,12 +46,14 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         [Inject]
         private void Construct(PlayerMovement playerMovement, LevelObjectsFactory levelObjectsFactory,
-            LevelGenerator levelGenerator, LevelTransitionManager levelTransitionManager)
+            LevelGenerator levelGenerator, LevelTransitionManager levelTransitionManager,
+            RunSeedService runSeedService)
         {
             _playerMovement = playerMovement;
             _levelGenerator = levelGenerator;
             _levelObjectsFactory = levelObjectsFactory;
             _levelTransitionManager = levelTransitionManager;
+            _runProgress.StartRun(runSeedService.BeginRun());
         }
 
         private void Awake()

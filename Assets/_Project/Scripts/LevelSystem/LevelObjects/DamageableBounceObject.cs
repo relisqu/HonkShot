@@ -1,5 +1,6 @@
 using Scripts.Audio;
 using Scripts.Health;
+using Scripts.Other;
 using Scripts.Player;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -50,9 +51,9 @@ namespace Scripts.LevelSystem.LevelObjects
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (!_healthController.IsAlive) return;
-            if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _)) return;
+            if (other.TryGetComponentInBody(out PlayerGhostProjectile _)) return;
 
-            if (other.gameObject.TryGetComponent(out PlayerAttackController attackController))
+            if (other.TryGetComponentInBody(out PlayerAttackController attackController))
             {
                 var rb = other.attachedRigidbody;
                 if (!rb) return;

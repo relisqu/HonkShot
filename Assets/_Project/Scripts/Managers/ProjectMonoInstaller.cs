@@ -1,4 +1,5 @@
 ﻿using Scripts.Services.Localization;
+using Scripts.Services.Seed;
 using Scripts.Services.Settings;
 using UnityEngine;
 using Zenject;
@@ -16,6 +17,7 @@ namespace Scripts.Managers
                 .FromInstance(Resources.Load<LanguagesConfigSO>(LanguagesConfigPath))
                 .AsSingle();
             Container.BindInterfacesAndSelfTo<SettingsService>().AsSingle().NonLazy();
+            Container.Bind<RunSeedService>().AsSingle().NonLazy();
         }
 
         public override void Start()

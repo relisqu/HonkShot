@@ -1,3 +1,4 @@
+using Scripts.Other;
 using System.Collections.Generic;
 using Scripts.Enemies;
 using Scripts.Health;
@@ -25,13 +26,13 @@ namespace Scripts.LevelSystem.LevelObjects
 
         private void TryDamage(Collider2D col)
         {
-            if (col.gameObject.TryGetComponent(out PlayerHealth playerHealth))
+            if (col.TryGetComponentInBody(out PlayerHealth playerHealth))
             {
                 ApplyDamage(playerHealth.HealthController, _defaultDamage);
                 return;
             }
 
-            if (col.gameObject.TryGetComponent(out EnemyHealth enemyHealth))
+            if (col.TryGetComponentInBody(out EnemyHealth enemyHealth))
             {
                 float damage = _hasTheSameContactDamageForAllEntities ? _defaultDamage : _enemyContactDamage;
                 ApplyDamage(enemyHealth.HealthController, damage);

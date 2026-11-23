@@ -22,14 +22,14 @@ namespace Scripts.Items.PlayerItemManager
             _allItems = itemPool.Items.Where(item => item.Enabled).ToList();
         }
 
-        public List<PlayerItemSO> GetRandomItems(int count)
+        public List<PlayerItemSO> GetRandomItems(int count, System.Random rng = null)
         {
             var available = new List<PlayerItemSO>(_allItems);
             available.RemoveAll(item => playerInventory.HasItem(item));
             var result = new List<PlayerItemSO>();
             for (int i = 0; i < count && available.Count > 0; i++)
             {
-                int idx = Random.Range(0, available.Count);
+                int idx = rng != null ? rng.Next(available.Count) : Random.Range(0, available.Count);
                 result.Add(available[idx]);
                 available.RemoveAt(idx);
             }

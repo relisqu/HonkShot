@@ -282,3 +282,12 @@ zero) and called it from `UnfreezePhysics()`.
 - `AudioManager`: one AudioSource per `SoundChanelType`; `SoundEffectSO.ApplyRandomSettings` overwrites source.volume on each play -> channel volume must be multiplied after it. `_volumes` dict existed but unused. No AudioMixer.
 - `PopupWindow` is the reference UI pattern (CanvasGroup + DOTween + BlackViewEffect + input layer).
 - Restart pattern in project: `SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex)`.
+
+
+---
+
+# Run seed — Findings (2026-11-19)
+- Before: only floor layout used a seed (`System.Random(RunSeed ^ floorIndex)` in LevelGenerator); RunSeed = Environment.TickCount, `RunProgress.StartRun` never called, seed never displayed.
+- Unseeded before: item offers (ItemManager), item-screen chance (LevelTransitionManager), extra-pick chance (ExtraPickSystem). `ItemPickBonusSystem` is an unused duplicate of Reroll/ExtraPick systems.
+- Still unseeded by design: combat/item effects (UnstableItem, BigBomb, feathers, boss dashes), decorations (InnerWallGeneration, BackgroundPropSpawner, SpikeWallDecorations), audio.
+- Offers filter owned items -> determinism holds only for the same picks; per-screen derived streams keep rerolls from shifting later screens.

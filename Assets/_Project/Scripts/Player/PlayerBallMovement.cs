@@ -112,7 +112,11 @@ namespace Scripts.Player
             _playerStatus.SetPlayerState(PlayerState.Ball);
             _throwStartTime = Time.time;
             if (_bouncingObject)
+            {
                 _bouncingObject.SetCurrentVelocity(_rigidbody2D.linearVelocity);
+                _bouncingObject.BounceOffTouchingSurfaces();
+            }
+
             if (_gooseFireSystem != null)
                 _gooseFireSystem.OnLaunchOrAcceleration();
         }

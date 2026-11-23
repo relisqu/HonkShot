@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Scripts.Health;
 using Scripts.LevelSystem;
+using Scripts.LevelSystem.LevelObjects;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
@@ -18,6 +19,7 @@ namespace Scripts.Player
         [SerializeField] private PlayerBallMovement _playerBallMovement;
         [SerializeField] private List<ParticleSystem> _particleSystems;
         [SerializeField] private GooseFireSystem _gooseFireSystem;
+        [SerializeField] private TeleportableEntity _teleportableEntity;
 
         [Header("Fire Effects")] [SerializeField]
         private float _honkRateMultiplier = 3f;
@@ -55,6 +57,9 @@ namespace Scripts.Player
 
             _levelTransitionManager.LevelTransitionStarted += LevelTransitionManager_LevelTransitionStarted;
             _levelTransitionManager.LevelTransitionFinished += LevelTransitionManager_LevelTransitionFinished;
+
+            if (_teleportableEntity)
+                _teleportableEntity.Teleported += ClearTrail;
         }
 
 
@@ -62,6 +67,9 @@ namespace Scripts.Player
         {
             _levelTransitionManager.LevelTransitionStarted -= LevelTransitionManager_LevelTransitionStarted;
             _levelTransitionManager.LevelTransitionFinished -= LevelTransitionManager_LevelTransitionFinished;
+
+            if (_teleportableEntity)
+                _teleportableEntity.Teleported -= ClearTrail;
         }
 
         private void LevelTransitionManager_LevelTransitionFinished()
@@ -112,8 +120,12 @@ namespace Scripts.Player
             }
 
             _trailRenderer.gameObject.SetActive(true);
+            ClearTrail();
             SetTrailVisual();
         }
+
+        // Drops the trail's recorded points so it doesn't draw a line from the old position after a jump.
+        public void ClearTrail() => _trailRenderer.Clear();
 
         private void SetTrailVisual()
         {

@@ -28,6 +28,7 @@ namespace Scripts.Health
         public bool IsAlive => GetCurrentHealth() > 0;
 
         public float RemainingHealthPercentage => GetCurrentHealth() / _defaultHealth;
+        public float DefaultHealth => _defaultHealth;
         public NumericStatModifierSystem DamageTakenModifierSystem => _damageTakenModifierSystem;
         public NumericStatModifierSystem MaxHpModifierSystem => _maxHpModifierSystem;
         public BoolStatModifierSystem InvisibilitySystem => _invisibilitySystem;

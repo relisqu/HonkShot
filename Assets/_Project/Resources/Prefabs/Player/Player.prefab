@@ -34,12 +34,12 @@ GameObject:
   - component: {fileID: 3030431709123272130}
   - component: {fileID: 3323263315137026221}
   - component: {fileID: 5020504577243975703}
-  - component: {fileID: 7210995127067110868}
   - component: {fileID: 8588473697873562762}
   - component: {fileID: 1234567890123456789}
   - component: {fileID: 6829354694396117980}
   - component: {fileID: -2115843882568929296}
   - component: {fileID: -3870262679006619782}
+  - component: {fileID: 4861270043121370161}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -573,42 +573,6 @@ CompositeCollider2D:
   m_OffsetDistance: 0.00005
   m_UseDelaunayMesh: 0
   m_CompositeGameObject: {fileID: 225159964537138388}
---- !u!58 &7210995127067110868
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 225159964537138388}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: -0.004993081, y: 0.25839472}
-  m_Radius: 0.3214954
 --- !u!114 &8588473697873562762
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -716,6 +680,48 @@ MonoBehaviour:
   _channel: 0
   _blockedSound: shieldBlocked
   _brokenSound: shieldBroken
+--- !u!114 &4861270043121370161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 225159964537138388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bb6d8567a241c548a040534d19c506d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.VFX.BounceVFXEmitter
+  _effectPrefab: {fileID: 2450631990372889432, guid: fddddd48d4edfe3448314f03a7c4cf93, type: 3}
+  _poolSize: 4
+  _minImpactSpeed: 3
+  _maxImpactSpeed: 15
+  _scaleRange: {x: 0.4, y: 1}
+  _response:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _retriggerCooldown: 0.05
 --- !u!1 &334979677366588079
 GameObject:
   m_ObjectHideFlags: 0
@@ -868,6 +874,7 @@ MonoBehaviour:
   - {fileID: 8832356744712714151}
   - {fileID: 392083217252386928}
   _gooseFireSystem: {fileID: 1399843973862884099}
+  _teleportableEntity: {fileID: 8887970704425061413}
   _honkRateMultiplier: 1
   _ultimateRateMultiplier: 3
   _defaultGradient:

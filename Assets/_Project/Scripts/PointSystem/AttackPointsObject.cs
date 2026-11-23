@@ -1,4 +1,5 @@
-﻿using Scripts.Player;
+﻿using Scripts.Other;
+using Scripts.Player;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Zenject;
@@ -48,7 +49,7 @@ namespace Scripts.PointSystem
         public void OnCollisionEnter2D(Collision2D collision)
         {
             if(InteractionType == FireInteractionType.Manual) return;
-            if (collision.gameObject.TryGetComponent(out GooseFireSystem _))
+            if (collision.collider.TryGetComponentInBody(out GooseFireSystem _))
             {
                 EarnTouchPoints();
             }
@@ -61,7 +62,7 @@ namespace Scripts.PointSystem
             if(InteractionType == FireInteractionType.Manual) return;
             _stayPoints += _difficultyLevel;
             _startInteractTime = Time.time;
-            if (other.gameObject.TryGetComponent(out GooseFireSystem _))
+            if (other.TryGetComponentInBody(out GooseFireSystem _))
             {
                 EarnTouchPoints();
             }
@@ -70,7 +71,7 @@ namespace Scripts.PointSystem
         public void OnTriggerStay2D(Collider2D other)
         {
             if(InteractionType == FireInteractionType.Manual) return;
-            if (other.TryGetComponent(out GooseFireSystem _))
+            if (other.TryGetComponentInBody(out GooseFireSystem _))
             {
                 if (InteractionType == FireInteractionType.Continuous)
                 {
@@ -86,7 +87,7 @@ namespace Scripts.PointSystem
         private void OnTriggerExit2D(Collider2D other)
         {
             if(InteractionType == FireInteractionType.Manual) return;
-            if (other.TryGetComponent(out GooseFireSystem gooseFireSystem))
+            if (other.TryGetComponentInBody(out GooseFireSystem gooseFireSystem))
             {
                 EarnStayPoints();
                 _stayPoints = 0;

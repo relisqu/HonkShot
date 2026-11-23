@@ -11,6 +11,7 @@ namespace Scripts.UI.PauseMenu
     {
         [SerializeField] private VolumeSliderView[] _volumeSliders;
         [SerializeField] private LanguageSelectorView _languageSelector;
+        [SerializeField] private SeedSettingsView _seedSettings;
         [SerializeField] private Button _backButton;
         [SerializeField] private Selectable _firstSelected;
 
@@ -42,6 +43,8 @@ namespace Scripts.UI.PauseMenu
             foreach (var volumeSlider in _volumeSliders)
                 volumeSlider.Refresh();
             _languageSelector.Refresh();
+            if (_seedSettings)
+                _seedSettings.Refresh();
 
             if (EventSystem.current && _firstSelected)
                 EventSystem.current.SetSelectedGameObject(_firstSelected.gameObject);

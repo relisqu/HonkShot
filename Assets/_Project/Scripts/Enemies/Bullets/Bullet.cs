@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Scripts.Other;
+using System;
 using Scripts.LevelSystem.LevelObjects;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace Scripts.Enemies.Bullets
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.gameObject.TryGetComponent(out PlayerHealth health))
+            if (other.TryGetComponentInBody(out PlayerHealth health))
             {
                 DamagePlayer(health);
             }

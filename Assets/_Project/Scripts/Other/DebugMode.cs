@@ -3,9 +3,11 @@ using System.Linq;
 using Scripts.Enemies;
 using Scripts.Health;
 using Scripts.Items.PlayerItemManager;
+using Scripts.Services.Seed;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Zenject;
 
 namespace Scripts.Other
 {
@@ -19,6 +21,34 @@ namespace Scripts.Other
         public bool DebugEnabled;
         public string itemId;
         public string[] itemIds;
+
+        [SerializeField] private KeyCode _printSeedKey = KeyCode.F8;
+        [SerializeField] private bool _copySeedOnPrint = true;
+
+        private RunSeedService _runSeedService;
+
+        [Inject]
+        private void Construct(RunSeedService runSeedService)
+        {
+            _runSeedService = runSeedService;
+        }
+
+        [Button]
+        public void PrintSeed()
+        {
+            if (_runSeedService == null)
+            {
+                Debug.LogWarning("[DebugMode] RunSeedService is not injected yet");
+                return;
+            }
+
+            string seed = _runSeedService.CurrentSeedText;
+            if (_copySeedOnPrint)
+                GUIUtility.systemCopyBuffer = seed;
+
+            Debug.Log($"[DebugMode] Run seed: {seed} (raw {_runSeedService.CurrentSeed})" +
+                      (_copySeedOnPrint ? " — copied to clipboard" : string.Empty));
+        }
 
         [Button]
         public void SpawnItemWithIndex()
@@ -83,6 +113,11 @@ namespace Scripts.Other
             if (Input.GetKeyDown(KeyCode.F))
             {
                 KillAllEnemies();
+            }
+
+            if (Input.GetKeyDown(_printSeedKey))
+            {
+                PrintSeed();
             }
         }
 

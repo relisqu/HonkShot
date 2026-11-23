@@ -1,9 +1,9 @@
 using DG.Tweening;
+using Scripts.Other;
 using Scripts.Player.InputHandling;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Zenject;
 
@@ -118,13 +118,8 @@ namespace Scripts.UI.PauseMenu
             _settingsMenuView.Show();
         }
 
-        private void RestartButton_Click()
-        {
-            // TimeManager.Awake doesn't touch Time.timeScale, so the reloaded scene would stay frozen.
-            TimeManager.Instance.SetMenuPaused(false);
-            TimeManager.Instance.ResumeGame();
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }
+        private void RestartButton_Click() =>
+            SceneRestarter.RestartCurrentScene();
 
         private void SettingsMenuView_Closed()
         {

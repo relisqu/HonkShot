@@ -1,3 +1,4 @@
+using Scripts.Other;
 using Scripts.Player;
 using UnityEngine;
 
@@ -43,11 +44,11 @@ namespace Scripts.Health
         private void OnTriggerEnter2D(Collider2D other)
         {
             if(!IsDamagedByTrigger) return;
-            if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _))
+            if (other.TryGetComponentInBody(out PlayerGhostProjectile _))
                 return;
 
             if (_healthController.IsInvincible()) return;
-            if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
+            if (other.TryGetComponentInBody(out PlayerAttackController playerAttackController))
             {
                 ReceiveDamage(playerAttackController);
             }
@@ -57,11 +58,11 @@ namespace Scripts.Health
         {
             
             if(!IsDamagedByTrigger) return;
-            if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _))
+            if (other.TryGetComponentInBody(out PlayerGhostProjectile _))
                 return;
 
             if (_healthController.IsInvincible()) return;
-            if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
+            if (other.TryGetComponentInBody(out PlayerAttackController playerAttackController))
             {
                 ReceiveDamage(playerAttackController);
             }
@@ -70,11 +71,11 @@ namespace Scripts.Health
         private void OnCollisionEnter2D(Collision2D other)
         {
             if(!IsDamagedByCollision) return;
-            if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _))
+            if (other.collider.TryGetComponentInBody(out PlayerGhostProjectile _))
                 return;
 
             if (_healthController.IsInvincible()) return;
-            if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
+            if (other.collider.TryGetComponentInBody(out PlayerAttackController playerAttackController))
             {
                 ReceiveDamage(playerAttackController);
             }

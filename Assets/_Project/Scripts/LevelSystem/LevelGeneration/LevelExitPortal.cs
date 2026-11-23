@@ -1,3 +1,4 @@
+using Scripts.Other;
 using System;
 using DG.Tweening;
 using Scripts.Audio;
@@ -53,7 +54,7 @@ namespace Scripts.LevelSystem.LevelGeneration
             // Pause input globally
             OnPortalTrigger?.Invoke();
             if (_isJumpingOut) return;
-            if (other.TryGetComponent(out PlayerBallMovement player))
+            if (other.TryGetComponentInBody(out PlayerBallMovement player))
             {
                 if (_isSucking) return;
                 if (_inputHandler) _inputHandler.SetInputEnabled(InputLayer.LevelChange, false);

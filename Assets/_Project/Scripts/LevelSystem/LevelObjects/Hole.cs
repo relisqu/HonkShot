@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Scripts.Other;
+using System;
 using DG.Tweening;
 using Scripts.Health;
 using Scripts.LevelSystem.LevelGeneration;
@@ -40,7 +41,7 @@ namespace Scripts.LevelSystem.LevelObjects
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            if (!collision.TryGetComponent(out HoleDamageable holeDamageable)) return;
+            if (!collision.TryGetComponentInBody(out HoleDamageable holeDamageable)) return;
 
             if (holeDamageable.HealthController.IsInvincible()) return;
 
@@ -69,7 +70,8 @@ namespace Scripts.LevelSystem.LevelObjects
             swirlSequence.Join(targetTransform.DOMove(transform.position, swirlDuration * 0.8f)
                 .SetEase(Ease.Linear));
 
-            if (collision.transform.TryGetComponent<FireParticleSystem>(out var fireParticleSystem))
+            var fireParticleSystem = holeDamageable.GetComponentInChildren<FireParticleSystem>();
+            if (fireParticleSystem)
             {
                 fireParticleSystem.ClearParticleSystems();
             }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Scripts.Other;
+using System;
 using Scripts.Player;
 using UnityEngine;
 
@@ -15,7 +16,7 @@ namespace Scripts.LevelSystem.LevelObjects
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.TryGetComponent(out PlayerMovement playerMovement))
+            if (other.TryGetComponentInBody(out PlayerMovement playerMovement))
             {
                 if (_maxTouchCountPerDash == -1 || _currentTouchCount < _maxTouchCountPerDash)
                 {

@@ -1,6 +1,7 @@
 ﻿using Scripts.Audio;
 using Scripts.Camera;
 using Scripts.Health;
+using Scripts.Other;
 using Scripts.Player;
 using Scripts.ScoreSystem;
 using Scripts.UI;
@@ -13,6 +14,27 @@ namespace Scripts.Enemies
     {
         [SerializeField] private HealthController _healthController;
         [SerializeField] private BaseEnemy _baseEnemy;
+
+        [Header("Hit Sound")]
+        [SerializeField] private string _hitSound = "damageEnemy";
+
+        [Tooltip("Damage at or below this sounds like a normal hit.")]
+        [SerializeField] private float _normalHitDamage = 20f;
+
+        [Tooltip("Damage that reaches the loudest hit.")]
+        [SerializeField] private float _heavyHitDamage = 40f;
+
+        [Tooltip("Share of starting health at or below which a hit sounds normal.")]
+        [SerializeField, Range(0f, 1f)] private float _normalHitHealthShare = 0.1f;
+
+        [Tooltip("Share of starting health that reaches the loudest hit.")]
+        [SerializeField, Range(0f, 1f)] private float _heavyHitHealthShare = 0.35f;
+
+        [Tooltip("Loudness of a normal hit (x) and the heaviest hit (y). Above 1 amplifies past the clip's volume.")]
+        [SerializeField] private Vector2 _hitLoudnessRange = new Vector2(1f, 1.35f);
+
+        [Tooltip("Shapes how hit heaviness maps onto that loudness range.")]
+        [SerializeField] private AnimationCurve _hitLoudnessResponse = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
         private float _lastDamageReceived;
 
@@ -46,7 +68,23 @@ namespace Scripts.Enemies
                 ScoreManager.Instance.OnDamageDealt(_baseEnemy, _lastDamageReceived);
             }
 
-            AudioManager.Instance.PlayOneShot(SoundChanelType.Enemy, "damageEnemy");
+            if (AudioManager.Instance)
+                AudioManager.Instance.PlayOneShotWithGain(SoundChanelType.Enemy, _hitSound, GetHitLoudness(damage));
+        }
+
+        private float GetHitLoudness(float damage)
+        {
+            float byDamage = _heavyHitDamage > _normalHitDamage
+                ? Mathf.InverseLerp(_normalHitDamage, _heavyHitDamage, damage)
+                : 0f;
+
+            float startingHealth = _healthController.DefaultHealth;
+            float byHealthShare = startingHealth > 0f && _heavyHitHealthShare > _normalHitHealthShare
+                ? Mathf.InverseLerp(_normalHitHealthShare, _heavyHitHealthShare, damage / startingHealth)
+                : 0f;
+
+            float heaviness = Mathf.Max(byDamage, byHealthShare);
+            return Mathf.Lerp(_hitLoudnessRange.x, _hitLoudnessRange.y, _hitLoudnessResponse.Evaluate(heaviness));
         }
 
         public bool IsAlive()
@@ -56,13 +94,13 @@ namespace Scripts.Enemies
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _))
+            if (other.TryGetComponentInBody(out PlayerGhostProjectile _))
             {
                 return;
             }
 
             if (_healthController.IsInvincible()) return;
-            if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
+            if (other.TryGetComponentInBody(out PlayerAttackController playerAttackController))
             {
                 ReceiveDamage(playerAttackController);
             }
@@ -78,13 +116,13 @@ namespace Scripts.Enemies
 
         private void OnTriggerStay2D(Collider2D other)
         {
-            if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _))
+            if (other.TryGetComponentInBody(out PlayerGhostProjectile _))
             {
                 return;
             }
 
             if (_healthController.IsInvincible()) return;
-            if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
+            if (other.TryGetComponentInBody(out PlayerAttackController playerAttackController))
             {
                 ReceiveDamage(playerAttackController);
             }
@@ -92,13 +130,13 @@ namespace Scripts.Enemies
 
         private void OnCollisionStay2D(Collision2D other)
         {
-            if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _))
+            if (other.collider.TryGetComponentInBody(out PlayerGhostProjectile _))
             {
                 return;
             }
 
             if (_healthController.IsInvincible()) return;
-            if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
+            if (other.collider.TryGetComponentInBody(out PlayerAttackController playerAttackController))
             {
                 ReceiveDamage(playerAttackController);
             }
@@ -106,13 +144,13 @@ namespace Scripts.Enemies
 
         private void OnCollisionEnter2D(Collision2D other)
         {
-            if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _))
+            if (other.collider.TryGetComponentInBody(out PlayerGhostProjectile _))
             {
                 return;
             }
 
             if (_healthController.IsInvincible()) return;
-            if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
+            if (other.collider.TryGetComponentInBody(out PlayerAttackController playerAttackController))
             {
                 ReceiveDamage(playerAttackController);
             }

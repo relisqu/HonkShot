@@ -49,7 +49,7 @@ namespace Scripts.Items
             _providers.Remove(provider);
         }
 
-        public void CalculateExtraPicks()
+        public void CalculateExtraPicks(System.Random rng = null)
         {
             _pendingExtraPicks = 0;
 
@@ -57,7 +57,8 @@ namespace Scripts.Items
             {
                 _pendingExtraPicks += provider.GuaranteedExtraPicks;
 
-                if (provider.ExtraPickChance > 0 && UnityEngine.Random.value < provider.ExtraPickChance)
+                float roll = rng != null ? (float)rng.NextDouble() : UnityEngine.Random.value;
+                if (provider.ExtraPickChance > 0 && roll < provider.ExtraPickChance)
                 {
                     _pendingExtraPicks++;
                     Debug.Log($"[ExtraPickSystem] Chance-based extra pick from {provider.GetType().Name}");

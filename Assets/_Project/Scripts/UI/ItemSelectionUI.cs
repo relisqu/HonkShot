@@ -9,6 +9,7 @@ using UnityEngine.EventSystems;
 using DG.Tweening;
 using Scripts.Items.PlayerItemManager;
 using Scripts.Services.Localization;
+using Scripts.Services.Seed;
 using TMPro;
 using Zenject;
 
@@ -17,6 +18,7 @@ namespace Scripts.UI
     public class ItemSelectionUI : MonoBehaviour
     {
         private ILocalizationService _localizationService;
+        private RunSeedService _runSeedService;
 
         public ItemSelectionSlotUI[] slots;
         [SerializeField] private TMP_Text _itemNameText;
@@ -32,14 +34,20 @@ namespace Scripts.UI
         [SerializeField] private TMP_Text _rerollCountText;
 
         [Inject]
-        private void Construct(ILocalizationService localizationService)
+        private void Construct(ILocalizationService localizationService, RunSeedService runSeedService)
         {
             _localizationService = localizationService;
+            _runSeedService = runSeedService;
         }
 
         private Action<int> _onItemSelected;
         public bool IsActive => _isActive;
         private bool _isActive;
+
+        // Per-screen counters keep offers deterministic: same seed + same picks/rerolls = same items.
+        private int _screenIndex = -1;
+        private int _refreshIndex;
+        private int _pickIndex;
 
         public void ShowItems(Action<int> onItemSelected)
         {
@@ -48,9 +56,13 @@ namespace Scripts.UI
             panel.SetActive(true);
             _onItemSelected = onItemSelected;
 
+            _screenIndex++;
+            _refreshIndex = 0;
+            _pickIndex = 0;
+
             if (ExtraPickSystem.Instance)
             {
-                ExtraPickSystem.Instance.CalculateExtraPicks();
+                ExtraPickSystem.Instance.CalculateExtraPicks(CreateExtraPickRandom());
             }
 
             RefreshItems();
@@ -59,7 +71,9 @@ namespace Scripts.UI
 
         private void RefreshItems()
         {
-            var items = _itemManager.GetRandomItems(3);
+            var items = _itemManager.GetRandomItems(3,
+                _runSeedService.CreateRandom(SeedStream.ItemOffer, _screenIndex, _refreshIndex));
+            _refreshIndex++;
 
             for (int i = 0; i < slots.Length; i++)
             {
@@ -88,6 +102,9 @@ namespace Scripts.UI
                 }
             }
         }
+
+        private System.Random CreateExtraPickRandom() =>
+            _runSeedService.CreateRandom(SeedStream.ExtraPick, _screenIndex, _pickIndex);
 
         private void UpdateRerollButton()
         {
@@ -157,7 +174,8 @@ namespace Scripts.UI
 
             if (ExtraPickSystem.Instance)
             {
-                ExtraPickSystem.Instance.CalculateExtraPicks();
+                _pickIndex++;
+                ExtraPickSystem.Instance.CalculateExtraPicks(CreateExtraPickRandom());
 
                 if (ExtraPickSystem.Instance.TryUseExtraPick())
                 {

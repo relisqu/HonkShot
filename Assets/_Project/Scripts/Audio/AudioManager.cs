@@ -108,6 +108,8 @@ namespace Scripts.Audio
                 SetChannelVolume(chanelType, volume);
         }
 
+        public float GetChannelVolume(SoundChanelType soundChanelType) => _volumes[soundChanelType];
+
         public void SetChannelVolume(SoundChanelType soundChanelType, float volume)
         {
             _volumes[soundChanelType] = volume;
@@ -135,7 +137,7 @@ namespace Scripts.Audio
             set => AudioListener.pause = value;
         }
 
-        private SoundEffectSO GetSoundEffectSO(string soundName)
+        public SoundEffectSO GetSoundEffectSO(string soundName)
         {
             if (soundTable.Sounds.TryGetValue(soundName, out var so))
             {
@@ -174,6 +176,30 @@ namespace Scripts.Audio
             audioSource.volume *= volumeScale;
             CaptureBaseVolume(soundChanelType);
             audioSource.PlayOneShot(clip);
+        }
+
+        /// <summary>
+        /// Like <see cref="PlayOneShot(SoundChanelType, string, float)"/>, but loudness above 1 is not lost
+        /// to the AudioSource volume cap: the excess is applied as one-shot gain on top.
+        /// </summary>
+        public void PlayOneShotWithGain(SoundChanelType soundChanelType, string soundName, float loudness)
+        {
+            var soundEffect = GetSoundEffectSO(soundName);
+            if (!soundEffect) return;
+
+            var clip = soundEffect.GetAudioClip();
+            if (!clip) return;
+
+            var audioSource = _audioSources[soundChanelType];
+            soundEffect.ApplyRandomSettings(audioSource);
+
+            float rolledVolume = audioSource.volume;
+            float targetVolume = rolledVolume * loudness;
+            audioSource.volume = Mathf.Min(1f, targetVolume);
+            float gain = audioSource.volume > 0f ? Mathf.Max(1f, targetVolume / audioSource.volume) : 1f;
+
+            CaptureBaseVolume(soundChanelType);
+            audioSource.PlayOneShot(clip, gain);
         }
 
         public void PlayOneShotWithDelay(SoundChanelType soundChanelType, string soundName, float delay) =>
@@ -229,13 +255,14 @@ namespace Scripts.Audio
         public bool IsPlaying(SoundChanelType soundChanelType, SoundEffectSO soundEffect) =>
             soundEffect
             && _audioSources[soundChanelType].isPlaying
-            && _audioSources[soundChanelType].clip == soundEffect.GetAudioClip();
+            && soundEffect.clips != null
+            && Array.IndexOf(soundEffect.clips, _audioSources[soundChanelType].clip) >= 0;
 
         public void Stop(SoundChanelType soundChanelType, string soundName = null)
         {
             if (soundName != null)
             {
-                if (IsPlaying(soundChanelType, name))
+                if (IsPlaying(soundChanelType, soundName))
                     _audioSources[soundChanelType].Stop();
             }
             else

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Scripts.Other;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -103,13 +104,13 @@ namespace Scripts.Enemies.Bosses
 
         private void OnCollisionEnter2D(Collision2D other)
         {
-            if (other.gameObject.TryGetComponent(out PlayerGhostProjectile _))
+            if (other.collider.TryGetComponentInBody(out PlayerGhostProjectile _))
             {
                 return;
             }
 
             if (_bossHealth.IsInvincible()) return;
-            if (other.gameObject.TryGetComponent(out PlayerAttackController playerAttackController))
+            if (other.collider.TryGetComponentInBody(out PlayerAttackController playerAttackController))
             {
                 _bossHealth.TakeDamage(playerAttackController.GetDamage());
                 playerAttackController.Damage(gameObject);

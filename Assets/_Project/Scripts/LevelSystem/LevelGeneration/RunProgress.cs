@@ -1,4 +1,5 @@
 using System;
+using Scripts.Services.Seed;
 
 namespace Scripts.LevelSystem.LevelGeneration
 {
@@ -16,16 +17,16 @@ namespace Scripts.LevelSystem.LevelGeneration
 
         public RunProgress()
         {
-            RunSeed = Environment.TickCount;
+            RunSeed = SeedUtility.CreateRandomSeed();
         }
 
         public void StartRun(int? seed = null)
         {
             Reset();
-            RunSeed = seed ?? Environment.TickCount;
+            RunSeed = seed ?? SeedUtility.CreateRandomSeed();
         }
 
-        public int GetFloorSeed() => RunSeed ^ CurrentFloorIndex;
+        public int GetFloorSeed() => SeedUtility.Combine(RunSeed, SeedStream.FloorLayout, CurrentFloorIndex);
 
         public void OnFloorStarted()
         {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Scripts.Other;
+using System;
 using System.Collections;
 using DG.Tweening;
 using UnityEngine;
@@ -77,7 +78,7 @@ namespace Scripts.Enemies.Bullets
 
         private void OnTriggerStay2D(Collider2D other)
         {
-            if (other.gameObject.TryGetComponent(out PlayerHealth health))
+            if (other.TryGetComponentInBody(out PlayerHealth health))
             {
                 DamagePlayer(health);
             }
@@ -85,7 +86,7 @@ namespace Scripts.Enemies.Bullets
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.gameObject.TryGetComponent(out PlayerHealth health))
+            if (other.TryGetComponentInBody(out PlayerHealth health))
             {
                 DamagePlayer(health);
             }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Scripts.Other;
+using System.Collections;
 using System.Collections.Generic;
 using Scripts.Health;
 using Scripts.LevelSystem.LevelObjects.Interaction;
@@ -72,7 +73,7 @@ namespace Scripts.LevelSystem.LevelObjects
         {
             if (_containedObject) return;
 
-            if (!other.TryGetComponent(out CannonInteractable interactable)) return;
+            if (!other.TryGetComponentInBody(out CannonInteractable interactable)) return;
 
             // OnExitCannon re-enables the collider while it is still inside this trigger, so Unity
             // raises another enter on the next physics step. Without this the cannon swallows the
@@ -86,7 +87,7 @@ namespace Scripts.LevelSystem.LevelObjects
         private void OnTriggerExit2D(Collider2D other)
         {
             // Left the barrel for real, so it may be captured again straight away.
-            if (other.TryGetComponent(out CannonInteractable interactable) && interactable == _lastShotObject)
+            if (other.TryGetComponentInBody(out CannonInteractable interactable) && interactable == _lastShotObject)
                 _lastShotObject = null;
         }
 

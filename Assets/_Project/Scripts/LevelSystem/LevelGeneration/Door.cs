@@ -1,3 +1,4 @@
+using Scripts.Other;
 using System;
 using DG.Tweening;
 using Scripts.LevelSystem.LevelGeneration;
@@ -20,13 +21,13 @@ namespace Assets.Scripts.LevelCreator
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (!isCurrentlyOpened || !other.gameObject.TryGetComponent(out PlayerMovement player)) return;
+            if (!isCurrentlyOpened || !other.TryGetComponentInBody(out PlayerMovement player)) return;
             GoThroughDoor(player);
         }
 
         private void OnCollisionEnter2D(Collision2D other)
         {
-            if (!isCurrentlyOpened || !other.gameObject.TryGetComponent(out PlayerMovement player)) return;
+            if (!isCurrentlyOpened || !other.collider.TryGetComponentInBody(out PlayerMovement player)) return;
             if (_room == null) return;
             GoThroughDoor(player);
         }
