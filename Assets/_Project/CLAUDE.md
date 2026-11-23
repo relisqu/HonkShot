@@ -131,8 +131,14 @@ Scripts/
 2. Create `NumericStatModifier` with unique ID
 3. Call `.AddModifier()` during initialization
 
-## Plugin Use
+## Task Tracking (beads)
 
-- BEFORE starting any task, invoke the planning-with-files skill and run session-catchup.
-- Do NOT begin implementation without task_plan.md, findings.md, and progress.md being read or created.
-- Update these files throughout the session as work progresses.
+Work is tracked with beads (`bd`, issue prefix `hs`, data in `.beads/` at the repo root).
+- At the start of a session, run `bd ready` to see open work.
+- Multi-step or multi-session work: create an issue (`bd create "..." -t task|bug|feature|chore -p 0-4`),
+  `bd update <id> --claim` when starting, `bd close <id> --reason "..."` when done.
+- Anything left for the user to verify (playtest, Unity-side wiring, tuning): file it as an issue with
+  label `playtest` instead of leaving it in chat.
+- Small one-shot requests don't need an issue.
+- Never run `bd sync`, `bd dolt push`, `bd hooks install`, `bd init` or `bd setup`: the user makes all git
+  commits and pushes.
