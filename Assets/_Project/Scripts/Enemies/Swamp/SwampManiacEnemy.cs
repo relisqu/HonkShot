@@ -97,6 +97,7 @@ namespace Scripts.Enemies.Swamp
             _isAttacking = false;
             _rb.linearVelocity = Vector2.zero;
             EnemyAttackInterrupt.ResetAttackVisuals(_animator, _idleStateName, null, _attackParticles);
+            EnemyAttackInterrupt.PlayStunFeedback(this, _hitStunDuration);
             StartCoroutine(StunRoutine());
         }
 

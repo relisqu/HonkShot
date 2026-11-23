@@ -10,6 +10,9 @@ namespace Scripts.Camera
     {
         [SerializeField] public CinemachineCamera _virtualCamera;
 
+        [Tooltip("Noise frequency at the start of every shake. At 0 the noise doesn't move, so a shake becomes a one-direction nudge.")]
+        [SerializeField] private float _shakeFrequency = 2f;
+
         public static CameraShakeHandler Instance;
 
         private void Awake()
@@ -23,6 +26,7 @@ namespace Scripts.Camera
         {
             var noiseChannel = _virtualCamera.GetComponent<CinemachineBasicMultiChannelPerlin>();
             noiseChannel.AmplitudeGain = strength;
+            noiseChannel.FrequencyGain = _shakeFrequency;
 
             _shakeTween = DOTween.To(
                 () => noiseChannel.AmplitudeGain,

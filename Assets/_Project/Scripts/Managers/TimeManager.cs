@@ -86,6 +86,53 @@ public class TimeManager : MonoBehaviour
         GameState = GameState.Play;
     }
 
+    [Header("Hit Stop")]
+    [Tooltip("Minimum real-time gap between two hit stops, so rapid contact hits don't freeze the game repeatedly.")]
+    [SerializeField] private float _hitStopCooldown = 0.12f;
+
+    private Coroutine _hitStopRoutine;
+    private float _hitStopEndTime;
+    private float _hitStopReadyTime;
+
+    // Briefly freezes time on impact; the regular game state is re-applied when it ends.
+    public void HitStop(float duration, float timeScale = 0.02f, bool ignoreCooldown = false)
+    {
+        if (duration <= 0f || _isMenuPaused || gameState == GameState.Pause) return;
+
+        if (_hitStopRoutine != null)
+        {
+            _hitStopEndTime = Mathf.Max(_hitStopEndTime, Time.unscaledTime + duration);
+            return;
+        }
+
+        if (!ignoreCooldown && Time.unscaledTime < _hitStopReadyTime) return;
+
+        _hitStopEndTime = Time.unscaledTime + duration;
+        _hitStopRoutine = StartCoroutine(HitStopRoutine(timeScale));
+    }
+
+    private IEnumerator HitStopRoutine(float timeScale)
+    {
+        Time.timeScale = Mathf.Min(Time.timeScale, timeScale);
+
+        while (Time.unscaledTime < _hitStopEndTime && !_isMenuPaused && gameState != GameState.Pause)
+            yield return null;
+
+        _hitStopRoutine = null;
+        _hitStopReadyTime = Time.unscaledTime + _hitStopCooldown;
+        GameState = gameState;
+    }
+
+    private void OnDisable()
+    {
+        if (_hitStopRoutine == null) return;
+
+        StopCoroutine(_hitStopRoutine);
+        _hitStopRoutine = null;
+        if (!_isMenuPaused && gameState != GameState.Pause)
+            Time.timeScale = gameState == GameState.Slowed ? TimeSlow : 1f;
+    }
+
     // Start is called before the first frame update
     void Start()
     {

@@ -40,6 +40,7 @@ GameObject:
   - component: {fileID: -2115843882568929296}
   - component: {fileID: -3870262679006619782}
   - component: {fileID: 4861270043121370161}
+  - component: {fileID: 7342378516840245613}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -229,6 +230,8 @@ MonoBehaviour:
   _playerMovement: {fileID: 4628585418959965787}
   _teleportableEntity: {fileID: 8887970704425061413}
   _gooseFireSystem: {fileID: 1399843973862884099}
+  _inputHandler: {fileID: 0}
+  _playerBallMovement: {fileID: 0}
   _dashStartSound: dashStart
   _dashFailSound: dashFail
   _releaseSound: gooseRelease
@@ -238,6 +241,34 @@ MonoBehaviour:
   _stepSound: step
   _rollSound: roll
   _stretchSound: stretch
+  _stretchVolumeRange: {x: 0.3, y: 1}
+  _stretchPitchRange: {x: 0.9, y: 1.3}
+  _stretchResponse:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _stretchFollowTime: 0.06
+  _stretchFadeOutTime: 0.08
 --- !u!114 &8887970704425061413
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -722,6 +753,29 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _retriggerCooldown: 0.05
+--- !u!114 &7342378516840245613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 225159964537138388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 317d78b057ea7124dbc8d8907e2e7968, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.VFX.PlayerHitJuice
+  _attackController: {fileID: 344756555288879489}
+  _lightHitDamage: 10
+  _heavyHitDamage: 35
+  _hitStopRange: {x: 0.02, y: 0.045}
+  _hitStopCooldown: 0.3
+  _hitStopTimeScale: 0.02
+  _bigKillHealth: 80
+  _bigKillHitStop: 0.075
+  _bigKillCooldown: 1
+  _shakeDuration: 0.12
+  _shakeStrengthRange: {x: 0.8, y: 2.2}
 --- !u!1 &334979677366588079
 GameObject:
   m_ObjectHideFlags: 0

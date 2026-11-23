@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Scripts.VFX;
 using UnityEngine;
 
 namespace Scripts.Enemies
@@ -29,6 +30,13 @@ namespace Scripts.Enemies
             int idleHash = Animator.StringToHash(idleStateName);
             if (animator.HasState(0, idleHash))
                 animator.Play(idleHash, 0, 0f);
+        }
+
+        public static void PlayStunFeedback(Component owner, float duration)
+        {
+            var hitFeedback = owner.GetComponent<HitFeedback>();
+            if (hitFeedback)
+                hitFeedback.PlayStun(duration);
         }
     }
 }

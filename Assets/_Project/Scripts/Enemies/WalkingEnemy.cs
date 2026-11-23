@@ -99,6 +99,7 @@ namespace Scripts.Enemies
             _isAttacking = false;
             _rigidbody2D.linearVelocity = Vector2.zero;
             EnemyAttackInterrupt.ResetAttackVisuals(_animator, _idleStateName, _prefireSpriteRenderer, _attackWarningEffect);
+            EnemyAttackInterrupt.PlayStunFeedback(this, _hitStunDuration);
             StartCoroutine(StunRoutine());
         }
 
