@@ -36,16 +36,16 @@ namespace Scripts.Audio
         private void OnEnable()
         {
             if (_attackController)
-                _attackController.OnDamaged += AttackController_Damaged;
+                _attackController.OnDamageDealt += AttackController_DamageDealt;
         }
 
         private void OnDisable()
         {
             if (_attackController)
-                _attackController.OnDamaged -= AttackController_Damaged;
+                _attackController.OnDamageDealt -= AttackController_DamageDealt;
         }
 
-        private void AttackController_Damaged(float damage)
+        private void AttackController_DamageDealt(HealthController target, float damage)
         {
             _lastDamage = damage;
             _lastDamageTime = Time.time;

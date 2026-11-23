@@ -86,16 +86,12 @@ public class TimeManager : MonoBehaviour
         GameState = GameState.Play;
     }
 
-    [Header("Hit Stop")]
-    [Tooltip("Minimum real-time gap between two hit stops, so rapid contact hits don't freeze the game repeatedly.")]
-    [SerializeField] private float _hitStopCooldown = 0.12f;
-
     private Coroutine _hitStopRoutine;
     private float _hitStopEndTime;
-    private float _hitStopReadyTime;
 
     // Briefly freezes time on impact; the regular game state is re-applied when it ends.
-    public void HitStop(float duration, float timeScale = 0.02f, bool ignoreCooldown = false)
+    // Callers own their cooldown policy (see PlayerHitJuice); a call during a running stop extends it.
+    public void HitStop(float duration, float timeScale = 0.02f)
     {
         if (duration <= 0f || _isMenuPaused || gameState == GameState.Pause) return;
 
@@ -104,8 +100,6 @@ public class TimeManager : MonoBehaviour
             _hitStopEndTime = Mathf.Max(_hitStopEndTime, Time.unscaledTime + duration);
             return;
         }
-
-        if (!ignoreCooldown && Time.unscaledTime < _hitStopReadyTime) return;
 
         _hitStopEndTime = Time.unscaledTime + duration;
         _hitStopRoutine = StartCoroutine(HitStopRoutine(timeScale));
@@ -119,7 +113,6 @@ public class TimeManager : MonoBehaviour
             yield return null;
 
         _hitStopRoutine = null;
-        _hitStopReadyTime = Time.unscaledTime + _hitStopCooldown;
         GameState = gameState;
     }
 

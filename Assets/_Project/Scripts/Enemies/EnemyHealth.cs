@@ -109,9 +109,7 @@ namespace Scripts.Enemies
         private void ReceiveDamage(PlayerAttackController playerAttackController)
         {
             _lastDamageReceived = playerAttackController.GetDamage();
-            var resultDamage = _healthController.TakeDamage(_lastDamageReceived);
-            playerAttackController.Damage(gameObject);
-            playerAttackController.OnDamaged?.Invoke(resultDamage);
+            playerAttackController.DealDamageTo(_healthController, gameObject, _lastDamageReceived);
         }
 
         private void OnTriggerStay2D(Collider2D other)

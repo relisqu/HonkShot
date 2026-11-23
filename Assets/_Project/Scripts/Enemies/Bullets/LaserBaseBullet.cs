@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using DG.Tweening;
+using Scripts.Health;
 using UnityEngine;
 
 namespace Scripts.Enemies.Bullets
@@ -72,7 +73,7 @@ namespace Scripts.Enemies.Bullets
         {
             if (_isFired)
             {
-                health.HealthController.TakeDamage(_damage);
+                health.HealthController.TakeDamage(_damage, DamageSource.At(transform.position));
             }
         }
 

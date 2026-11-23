@@ -7,7 +7,7 @@ using Zenject;
 
 namespace Scripts.Enemies.Swamp
 {
-    public class SwampManiacEnemy : BaseEnemy
+    public class SwampManiacEnemy : BaseEnemy, IAttackInterruptible
     {
         [Inject] private PointReceiver _pointReceiver;
 
@@ -33,15 +33,15 @@ namespace Scripts.Enemies.Swamp
         [SerializeField] private Animator _animator;
         [SerializeField] private Rigidbody2D _rb;
 
-        [Header("Hit Stun")]
-        [Tooltip("How long the enemy stands still after a hit cancels its attack wind-up.")]
-        [SerializeField] private float _hitStunDuration = 0.6f;
+        [Tooltip("Animator state played when a hit interrupts the attack.")]
         [SerializeField] private string _idleStateName = "FollowerEnemy_idle";
 
         private bool _isAttacking;
         private bool _isWindingUp;
         private float _nextAttackTime;
         private Coroutine _behaviourRoutine;
+
+        public bool IsWindingUp => _isWindingUp;
 
         private void Awake()
         {
@@ -70,43 +70,24 @@ namespace Scripts.Enemies.Swamp
             _isWindingUp = false;
         }
 
-        private void Start()
-        {
-            if (_enemyHealth && _enemyHealth.HealthController)
-                _enemyHealth.HealthController.OnNonLethalDamageReceived += HealthController_NonLethalDamageReceived;
-        }
-
-        private void OnDestroy()
-        {
-            if (_enemyHealth && _enemyHealth.HealthController)
-                _enemyHealth.HealthController.OnNonLethalDamageReceived -= HealthController_NonLethalDamageReceived;
-        }
-
         private void StartBehaviour()
         {
             _nextAttackTime = Time.time + _attackInterval;
             _behaviourRoutine = StartCoroutine(BehaviourRoutine());
         }
 
-        private void HealthController_NonLethalDamageReceived(float damage)
+        public void InterruptAttack()
         {
-            if (!_isWindingUp) return;
-
             StopAllCoroutines();
             _isWindingUp = false;
             _isAttacking = false;
             _rb.linearVelocity = Vector2.zero;
-            EnemyAttackInterrupt.ResetAttackVisuals(_animator, _idleStateName, null, _attackParticles);
-            EnemyAttackInterrupt.PlayStunFeedback(this, _hitStunDuration);
-            StartCoroutine(StunRoutine());
+            EnemyAttackVisuals.ResetAfterInterrupt(_animator, _idleStateName, null, _attackParticles);
         }
 
-        private IEnumerator StunRoutine()
+        public void ResumeAfterStun()
         {
-            yield return new WaitForSeconds(_hitStunDuration);
-
-            if (_enemyHealth.IsAlive())
-                StartBehaviour();
+            StartBehaviour();
         }
 
         private IEnumerator BehaviourRoutine()
@@ -175,7 +156,7 @@ namespace Scripts.Enemies.Swamp
                 if (_target.TryGetComponent(out HealthController playerHealth))
                 {
                     PlayParticles();
-                    playerHealth.TakeDamage(_damage);
+                    playerHealth.TakeDamage(_damage, DamageSource.At(transform.position));
                 }
             }
 

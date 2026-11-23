@@ -112,8 +112,7 @@ namespace Scripts.Enemies.Bosses
             if (_bossHealth.IsInvincible()) return;
             if (other.collider.TryGetComponentInBody(out PlayerAttackController playerAttackController))
             {
-                _bossHealth.TakeDamage(playerAttackController.GetDamage());
-                playerAttackController.Damage(gameObject);
+                playerAttackController.DealDamageTo(_bossHealth, gameObject, playerAttackController.GetDamage());
             }
         }
 

@@ -4,18 +4,12 @@ using UnityEngine;
 
 namespace Scripts.VFX
 {
+    // Global feedback for the player's direct hits: hit stop and a small camera shake.
+    // Hit strength and the weak-hit threshold come from the same HitFeedbackConfig the enemies use.
     public class PlayerHitJuice : MonoBehaviour
     {
         [SerializeField] private PlayerAttackController _attackController;
-
-        [Header("Hit Strength")]
-        [Tooltip("Damage at or below this plays the lightest reaction.")]
-        [SerializeField] private float _lightHitDamage = 10f;
-        [Tooltip("Damage at or above this plays the strongest reaction.")]
-        [SerializeField] private float _heavyHitDamage = 35f;
-
-        [Tooltip("Hits below this damage (e.g. resting contact ticks) get no hit stop or shake. Kills always do.")]
-        [SerializeField] private float _minJuiceDamage = 7f;
+        [SerializeField] private HitFeedbackConfig _hitConfig;
 
         [Header("Hit Stop")]
         [Tooltip("Freeze length in real seconds for the lightest (x) and heaviest (y) hit. Small kills use this too.")]
@@ -37,8 +31,6 @@ namespace Scripts.VFX
         [Tooltip("Shake strength for the lightest (x) and heaviest (y) hit.")]
         [SerializeField] private Vector2 _shakeStrengthRange = new Vector2(0.8f, 2.2f);
 
-        private bool _lastHitWasBigKill;
-        private bool _lastHitKilled;
         private float _hitStopReadyTime;
         private float _bigKillReadyTime;
 
@@ -46,56 +38,39 @@ namespace Scripts.VFX
         {
             if (!_attackController)
                 _attackController = GetComponentInChildren<PlayerAttackController>();
+            if (!_hitConfig)
+                Debug.LogWarning($"{name}: PlayerHitJuice has no HitFeedbackConfig assigned, hit stop and shake are off.", this);
         }
 
         private void Start()
         {
-            if (!_attackController) return;
-            _attackController.OnHit += AttackController_Hit;
-            _attackController.OnDamaged += AttackController_Damaged;
+            if (_attackController)
+                _attackController.OnDamageDealt += AttackController_DamageDealt;
         }
 
         private void OnDestroy()
         {
-            if (!_attackController) return;
-            _attackController.OnHit -= AttackController_Hit;
-            _attackController.OnDamaged -= AttackController_Damaged;
+            if (_attackController)
+                _attackController.OnDamageDealt -= AttackController_DamageDealt;
         }
 
-        private void AttackController_Hit(GameObject target)
+        private void AttackController_DamageDealt(HealthController target, float damage)
         {
-            _lastHitWasBigKill = false;
-            _lastHitKilled = false;
-            if (!target) return;
+            if (!_hitConfig || !target || damage <= 0f) return;
 
-            var health = target.GetComponent<HealthController>();
-            if (!health)
-                health = target.GetComponentInParent<HealthController>();
-            _lastHitKilled = health && !health.IsAlive;
-            _lastHitWasBigKill = _lastHitKilled && health.DefaultHealth >= _bigKillHealth;
-        }
+            bool killed = !target.IsAlive;
+            if (!killed && !_hitConfig.IsFullReaction(damage)) return;
 
-        private void AttackController_Damaged(float damage)
-        {
-            bool bigKill = _lastHitWasBigKill;
-            bool killed = _lastHitKilled;
-            _lastHitWasBigKill = false;
-            _lastHitKilled = false;
-            if (damage <= 0f) return;
-            if (!killed && damage < _minJuiceDamage) return;
-
-            float heaviness = _heavyHitDamage > _lightHitDamage
-                ? Mathf.InverseLerp(_lightHitDamage, _heavyHitDamage, damage)
-                : 0.5f;
-
-            TryHitStop(bigKill, heaviness);
+            float strength = _hitConfig.GetHitStrength(damage);
+            bool bigKill = killed && target.DefaultHealth >= _bigKillHealth;
+            TryHitStop(bigKill, strength);
 
             if (CameraShakeHandler.Instance)
                 CameraShakeHandler.Instance.ShakeCamera(_shakeDuration,
-                    Mathf.Lerp(_shakeStrengthRange.x, _shakeStrengthRange.y, heaviness));
+                    Mathf.Lerp(_shakeStrengthRange.x, _shakeStrengthRange.y, strength));
         }
 
-        private void TryHitStop(bool bigKill, float heaviness)
+        private void TryHitStop(bool bigKill, float strength)
         {
             if (!TimeManager.Instance) return;
 
@@ -108,7 +83,7 @@ namespace Scripts.VFX
             }
             else if (now >= _hitStopReadyTime)
             {
-                duration = Mathf.Lerp(_hitStopRange.x, _hitStopRange.y, heaviness);
+                duration = Mathf.Lerp(_hitStopRange.x, _hitStopRange.y, strength);
             }
             else
             {
@@ -116,7 +91,7 @@ namespace Scripts.VFX
             }
 
             _hitStopReadyTime = now + duration + _hitStopCooldown;
-            TimeManager.Instance.HitStop(duration, _hitStopTimeScale, bigKill);
+            TimeManager.Instance.HitStop(duration, _hitStopTimeScale);
         }
     }
 }

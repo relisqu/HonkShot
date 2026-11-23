@@ -1,15 +1,14 @@
 using DG.Tweening;
-using Scripts.VFX;
 using UnityEngine;
 
 namespace Scripts.Enemies
 {
-    public static class EnemyAttackInterrupt
+    public static class EnemyAttackVisuals
     {
         private static readonly int AttackTrigger = Animator.StringToHash("Attack");
         private static readonly int IsWalkingBool = Animator.StringToHash("IsWalking");
 
-        public static void ResetAttackVisuals(Animator animator, string idleStateName,
+        public static void ResetAfterInterrupt(Animator animator, string idleStateName,
             SpriteRenderer prefireSpriteRenderer, ParticleSystem warningEffect)
         {
             if (prefireSpriteRenderer)
@@ -30,13 +29,6 @@ namespace Scripts.Enemies
             int idleHash = Animator.StringToHash(idleStateName);
             if (animator.HasState(0, idleHash))
                 animator.Play(idleHash, 0, 0f);
-        }
-
-        public static void PlayStunFeedback(Component owner, float duration)
-        {
-            var hitFeedback = owner.GetComponent<HitFeedback>();
-            if (hitFeedback)
-                hitFeedback.PlayStun(duration);
         }
     }
 }

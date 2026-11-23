@@ -48,7 +48,7 @@ namespace Scripts.Items.PermanentItems.CustomItems
             _cooldownCoroutine = null;
             _isOnCooldown = false;
         }
-        private void HandleDamageReceived(float damageAmount)
+        private void HandleDamageReceived(float damageAmount, DamageSource source)
         {
             if (_isOnCooldown)
                 return;

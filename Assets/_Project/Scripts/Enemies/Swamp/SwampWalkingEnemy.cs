@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Scripts.Enemies.Swamp
 {
-    public class SwampWalkingEnemy : BaseEnemy
+    public class SwampWalkingEnemy : BaseEnemy, IAttackInterruptible
     {
         [Header("Path Settings")] [SerializeField]
         private List<Transform> _pathPoints = new();
@@ -33,9 +33,7 @@ namespace Scripts.Enemies.Swamp
         [SerializeField] private Animator _animator;
         [SerializeField] private Rigidbody2D _rb;
 
-        [Header("Hit Stun")]
-        [Tooltip("How long the enemy stands still after a hit cancels its attack wind-up.")]
-        [SerializeField] private float _hitStunDuration = 0.6f;
+        [Tooltip("Animator state played when a hit interrupts the attack.")]
         [SerializeField] private string _idleStateName = "walkingEnemy_idle";
 
         private int _currentTargetIndex;
@@ -43,6 +41,8 @@ namespace Scripts.Enemies.Swamp
         private bool _isAttacking;
         private bool _isWindingUp;
         private float _nextAttackTime;
+
+        public bool IsWindingUp => _isWindingUp;
 
         private void Awake()
         {
@@ -83,43 +83,24 @@ namespace Scripts.Enemies.Swamp
             _isWindingUp = false;
         }
 
-        private void Start()
-        {
-            if (_enemyHealth && _enemyHealth.HealthController)
-                _enemyHealth.HealthController.OnNonLethalDamageReceived += HealthController_NonLethalDamageReceived;
-        }
-
-        private void OnDestroy()
-        {
-            if (_enemyHealth && _enemyHealth.HealthController)
-                _enemyHealth.HealthController.OnNonLethalDamageReceived -= HealthController_NonLethalDamageReceived;
-        }
-
         private void StartBehaviour()
         {
             _nextAttackTime = Time.time + _attackInterval;
             StartCoroutine(BehaviourRoutine());
         }
 
-        private void HealthController_NonLethalDamageReceived(float damage)
+        public void InterruptAttack()
         {
-            if (!_isWindingUp) return;
-
             StopAllCoroutines();
             _isWindingUp = false;
             _isAttacking = false;
             _rb.linearVelocity = Vector2.zero;
-            EnemyAttackInterrupt.ResetAttackVisuals(_animator, _idleStateName, _prefireSpriteRenderer, _attackWarningEffect);
-            EnemyAttackInterrupt.PlayStunFeedback(this, _hitStunDuration);
-            StartCoroutine(StunRoutine());
+            EnemyAttackVisuals.ResetAfterInterrupt(_animator, _idleStateName, _prefireSpriteRenderer, _attackWarningEffect);
         }
 
-        private IEnumerator StunRoutine()
+        public void ResumeAfterStun()
         {
-            yield return new WaitForSeconds(_hitStunDuration);
-
-            if (_enemyHealth.IsAlive() && isActiveAndEnabled)
-                StartBehaviour();
+            StartBehaviour();
         }
 
         private IEnumerator BehaviourRoutine()
@@ -222,7 +203,7 @@ namespace Scripts.Enemies.Swamp
             _isWindingUp = false;
 
             if (TryFindPlayerHealth(out var playerHealth))
-                playerHealth.TakeDamage(_damage);
+                playerHealth.TakeDamage(_damage, DamageSource.At(transform.position));
 
             if (_prefireSpriteRenderer)
                 _prefireSpriteRenderer.color = Color.clear;

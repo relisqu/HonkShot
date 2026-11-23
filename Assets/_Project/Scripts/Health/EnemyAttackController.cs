@@ -63,7 +63,7 @@ namespace Scripts.Health
             if (Vector2.Distance(transform.position, _attackTarget.position) <= _attackRange &&
                 _attackTarget.TryGetComponent(out HealthController targetHealth))
             {
-                targetHealth.TakeDamage(_damage);
+                targetHealth.TakeDamage(_damage, DamageSource.At(transform.position));
             }
 
             _prefireSpriteRenderer.color = Color.clear;

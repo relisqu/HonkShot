@@ -83,9 +83,7 @@ namespace Scripts.Health
         public void ReceiveDamage(PlayerAttackController playerAttackController)
         {
             var damage = playerAttackController.GetDamage();
-            var finalDamage = _healthController.TakeDamage(damage);
-            playerAttackController.Damage(gameObject);
-            playerAttackController.OnDamaged?.Invoke(finalDamage);
+            var finalDamage = playerAttackController.DealDamageTo(_healthController, gameObject, damage);
             Debug.Log("Final damage: " + finalDamage);
             
             

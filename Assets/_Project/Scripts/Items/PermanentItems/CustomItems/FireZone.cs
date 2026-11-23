@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Scripts.Enemies;
 using Scripts.Player;
+using Scripts.Health;
 using UnityEngine;
 
 namespace Scripts.Items.PermanentItems.CustomItems
@@ -10,6 +11,9 @@ namespace Scripts.Items.PermanentItems.CustomItems
     {
         [SerializeField] private float _radius = 2f;
         [SerializeField] private float _tickInterval = 0.5f;
+        [Tooltip("How hard each burn tick kicks the enemy's sprite away from the zone (1 = normal hit). Cosmetic only; " +
+                 "ticks below HitFeedbackConfig's full-reaction damage don't kick at all.")]
+        [SerializeField] private float _spriteKickScale = 0.4f;
         [SerializeField] private ParticleSystem _particleSystem;
         [SerializeField] private float _fadeInTime = 0.3f;
         [SerializeField] private float _fadeOutTime = 0.5f;
@@ -100,7 +104,8 @@ namespace Scripts.Items.PermanentItems.CustomItems
             foreach (var hit in hits)
             {
                 if (hit.TryGetComponent(out EnemyHealth enemyHealth))
-                    enemyHealth.HealthController.TakeDamage(damage);
+                    enemyHealth.HealthController.TakeDamage(damage,
+                        DamageSource.At(transform.position, _spriteKickScale));
             }
         }
 

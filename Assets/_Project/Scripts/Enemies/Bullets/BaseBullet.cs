@@ -1,4 +1,5 @@
 ﻿using System;
+using Scripts.Health;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -32,7 +33,7 @@ namespace Scripts.Enemies.Bullets
 
         public virtual void DamagePlayer(PlayerHealth health)
         {
-            health.HealthController.TakeDamage(_damage);
+            health.HealthController.TakeDamage(_damage, DamageSource.At(transform.position));
             Destroy(gameObject);
         }
 

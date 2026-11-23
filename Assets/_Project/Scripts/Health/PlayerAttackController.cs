@@ -25,7 +25,7 @@ namespace Scripts.Health
 
         public NumericStatModifierSystem DamageBuffModifierSystem => _damageBuffModifierSystem;
         public Action<GameObject> OnHit;
-        public Action<float> OnDamaged;
+        public Action<HealthController, float> OnDamageDealt;
 
         private void Awake()
         {
@@ -35,9 +35,14 @@ namespace Scripts.Health
                 _playerBallMovement = GetComponentInParent<PlayerBallMovement>();
         }
 
-        public void Damage(GameObject target)
+        // Single entry point for the player's direct hits: applies damage from the player's position,
+        // then raises OnHit (items) and OnDamageDealt (feedback, sound) with the final damage.
+        public float DealDamageTo(HealthController target, GameObject hitObject, float damage)
         {
-            OnHit?.Invoke(target);
+            float finalDamage = target.TakeDamage(damage, DamageSource.At(transform.position));
+            OnHit?.Invoke(hitObject);
+            OnDamageDealt?.Invoke(target, finalDamage);
+            return finalDamage;
         }
 
         public override float GetDamage()

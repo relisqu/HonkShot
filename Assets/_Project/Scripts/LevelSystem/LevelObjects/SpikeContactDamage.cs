@@ -50,7 +50,7 @@ namespace Scripts.LevelSystem.LevelObjects
                 return;
             }
 
-            health.TakeDamage(damage);
+            health.TakeDamage(damage, DamageSource.At(transform.position));
             _lastDamageTimes[health] = now;
         }
     }

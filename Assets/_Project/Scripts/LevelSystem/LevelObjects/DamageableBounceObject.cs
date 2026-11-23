@@ -84,9 +84,7 @@ namespace Scripts.LevelSystem.LevelObjects
             if (_healthController.IsInvincible()) return;
 
             var damage = playerAttackController.GetDamage();
-            var resultDamage = _healthController.TakeDamage(damage);
-            playerAttackController.Damage(gameObject);
-            playerAttackController.OnDamaged?.Invoke(resultDamage);
+            playerAttackController.DealDamageTo(_healthController, gameObject, damage);
         }
     }
 }

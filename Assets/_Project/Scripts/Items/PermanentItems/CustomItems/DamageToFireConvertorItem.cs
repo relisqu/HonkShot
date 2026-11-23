@@ -24,7 +24,7 @@ namespace Scripts.Items.PermanentItems.CustomItems
                 _healthController.OnDamageReceived -= HealthController_OnDamageReceived;
         }
 
-        private void HealthController_OnDamageReceived(float damageAmount)
+        private void HealthController_OnDamageReceived(float damageAmount, DamageSource source)
         {
             if (GooseFireSystem.Instance)
                 GooseFireSystem.Instance.AddFire(damageAmount * _conversionCoefficient);

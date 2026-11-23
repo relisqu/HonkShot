@@ -1,5 +1,6 @@
 using System.Collections;
 using Scripts.Enemies;
+using Scripts.Health;
 using UnityEngine;
 
 namespace Scripts.Player
@@ -7,6 +8,9 @@ namespace Scripts.Player
     public class Explosion : MonoBehaviour
     {
         [SerializeField] private float _returnDelay = 0.5f;
+        [Tooltip("How hard the blast kicks enemy sprites away from its center (1 = normal hit). " +
+                 "Cosmetic only; the physical push is the knockback below.")]
+        [SerializeField] private float _spriteKickScale = 1.5f;
 
         private float _damage;
         private float _radius;
@@ -41,7 +45,8 @@ namespace Scripts.Player
                 if (hit.TryGetComponent(out EnemyHealth enemyHealth))
                 {
                     Debug.Log("Explode");
-                    enemyHealth.HealthController.TakeDamage(_damage);
+                    enemyHealth.HealthController.TakeDamage(_damage,
+                        DamageSource.At(transform.position, _spriteKickScale));
                 }
 
                 if (hit.TryGetComponent(out Rigidbody2D rb))

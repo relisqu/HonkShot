@@ -12,7 +12,8 @@ namespace Scripts.LevelSystem.LevelObjects.Interaction
         {
             if (other.collider.TryGetComponent(out LevelSolidObject levelSolidObject))
             {
-                GetComponent<HealthController>().TakeDamage(_wallDamage);
+                var hitPoint = other.contactCount > 0 ? other.GetContact(0).point : (Vector2)other.transform.position;
+                GetComponent<HealthController>().TakeDamage(_wallDamage, DamageSource.At(hitPoint));
             }
         }
     }

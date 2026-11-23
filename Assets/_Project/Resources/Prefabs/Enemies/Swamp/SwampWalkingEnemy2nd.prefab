@@ -193,6 +193,7 @@ GameObject:
   - component: {fileID: 7889487439758411554}
   - component: {fileID: -4999520064065869862}
   - component: {fileID: 8934835240290741596}
+  - component: {fileID: 266156858665083190}
   m_Layer: 9
   m_Name: SwampWalkingEnemy2nd
   m_TagString: Untagged
@@ -482,7 +483,6 @@ MonoBehaviour:
   _enemyHealth: {fileID: 4515034298436149223}
   _animator: {fileID: 8655591957192124605}
   _rb: {fileID: 9023951278937606168}
-  _hitStunDuration: 0.6
   _idleStateName: walkingEnemy_idle
 --- !u!114 &367697537471600632
 MonoBehaviour:
@@ -612,27 +612,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8aa40a79fc0e404e93fa48e160d3075, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Scripts.VFX.HitFeedback
+  _config: {fileID: 11400000, guid: 1665df133d35c4a43851b6b994c477a1, type: 2}
   _healthController: {fileID: 1834656323582462977}
   _visualTarget: {fileID: 5029599289733208794}
-  _lightHitDamage: 10
-  _heavyHitDamage: 35
   _flashRenderers: []
-  _flashMaterial: {fileID: 2100000, guid: 58116ce9808040ef8672a489159d042b, type: 2}
-  _flashDuration: 0.1
-  _punch: {x: 0.45, y: -0.38, z: 0}
-  _punchStrengthRange: {x: 0.75, y: 1.5}
-  _punchDuration: 0.35
-  _punchVibrato: 7
-  _punchElasticity: 0.8
-  _kickDistanceRange: {x: 0.12, y: 0.32}
-  _kickDuration: 0.28
-  _kickVibrato: 3
-  _kickElasticity: 0.6
-  _hitParticlePrefab: {fileID: 3555091249245553309, guid: 026a268d0ac321844a1cafb198293b2a, type: 3}
-  _sparkOffset: 0.3
-  _sparkScaleRange: {x: 0.8, y: 1.4}
-  _stunShakeStrength: 0.07
-  _stunShakeVibrato: 35
+--- !u!114 &266156858665083190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2489550034644669959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b43fba46db657c4f8db76a5b0d67756, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.EnemyHitStun
+  _healthController: {fileID: 1834656323582462977}
+  _stunDuration: 0.6
 --- !u!1 &2759541325536828974
 GameObject:
   m_ObjectHideFlags: 0

@@ -41,8 +41,15 @@ The project uses Zenject for DI. Key installers:
 
 **Health & Combat** (`Scripts/Health/`)
 - `HealthController` - Damage, shields, invincibility with modifier support
-- Events: `OnDied`, `OnDamaged`, `OnTakeDamageTriggered`
+- `TakeDamage(amount, DamageSource source = default)` - pass `DamageSource.At(position, kickScale)` so hit reactions know where the hit came from
+- Events: `OnDied`, `OnDamageReceived(damage, source)`, `OnNonLethalDamageReceived`, `OnTakeDamageTriggered`
+- Player direct hits go through `PlayerAttackController.DealDamageTo(target, hitObject, damage)` (raises `OnHit` + `OnDamageDealt`)
 - Integrates with `ShieldController`
+
+**Hit Feedback** (`Scripts/VFX/`, `Scripts/Enemies/`)
+- `HitFeedback` (enemies/breakables) - flash, squash wobble, kick away from the source, spark; only moves its `_visualTarget` child, never colliders
+- All tuning in the shared `Resources/Data/Configs/HitFeedbackConfig.asset`; `PlayerHitJuice` (Player prefab) adds hit stop + camera shake
+- `EnemyHitStun` + `IAttackInterruptible` - a hit during an attack wind-up cancels it and stuns; the enemy implements cancel/resume
 
 **Level System** (`Scripts/LevelSystem/`)
 - `LevelManager` - Orchestrates floor/room progression

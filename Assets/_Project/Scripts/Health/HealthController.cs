@@ -19,7 +19,7 @@ namespace Scripts.Health
 
         public Action OnTakeDamageTriggered;
         public Action<float> OnDamageBlocked;
-        public Action<float> OnDamageReceived;
+        public Action<float, DamageSource> OnDamageReceived;
         public Action<HealthController> OnDied;
         public Action<float> OnNonLethalDamageReceived;
         public Action OnRevived;
@@ -52,7 +52,7 @@ namespace Scripts.Health
             return _defaultCurrentHealth;
         }
 
-        public float TakeDamage(float damageAmount)
+        public float TakeDamage(float damageAmount, DamageSource source = default)
         {
             
             if (_defaultCurrentHealth == 0)
@@ -89,7 +89,7 @@ namespace Scripts.Health
                     _defaultCurrentHealth = 0;
                 }
 
-                OnDamageReceived?.Invoke(finalDamage);
+                OnDamageReceived?.Invoke(finalDamage, source);
 
                 if (_defaultCurrentHealth == 0)
                 {

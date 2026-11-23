@@ -2,6 +2,7 @@ using System.Collections;
 using Scripts.Enemies;
 using Scripts.Enemies.Bullets;
 using Scripts.Services.Pooling;
+using Scripts.Health;
 using UnityEngine;
 
 namespace Scripts.Player.Shooting
@@ -41,7 +42,7 @@ namespace Scripts.Player.Shooting
 
         public virtual void DamageEnemy(EnemyHealth enemyHealth)
         {
-            enemyHealth.HealthController.TakeDamage(_damage);
+            enemyHealth.HealthController.TakeDamage(_damage, DamageSource.At(transform.position));
             _pool?.Return(this);
         }
         private void OnTriggerEnter2D(Collider2D other)

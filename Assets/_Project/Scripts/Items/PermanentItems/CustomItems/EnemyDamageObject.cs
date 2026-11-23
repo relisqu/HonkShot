@@ -69,7 +69,7 @@ namespace Scripts.Items.PermanentItems.CustomItems
                 }
             }
 
-            enemy.TakeDamage(_damageAmount);
+            enemy.TakeDamage(_damageAmount, DamageSource.At(transform.position));
             _damagedEnemies[enemy] = currentTime;
         }
 
