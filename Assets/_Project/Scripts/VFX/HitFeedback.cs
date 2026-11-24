@@ -5,9 +5,6 @@ using UnityEngine;
 
 namespace Scripts.VFX
 {
-    // Visual reaction to taking damage: white flash, squash wobble, knockback kick away from the
-    // damage source, hit spark, and a tremble while stunned. Only the visual child moves/scales,
-    // never the root, so colliders are untouched. Tuning lives in the shared HitFeedbackConfig.
     public class HitFeedback : MonoBehaviour
     {
         [SerializeField] private HitFeedbackConfig _config;
@@ -21,7 +18,7 @@ namespace Scripts.VFX
 
         private EnemyHitStun _hitStun;
         private SpriteFlasher _flasher;
-        private VisualTransformLayer _transformLayer;
+        private VisualTransformComposer _composer;
 
         private Tweener _punchTween;
         private Vector3 _punchOffset;
@@ -29,6 +26,9 @@ namespace Scripts.VFX
         private Vector3 _kickOffset;
         private Tweener _shakeTween;
         private Vector3 _shakeOffset;
+        private Tweener _stunTween;
+        private float _stunElapsed;
+        private float _stunDuration;
 
         private void Awake()
         {
@@ -45,7 +45,7 @@ namespace Scripts.VFX
 
             _flasher = new SpriteFlasher(_flashRenderers);
             if (_visualTarget)
-                _transformLayer = new VisualTransformLayer(_visualTarget);
+                _composer = VisualTransformComposer.GetOrAdd(_visualTarget);
         }
 
         private void Start()
@@ -68,7 +68,8 @@ namespace Scripts.VFX
         {
             KillTweens();
             _flasher?.Restore();
-            _transformLayer?.Restore();
+            if (_composer)
+                _composer.Clear(this);
         }
 
         private void HealthController_DamageReceived(float damage, DamageSource source)
@@ -89,13 +90,13 @@ namespace Scripts.VFX
             {
                 if (IsPlaying(_punchTween)) return;
                 Flash();
-                Punch(0f);
+                Punch(_config.GetPunch(0f), _config.PunchDuration);
                 return;
             }
 
             float strength = _config.GetHitStrength(damage);
             Flash();
-            Punch(strength);
+            Punch(_config.GetPunch(strength), _config.PunchDuration);
 
             var origin = GetVisualOrigin();
             if (!source.HasPosition)
@@ -112,23 +113,40 @@ namespace Scripts.VFX
 
         private void PlayStun(float duration)
         {
-            if (!_config || _transformLayer == null || !isActiveAndEnabled || duration <= 0f) return;
+            if (!_config || !_composer || !isActiveAndEnabled || duration <= 0f) return;
 
             KillTween(ref _shakeTween);
             _shakeOffset = Vector3.zero;
             _shakeTween = DOTween.Shake(() => _shakeOffset, value => _shakeOffset = value, duration,
                     _config.StunShakeStrength, _config.StunShakeVibrato, 90f, true, true)
                 .SetLink(gameObject);
+
+            KillTween(ref _stunTween);
+            _stunElapsed = 0f;
+            _stunDuration = duration;
+            _stunTween = DOTween.To(() => _stunElapsed, value => _stunElapsed = value, duration, duration)
+                .SetEase(Ease.Linear)
+                .SetLink(gameObject)
+                .OnComplete(() => Punch(_config.StunRecoverPunch, _config.StunRecoverDuration));
         }
 
         private void LateUpdate()
         {
-            if (_transformLayer == null) return;
+            if (!_composer) return;
 
             var scaleMultiplier = Vector3.one + (IsPlaying(_punchTween) ? _punchOffset : Vector3.zero);
             var offset = (IsPlaying(_kickTween) ? _kickOffset : Vector3.zero)
                          + (IsPlaying(_shakeTween) ? _shakeOffset : Vector3.zero);
-            _transformLayer.Apply(scaleMultiplier, offset);
+
+            if (IsPlaying(_stunTween))
+            {
+                float daze = _config.GetStunDazeWeight(_stunElapsed, _stunDuration);
+                scaleMultiplier = Vector3.Scale(scaleMultiplier, Vector3.Lerp(Vector3.one, _config.StunDazeScale, daze));
+                float sway = Mathf.Sin(_stunElapsed * _config.StunSwayFrequency * 2f * Mathf.PI);
+                offset.x += sway * _config.StunSwayAmplitude * daze;
+            }
+
+            _composer.Set(this, scaleMultiplier, offset);
         }
 
         private void Flash()
@@ -136,20 +154,20 @@ namespace Scripts.VFX
             _flasher.Flash(_config.FlashMaterial, _config.FlashDuration, gameObject);
         }
 
-        private void Punch(float strength)
+        private void Punch(Vector3 punch, float duration)
         {
-            if (_transformLayer == null) return;
+            if (!_composer) return;
 
             KillTween(ref _punchTween);
             _punchOffset = Vector3.zero;
-            _punchTween = DOTween.Punch(() => _punchOffset, value => _punchOffset = value, _config.GetPunch(strength),
-                    _config.PunchDuration, _config.PunchVibrato, _config.PunchElasticity)
+            _punchTween = DOTween.Punch(() => _punchOffset, value => _punchOffset = value, punch,
+                    duration, _config.PunchVibrato, _config.PunchElasticity)
                 .SetLink(gameObject);
         }
 
         private void Kick(Vector2 worldOffset)
         {
-            if (_transformLayer == null || worldOffset == Vector2.zero) return;
+            if (!_composer || worldOffset == Vector2.zero) return;
 
             KillTween(ref _kickTween);
             _kickOffset = Vector3.zero;
@@ -176,6 +194,7 @@ namespace Scripts.VFX
             KillTween(ref _punchTween);
             KillTween(ref _kickTween);
             KillTween(ref _shakeTween);
+            KillTween(ref _stunTween);
         }
 
         private static void KillTween(ref Tweener tween)

@@ -50,7 +50,7 @@ namespace Scripts.Enemies.Swamp
                     continue;
 
                 PlayShootStartAnimation();
-                TryShoot();
+                Shoot();
             }
         }
 
@@ -58,6 +58,8 @@ namespace Scripts.Enemies.Swamp
         {
             if (_shooterAnimator)
                 _shooterAnimator.SetTrigger("startShooting");
+            if (_shootingModule)
+                _shootingModule.NotifyWindUpStarted();
         }
 
         public void FinishShootingAnimation()
@@ -66,7 +68,13 @@ namespace Scripts.Enemies.Swamp
                 _shooterAnimator.SetTrigger("finishShooting");
         }
 
+        // Receiver for the TryShoot animation event in the shared shooter clips. Swamp shooters fire from their
+        // own routine instead (their animator is switched off during hide/show), so the event must not shoot again.
         public void TryShoot()
+        {
+        }
+
+        private void Shoot()
         {
             if (!_stateMachine.IsVisible)
                 return;

@@ -20,15 +20,28 @@ namespace Scripts.Enemies
             if (warningEffect)
                 warningEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
 
-            if (!animator || !animator.isActiveAndEnabled || !animator.runtimeAnimatorController) return;
+            if (!IsUsable(animator)) return;
 
-            animator.ResetTrigger(AttackTrigger);
             animator.SetBool(IsWalkingBool, false);
+            ResetToIdle(animator, idleStateName, AttackTrigger);
+        }
+
+        public static void ResetToIdle(Animator animator, string idleStateName, params int[] triggersToReset)
+        {
+            if (!IsUsable(animator)) return;
+
+            foreach (int trigger in triggersToReset)
+                animator.ResetTrigger(trigger);
 
             if (string.IsNullOrEmpty(idleStateName)) return;
             int idleHash = Animator.StringToHash(idleStateName);
             if (animator.HasState(0, idleHash))
                 animator.Play(idleHash, 0, 0f);
+        }
+
+        private static bool IsUsable(Animator animator)
+        {
+            return animator && animator.isActiveAndEnabled && animator.runtimeAnimatorController;
         }
     }
 }

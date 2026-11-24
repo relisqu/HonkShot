@@ -31,6 +31,10 @@ namespace Scripts.Enemies.Bullets
         private Vector2 _startPosition;
         private bool _isFired;
 
+        public float PrefireDuration => _prefireDuration;
+        public Vector2 BeamEnd { get; private set; }
+        public bool BeamHitsObstacle { get; private set; }
+
         protected override void Awake()
         {
             base.Awake();
@@ -73,7 +77,10 @@ namespace Scripts.Enemies.Bullets
             var filter = new ContactFilter2D { useTriggers = false };
             filter.SetLayerMask(_obstacleLayer);
             int hitCount = Physics2D.Raycast(_startPosition, direction, filter, _rayHits, _maxRange);
-            return hitCount > 0 ? _rayHits[0].distance : _maxRange;
+            float length = hitCount > 0 ? _rayHits[0].distance : _maxRange;
+            BeamHitsObstacle = hitCount > 0;
+            BeamEnd = _startPosition + direction.normalized * length;
+            return length;
         }
 
         private IEnumerator DestroyAfterTime()

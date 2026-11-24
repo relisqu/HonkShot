@@ -21,7 +21,7 @@ namespace Scripts.Enemies.Bullets
             }
 
             if (!other.isTrigger)
-                Destroy(gameObject);
+                DestroyOnImpact();
         }
     }
 }

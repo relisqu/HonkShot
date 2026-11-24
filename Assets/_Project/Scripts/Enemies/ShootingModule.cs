@@ -16,6 +16,11 @@ namespace Scripts.Enemies
         
         protected Transform _player;
 
+        public Action OnWindUpStarted;
+        public Action OnWindUpCancelled;
+        // Direction of the shot, or Vector2.zero for radial bursts.
+        public Action<Vector2> OnFired;
+
         protected virtual void Start()
         {
             var pointReceiver = _pointReceiver ?? PointReceiver.Instance; // Fallback to Instance if injection failed
@@ -40,7 +45,23 @@ namespace Scripts.Enemies
                 onShootFinish?.Invoke();
         }
 
+        // Called by the owning enemy when its shooting wind-up (animation) begins.
+        public void NotifyWindUpStarted()
+        {
+            OnWindUpStarted?.Invoke();
+        }
+
+        public void NotifyWindUpCancelled()
+        {
+            OnWindUpCancelled?.Invoke();
+        }
+
         protected abstract void Shoot(Action onShootFinish);
+
+        protected void RaiseFired(Vector2 direction)
+        {
+            OnFired?.Invoke(direction);
+        }
 
         private void OnDrawGizmos()
         {

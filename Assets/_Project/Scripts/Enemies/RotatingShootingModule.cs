@@ -16,6 +16,7 @@ namespace Scripts.Enemies
             {
                 float angleStep = 360f / _bulletCount;
                 float angle = _startRotation;
+                RaiseFired(Vector2.zero);
 
                 for (int i = 0; i < _bulletCount; i++)
                 {

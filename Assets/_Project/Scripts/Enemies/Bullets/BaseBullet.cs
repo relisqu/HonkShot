@@ -14,6 +14,10 @@ namespace Scripts.Enemies.Bullets
         [SerializeField] protected float _damage = 3f;
         [SerializeField] protected Transform _baseTransform;
         public Action OnReady;
+        // Raised right before the bullet is destroyed by hitting something (not on lifetime expiry).
+        public Action<Vector2> OnImpact;
+
+        public float MaxLifetime => _maxLifetime;
 
         protected virtual void Awake()
         {
@@ -34,6 +38,12 @@ namespace Scripts.Enemies.Bullets
         public virtual void DamagePlayer(PlayerHealth health)
         {
             health.HealthController.TakeDamage(_damage, DamageSource.At(transform.position));
+            DestroyOnImpact();
+        }
+
+        protected void DestroyOnImpact()
+        {
+            OnImpact?.Invoke(transform.position);
             Destroy(gameObject);
         }
 

@@ -13,6 +13,7 @@ namespace Scripts.Enemies
             Vector2 direction = (_player.position - transform.position).normalized;
             var bullet = Instantiate(_bulletPrefab, transform.position,
                 Quaternion.LookRotation(Vector3.forward, direction));
+            RaiseFired(direction);
             if (!bullet.TryGetComponent(out BaseBullet bulletComponent))
             {
                 var bulletBullet = bullet.GetComponentInChildren<BaseBullet>();

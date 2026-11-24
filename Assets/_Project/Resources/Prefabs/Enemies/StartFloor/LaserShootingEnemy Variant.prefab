@@ -301,6 +301,10 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7285576464758646721, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
+      propertyPath: _idleStateName
+      value: laser_idle
+      objectReference: {fileID: 0}
+    - target: {fileID: 7285576464758646721, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
       propertyPath: _shootInterval
       value: 5
       objectReference: {fileID: 0}
@@ -350,6 +354,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8924671554657805165, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4026343344618080023}
+    - targetCorrespondingSourceObject: {fileID: 8924671554657805165, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8894776291884976618}
+    - targetCorrespondingSourceObject: {fileID: 8924671554657805165, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9059220385451880626}
     - targetCorrespondingSourceObject: {fileID: 6774123108268076226, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4081470473917213766}
@@ -439,6 +449,50 @@ MonoBehaviour:
   _healthController: {fileID: 1141786122724050128}
   _visualTarget: {fileID: 9193029995312397752}
   _flashRenderers: []
+--- !u!114 &8894776291884976618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3756805598485683926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b300ccc82d954744a9c04bc23fe659e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.VFX.ShooterFeedback
+  _shootingModule: {fileID: 4081470473917213766}
+  _visualTarget: {fileID: 9193029995312397752}
+  _tintRenderers: []
+  _windUpDuration: 0.28
+  _windUpScale: {x: 1.15, y: 1.15, z: 1}
+  _windUpTint: {r: 1, g: 0.55, b: 0.55, a: 1}
+  _windUpShakeStrength: 0.04
+  _windUpShakeVibrato: 30
+  _recoilPunch: {x: 0.35, y: -0.3, z: 0}
+  _radialRecoilPunch: {x: 0.3, y: 0.3, z: 0}
+  _recoilDuration: 0.3
+  _recoilVibrato: 6
+  _recoilElasticity: 0.7
+  _recoilKickDistance: 0.18
+  _recoilKickDuration: 0.22
+  _muzzlePrefab: {fileID: 3555091249245553309, guid: 026a268d0ac321844a1cafb198293b2a, type: 3}
+  _muzzleOffset: 0.3
+  _muzzleScale: 0.7
+--- !u!114 &9059220385451880626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3756805598485683926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b43fba46db657c4f8db76a5b0d67756, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Enemies.EnemyHitStun
+  _healthController: {fileID: 1141786122724050128}
+  _stunDuration: 0.6
 --- !u!4 &4235211855637762424 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8448305441327721667, guid: 55d70bbb6a2e9e8418af27ef65caebe1, type: 3}
