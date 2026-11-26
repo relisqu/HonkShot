@@ -1,0 +1,20 @@
+{"id":"LL_43","name":"OrbitPillar","idea":"Cannon-to-slider orbit round a central pillar: the corner cannon fires you along the floor into a slider that carries you up the east side and over the pillar, then out west through points and back toward the cannon","difficulty":2,
+"outline":[-11,-6.5, 11,-6.5, 7,6.5, -7,6.5],
+"spawn":[-7,0],"exit":[-6,-3],
+"objects":[
+ {"key":"InnerWall","x":0.66,"y":-0.2},
+ {"key":"Cannon","x":-7.0,"y":-4.6,"rot":-90},
+ {"key":"MoveRoad","path":[6.6,-4.0, 5.4,1.0, 2.4,4.0, -2.0,4.0]},
+ {"key":"PointObject","x":-4.4,"y":-3.1},
+ {"key":"PointObject","x":-3.8,"y":4.0},
+ {"key":"PointObject","x":-5.0,"y":2.12},
+ {"key":"Follower","x":0.5,"y":-4.3},
+ {"key":"Follower","x":8.0,"y":-4.0},
+ {"key":"WalkerSpot","x":-3.4,"y":-5.0},
+ {"key":"Walker","x":-3.4,"y":5.3},
+ {"key":"BigFly","x":-5.4,"y":4.6},
+ {"key":"BigFly","x":6.0,"y":4.5},
+ {"key":"SmallFly","x":3.5,"y":-5.4},
+ {"key":"BouncerV","x":0,"y":-6.04},
+ {"key":"BouncerV","x":2.0,"y":6.4}
+]}

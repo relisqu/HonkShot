@@ -1,0 +1,21 @@
+{"id":"LL_36","name":"ZigzagLifts","idea":"Z-shaped room with two point-symmetric sliders: the lower one lifts you through the waist and up an Arrow line into the LaserShooter's corner, the upper one drops you back through two points onto the patroller by spawn","difficulty":2,
+"outline":[-11,-7, 3,-7, 3,-3, 11,-3, 11,7, -3,7, -3,3, -11,3],
+"spawn":[-8.5,0.5],"exit":[-7,-1.5],
+"objects":[
+ {"key":"MoveRoad","path":[-5,-5.4, -2.5,-5.4, -0.5,-3.0, 1.5,-1.2]},
+ {"key":"MoveRoad","path":[5,5.4, 2.5,5.4, 0.5,3.0, -1.5,1.2]},
+ {"key":"LaserShooter","x":8.5,"y":4.8},
+ {"key":"Arrow","x":3.5,"y":0.6,"rot":42},
+ {"key":"Arrow","x":5,"y":1.94,"rot":42},
+ {"key":"Arrow","x":6.48,"y":3.28,"rot":42},
+ {"key":"PointObject","x":-3.5,"y":-0.6},
+ {"key":"PointObject","x":-4.8,"y":-1.75},
+ {"key":"WalkerSpot","x":-7.5,"y":-4.2},
+ {"key":"Follower","x":6.5,"y":-0.8},
+ {"key":"Walker","x":-0.8,"y":5.0},
+ {"key":"BigFly","x":8.5,"y":0.5},
+ {"key":"SmallFly","x":-1,"y":-5.6},
+ {"key":"SmallFly","x":3.5,"y":4.5},
+ {"key":"BouncerV","x":-10.74,"y":-2,"rot":90},
+ {"key":"BouncerV","x":10.74,"y":2,"rot":90}
+]}
